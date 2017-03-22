@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>OpenLayers Editor</title>
+  </head>
+  <body>
+    <script src="node_modules/openlayers/dist/ol-debug.js"></script>
+    <script src="dist/ole.js"></script>
+
+    <div id="map" style="position:absolute;top:0;bottom:0;left:0;right:0;"></div>
+
+    <script type="text/javascript">
+      var dummyFeatures = '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[3776570.1518083513,8954194.824687667]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[6026906.8062295765,5263759.515830379]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[6124715.660728969,1870622.5394438133]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[10762333.582552813,-3972279.485924037]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[12503844.293296635,10715303.956378128]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[18315534.969580792,6946597.130556819]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[22600869.981655277,-12179114.755597865]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-13325756.304830123,7036542.659069166]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-10214432.963804673,4598451.621636204]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-8845891.159393854,-5272832.584276961]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-7005300.768279836,-3815736.4519959968]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-763177.8321048319,-10183191.073015342]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-4520210.6463778205,31241.89078933187]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-27668981.246781245,4128822.5198520813]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-21446395.648141615,-5537709.825204449]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-18668966.538378425,-4177031.3467806745]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-17826368.5302613,2340251.6412279364]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-24596854.747649074,9541231.20191782]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-25575248.70969933,11732833.676910395]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-20252785.556145936,-11474671.102921678]},"properties":null},{"type":"Feature","geometry":{"type":"Point","coordinates":[-32110920.37619504,-12374793.548007915]},"properties":null}]}';
+      var editLayer = new ol.layer.Vector({
+          source: new ol.source.Vector({
+            features: (new ol.format.GeoJSON()).readFeatures(dummyFeatures)
+          })
+      });
+
+      var map = new ol.Map({
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }),
+          editLayer
+        ],
+        target: 'map',
+        view: new ol.View({
+          center: [0, 0],
+          zoom: 2
+        })
+      });
+
+      var cad = new ole.CadControl({
+        map: map,
+        source: editLayer.getSource()
+      });
+
+      var draw = new ole.DrawControl({
+        map: map,
+        source: editLayer.getSource()
+      });
+
+      draw.activate()
+      cad.activate();
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "ole.git",
+  "version": "0.0.0",
+  "description": "OpenLayers Editor",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --progress --watch",
+    "build": "webpack"
+  },
+  "keywords": [
+    "OpenLayers",
+    "Editor"
+  ],
+  "author": "Mario Härtwig | geOps",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "openlayers": "^4.0.1",
+    "webpack": "~2.2.1",
+    "webpack-dev-server": "^2.4.2"
+  }
+}
