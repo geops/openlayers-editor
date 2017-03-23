@@ -28,7 +28,16 @@ module.exports = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
     })
-  ]
+  ],
+
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      }
+    ]
+  }
 };
 
 /**

@@ -14,8 +14,12 @@
   "author": "Mario Härtwig | geOps",
   "license": "BSD-2-Clause",
   "devDependencies": {
+    "css-loader": "^0.27.3",
     "openlayers": "^4.0.1",
     "webpack": "~2.2.1",
     "webpack-dev-server": "^2.4.2"
+  },
+  "dependencies": {
+    "style-loader": "^0.16.0"
   }
 }

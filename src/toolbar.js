@@ -1,3 +1,5 @@
+import '../style/ole.css';
+
 export default class Toolbar extends ol.control.Control {
 
   /**
@@ -7,7 +9,7 @@ export default class Toolbar extends ol.control.Control {
    */
   constructor(map, controls) {
     var element = document.createElement('div');
-    element.className = 'ole-toolbar';
+    element.setAttribute('id', 'ole-toolbar');
 
     super({
       element: element
