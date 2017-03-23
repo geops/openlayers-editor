@@ -45,6 +45,10 @@ export default class CadControl extends Control {
       pixelTolerance: this.snapTolerance,
       source: this.snapLayer.getSource()
     });
+
+    // control can be activated together with
+    // other controls, like Draw.
+    this.standalone = false;
   }
 
   /**

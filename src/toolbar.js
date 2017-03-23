@@ -32,9 +32,8 @@ export default class Toolbar extends ol.control.Control {
    */
   _load() {
     for (var i = 0; i < this.controls.getLength(); i++) {
-      var div = document.createElement('div');
-      div.innerText = 'foo';
-      this.element.appendChild(div);
+      var btn = this.controls.item(i).getElement();
+      this.element.appendChild(btn);
     }
   }
 }

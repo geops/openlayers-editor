@@ -13,8 +13,8 @@ export default class DrawControl extends Control {
    */
   constructor(options) {
     super(Object.assign(options, {
-      title: 'CAD control',
-      className: 'icon-cad'
+      title: 'Draw',
+      className: 'icon-draw'
     }));
 
     this.drawInteraction = new ol.interaction.Draw({
@@ -42,5 +42,6 @@ export default class DrawControl extends Control {
    */
   deactivate() {
     this.drawInteraction.setActive(false);
+    super.deactivate();
   }
 }
