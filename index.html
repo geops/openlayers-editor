@@ -40,7 +40,17 @@
         source: editLayer.getSource()
       });
 
-      editor.addControls([cad, draw]);
+      var drawLine = new ole.DrawControl({
+          type: 'LineString',
+        source: editLayer.getSource()
+      });
+
+      var drawPoly = new ole.DrawControl({
+        type: 'Polygon',
+        source: editLayer.getSource()
+      });
+
+      editor.addControls([cad, draw, drawLine, drawPoly]);
 
     </script>
   </body>

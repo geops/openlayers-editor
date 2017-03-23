@@ -13,7 +13,7 @@ export default class DrawControl extends Control {
    */
   constructor(options) {
     super(Object.assign(options, {
-      title: 'Draw',
+      title: 'Draw ' + (options.type || 'Point'),
       className: 'icon-draw'
     }));
 
