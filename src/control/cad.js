@@ -24,7 +24,7 @@ export default class CadControl extends Control {
     this.closestFeature = null;
 
     // Number of draw engles
-    this.numAuxiliaryLines = options.numAuxiliaryLines || 2;
+    this.numAuxiliaryLines = options.numAuxiliaryLines || 5;
 
     this.pointerInteraction = new ol.interaction.Pointer({
       handleMoveEvent: this._onMove.bind(this)
@@ -37,6 +37,7 @@ export default class CadControl extends Control {
     this.map.addLayer(this.snapLayer);
 
     this.snapInteraction = new ol.interaction.Snap({
+      pixelTolerance: 20,
       source: this.snapLayer.getSource()
     });
   }
@@ -47,10 +48,16 @@ export default class CadControl extends Control {
   _onMove(evt) {
     var features = this._getClosestFeatures(evt.coordinate, 4);
     this._drawAuxiliaryLines(features);
-    this._drawDistanceHelperPoints();
   }
 
-  _getClosestFeatures(coordinate, num) {
+  /**
+   * Returns a list of the (num} closest features
+   * to a given coordinate.
+   * @param {ol.Coordinate} coordinate Coordinate.
+   * @param {Number} num Number of features to search.
+   * @returns {Array.<ol.Feature>} List of closest features.
+   */
+   _getClosestFeatures(coordinate, num) {
     num = num || 1;
     var ext = [-Infinity, -Infinity, Infinity, Infinity];
     var featureDict = {};
@@ -100,88 +107,70 @@ export default class CadControl extends Control {
   }
 
   /**
-   * For the set of auxiliary lines in the snapLayer,
-   * check if there are further points on the line. If so, add
-   * snap geometries that help adding equidistant features.
+   * Get auxiliary lines building the extent of
+   * two given coordinates.
+   * @param {ol.Coordinate} coord1 First coordinate.
+   * @param {ol.Coordinate} coord2 Second coordinate.
+   * @returns {Array.<ol.geom.LineString>} Set of lines.
    */
-  _drawDistanceHelperPoints() {
-    var feats = this.snapLayer.getSource().getFeatures().filter(function(f) {
-      return f.getGeometry() instanceof ol.geom.LineString;
-    });
+  _getAuxiliaryLines(coord1, coord2) {
+    var minX = Math.min(coord1[0], coord2[0]);
+    var minY = Math.min(coord1[1], coord2[1]);
+    var maxX = Math.max(coord1[0], coord2[0]);
+    var maxY = Math.max(coord1[1], coord2[1]);
 
-    for (var i = 0, len = feats.length; i < len; i++) {
-      var p = feats[i].getGeometry();
+    var coords = [
+      [[minX, minY], [maxX, minY]],
+      [[maxX, minY], [maxX, maxY]],
+      [[maxX, maxY], [minX, maxY]],
+      [[minX, maxY], [minX, minY]]
+    ];
+
+    var lines = [];
+
+    for (var i = 0; i < coords.length; i++) {
+      lines.push(new ol.geom.LineString(coords[i]));
     }
+
+    return lines;
   }
 
   /**
-   * http://stackoverflow.com/questions/13937782/calculating-the-point-of-intersection-of-two-lines
-   */
-  _getIntersectionPoint(x1, y1, x2, y2, x3, y3, x4, y4) {
-    var ua;
-    var ub;
-    var denom = (y4 - y3)*(x2 - x1) - (x4 - x3)*(y2 - y1);
-
-    if (!denom) {
-      return;
-    }
-
-    ua = ((x4 - x3)*(y1 - y3) - (y4 - y3)*(x1 - x3)) / denom;
-    ub = ((x2 - x1)*(y1 - y3) - (y2 - y1)*(x1 - x3)) / denom;
-
-    return {
-      x: x1 + ua*(x2 - x1),
-      y: y1 + ua*(y2 - y1),
-      seg1: ua >= 0 && ua <= 1,
-      seg2: ub >= 0 && ub <= 1
-    };
-  }
-
-  _drawIntercectionPoints() {
-    var feats = this.snapLayer.getSource().getFeatures().filter(function(f) {
-      return f.getGeometry() instanceof ol.geom.LineString;
-    });
-
-    for (var i = 0, len = feats.length; i++) {}
-  }
-
-  /**
-   * Draws the auxiliary lines for snapping to
-   * the given feature.
-   * @param {Array.<ol.Feature>} feature Feature to draw auxiliary lines for.
+   * Draws auxiliary lines by building the extent for
+   * a pair of features.
+   * @param {Array.<ol.Feature>} features List of features.
    */
   _drawAuxiliaryLines(features) {
     this.snapLayer.getSource().clear();
 
+    var auxCoords = [];
     for (var i = 0; i < features.length; i++) {
-      var ext = features[i].getGeometry().getExtent();
-      var coords = ol.geom.Polygon.fromExtent(ext).getCoordinates()[0];
-      var oldCoord = [0, 0];
+      var geom = features[i].getGeometry();
 
-      for (var j = 0; j < coords.length; j++) {
-        if (coords[i][0] === oldCoord[0] && coords[j][1] === oldCoord[1]) {
-          break;
-        }
-
-        oldCoord = coords[i];
-        var currDeg = 0;
-        var increment = 180 / this.numAuxiliaryLines;
-
-        do {
-          var rad = currDeg * (Math.PI / 180);
-          var feat = new ol.Feature(this._getAuxiliaryLine(coords[j], 10000000, rad));
-          this.snapLayer.getSource().addFeature(feat);
-
-          currDeg += increment;
-        } while (currDeg <= 180);
-
-        this.snapInteraction.changed();
+      if (geom instanceof ol.geom.Point) {
+        auxCoords.push(geom.getCoordinates());
+      } else {
+        var coords = ol.geom.Polygon.fromExtent(
+          geom.getExtent()).getCoordinates()[0];
+        auxCoords = auxCoords.concat(coords);
       }
     }
+
+    for (i = 0; i < auxCoords.length; i++) {
+      for (var j = 0; j < auxCoords.length; j++) {
+        if (auxCoords[i] !== auxCoords[j]) {
+            var l = this._getAuxiliaryLines(auxCoords[i], auxCoords[j]);
+            for (var k = 0; k < l.length; k++) {
+              var feat = new ol.Feature(l[k]);
+              this.snapLayer.getSource().addFeature(feat);
+            }
+          }
+        }
+     }
   }
 
   /**
-   * Activate the control
+   * Activate the control.
    */
   activate() {
     this.map.addInteraction(this.pointerInteraction);
@@ -189,6 +178,9 @@ export default class CadControl extends Control {
     super.activate();
   }
 
+  /**
+   * Deactivate the control.
+   */
   deactivate() {
     this.map.removeInteraction(this.pointerInteraction);
     this.map.removeInteraction(this.snapInteraction);
