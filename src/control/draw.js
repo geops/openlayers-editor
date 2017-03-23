@@ -22,7 +22,10 @@ export default class DrawControl extends Control {
       features: options.features,
       source: options.source
     });
+  }
 
+  setMap(map) {
+    super.setMap(map);
     this.map.addInteraction(this.drawInteraction);
   }
 

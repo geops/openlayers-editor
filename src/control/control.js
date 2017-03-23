@@ -3,7 +3,6 @@ export default class Control extends ol.control.Control {
   constructor(options) {
     var button = document.createElement('button');
     button.className = 'ole3-control ' + options.className;
-    // button.addEventListener('click', this._toggleActiveState.bind(this));
 
     var element = document.createElement('div');
     element.appendChild(button);
@@ -14,10 +13,17 @@ export default class Control extends ol.control.Control {
 
     this.title = options.title;
     this.element = element;
-    this.map = options.map;
     this.source = options.source || new ol.source.Vector({
       features: options.features
     });
+  }
+
+  /**
+   * Sets the map of the control.
+   */
+  setMap(map) {
+      this.map = map;
+      super.setMap(this.map);
   }
 
   /**

@@ -1,4 +1,5 @@
 import Control from './control.js';
+import CadStyle from '../style/style.js';
 
 export default class CadControl extends Control {
 
@@ -7,10 +8,11 @@ export default class CadControl extends Control {
    * @param {Object} options Tool options.
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
-   * @param {ol.Collection<ol.Feature>} [features] Destination for drawing.
-   * @param {ol.source.Vector} [source] Destination for drawing.
-   * @param {Number} [numAuxiliaryLines] Number of angles for auxiliary lines.
-   *   Default is 2.
+   * @param {ol.Collection<ol.Feature>} [options.features] Destination
+   *   for drawing.
+   * @param {ol.source.Vector} [options.source] Destination for drawing.
+   * @param {Number} [options.snapTolerance] Snap tolerance in pixel
+   *   for auxiliary lines. Default is 2.
    */
   constructor(options) {
     super(Object.assign(options, {
@@ -24,22 +26,33 @@ export default class CadControl extends Control {
     this.closestFeature = null;
 
     // Number of draw engles
-    this.numAuxiliaryLines = options.numAuxiliaryLines || 5;
-
     this.pointerInteraction = new ol.interaction.Pointer({
       handleMoveEvent: this._onMove.bind(this)
     });
 
+    this.snapStyle = new CadStyle();
+
     this.snapLayer = new ol.layer.Vector({
+      style: function(feature) {
+        return this.snapStyle.styleFunction(feature);
+      }.bind(this),
       source: new ol.source.Vector()
     });
 
-    this.map.addLayer(this.snapLayer);
+    this.snapTolerance = options.snapTolerance || 20;
 
     this.snapInteraction = new ol.interaction.Snap({
-      pixelTolerance: 20,
+      pixelTolerance: this.snapTolerance,
       source: this.snapLayer.getSource()
     });
+  }
+
+  /**
+   * Set the map of the control.
+   */
+  setMap(map) {
+    super.setMap(map);
+    this.map.addLayer(this.snapLayer);
   }
 
   /**
@@ -48,6 +61,18 @@ export default class CadControl extends Control {
   _onMove(evt) {
     var features = this._getClosestFeatures(evt.coordinate, 4);
     this._drawAuxiliaryLines(features);
+
+    // highlight lines
+    var lineFeats = this.snapLayer.getSource().getFeatures();
+
+    for (var i = 0, len = lineFeats.length; i < len; i++) {
+      var ext = lineFeats[i].getGeometry().getExtent();
+      var bufferExt = ol.extent.buffer(ext, this.snapTolerance);
+
+      if (ol.extent.containsCoordinate(bufferExt, evt.coordinate)) {
+        this.snapStyle.addHoverFeature(lineFeats[i]);
+      }
+    }
   }
 
   /**

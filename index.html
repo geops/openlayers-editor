@@ -30,15 +30,17 @@
         })
       });
 
+      var editor = new ole.Editor(map);
+
       var cad = new ole.CadControl({
-        map: map,
         source: editLayer.getSource()
       });
 
       var draw = new ole.DrawControl({
-        map: map,
         source: editLayer.getSource()
       });
+
+      editor.addControls([cad, draw]);
 
       draw.activate()
       cad.activate();
