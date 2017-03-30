@@ -33,6 +33,7 @@ export default class RotateControl extends Control {
         var rotation = f.get(this.rotateAttribute);
         return [
           new ol.style.Style({
+            geometry: new ol.geom.Point(this._center),
             image: new ol.style.Icon({
               rotation: rotation,
               src: 'img/rotate.svg'
@@ -53,16 +54,15 @@ export default class RotateControl extends Control {
       return f;
     });
 
-    if (this._feature) {
-      this._center = ol.extent.getCenter(
-        this._feature.getGeometry().getExtent()
-      );
+    if (this._center && this._feature) {
+      this._feature.set(this.rotateAttribute,
+        this._feature.get(this.rotateAttribute) || 0);
 
       // rotation between clicked coordinate and feature center
       this._initialRotation = Math.atan2(
         evt.coordinate[1] - this._center[1],
         evt.coordinate[0] - this._center[0]
-      );
+      ) + (this._feature.get(this.rotateAttribute));
     }
 
     return true;
@@ -82,17 +82,22 @@ export default class RotateControl extends Control {
       );
 
       var rotationDiff = this._initialRotation - rotation;
+      var geomRotation = rotationDiff - this._feature.get(this.rotateAttribute);
+      this._feature.getGeometry().rotate(-geomRotation, this._center);
       this._feature.set(this.rotateAttribute, rotationDiff);
     }
   }
 
   /**
    * Handle a pointer up event.
+   * @param {ol.MapBrowserEvent} event Down event
    */
-  _onUp() {
+  _onUp(evt) {
     if (!this._dragging) {
       if (this._feature) {
-        this.rotateLayer.getSource().addFeature(this._feature.clone());
+        this._center = evt.coordinate;
+        this.rotateLayer.getSource().clear();
+        this.rotateLayer.getSource().addFeature(this._feature);
       } else {
         this.rotateLayer.getSource().clear();
       }
