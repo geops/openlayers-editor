@@ -45,12 +45,16 @@
         source: editLayer.getSource()
       });
 
+      var rotate = new ole.RotateControl({
+        source: editLayer.getSource()
+      });
+
       var drawPoly = new ole.DrawControl({
         type: 'Polygon',
         source: editLayer.getSource()
       });
 
-      editor.addControls([cad, draw, drawLine, drawPoly]);
+      editor.addControls([cad, draw, drawLine, drawPoly, rotate]);
 
     </script>
   </body>
