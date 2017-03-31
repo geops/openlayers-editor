@@ -2,17 +2,30 @@
   position: absolute;
   right: 20px;
   top: 20px;
-  padding: 10px;
-  background-color: rgba(255,255,255,0.7);
+  padding: 8px;
 }
 
 #ole-toolbar button.ole-control {
-  background: white;
-  border: 1px solid #666;
+  background: #fafafa;
+  border: 0;
+  color: #999;
   cursor: pointer;
   font-size: 14px;
-  margin: 0 5px;
-  padding: 3px 5px;
+  line-height: 36px;
+  padding: 0 8px;
+  transition: all .3s ease-out;
+}
+
+#ole-toolbar button.ole-control:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+#ole-toolbar button.ole-control:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+#ole-toolbar button.ole-control:hover {
+  color: #5c5c5c;
 }
 
 #ole-toolbar button.ole-control:focus {
@@ -20,5 +33,34 @@
 }
 
 #ole-toolbar button.ole-control.active {
-  background: #ddd;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.3);
+  color: #5c5c5c;
+  filter: brightness(90%);
+}
+
+/* dialog */
+.ole-dialog {
+  background: #fafafa;
+  border-radius: 4px;
+  right: 25px;
+  padding: 10px;
+  position: absolute;
+  top: 75px;
+  width: 310px;
+  z-index: 2;
+}
+
+/* font */
+#ole-toolbar, .ole-dialog {
+  font-family: Arial;
+  font-size:  14px;
+}
+
+/* shadow */
+#ole-toolbar button.ole-control, .ole-dialog {
+  box-shadow: 0 3px 3px 0 rgba(0,0,0,0.2);
+}
+
+#width-input {
+  width: 50px;
 }

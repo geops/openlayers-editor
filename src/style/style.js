@@ -18,6 +18,7 @@ export class Style {
    */
   _getDefaultPointStyle() {
     return new ol.style.Circle({
+      radius: 5,
       fill: new ol.style.Fill({
         color: 'rgba(97, 132, 156, 0.5)'
       }),
@@ -46,12 +47,26 @@ export class Style {
 }
 
 /**
+ * Style for the CAD tool.
  * Features are invisible by default and become
  * visible on mouse over.
  */
 export default class CadStyle extends Style {
   constructor() {
     super();
+
+    this.style.setImage(
+      new ol.style.RegularShape({
+        fill: new ol.style.Fill({
+          color: '#E8841F'
+        }),
+        stroke: this.strokeStyle,
+        points: 4,
+        radius: 5,
+        radius2: 0,
+        angle: Math.PI / 4
+      })
+    );
 
     this.strokeStyle.setLineDash([5, 5]);
     this.hoverFeatures = [];
@@ -79,10 +94,10 @@ export default class CadStyle extends Style {
    */
   styleFunction(feature) {
     if (this.hoverFeatures.indexOf(feature) === -1) {
-      return []
+     //  return [];
+    return [this.style];
     }
 
     return [this.style];
   }
 }
-

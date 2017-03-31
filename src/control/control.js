@@ -15,6 +15,7 @@ export default class Control extends ol.control.Control {
        element: button
     });
 
+    this.className = options.className;
     this.title = options.title;
     button.innerText = this.title;
 

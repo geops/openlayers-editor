@@ -39,11 +39,3 @@ module.exports = {
     ]
   }
 };
-
-/**
-  module.exports.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true
-    })
-  );
-*/
