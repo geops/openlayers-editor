@@ -17,7 +17,13 @@ export default class Control extends ol.control.Control {
 
     this.className = options.className;
     this.title = options.title;
-    button.innerText = this.title;
+
+
+    var img = document.createElement('img');
+    img.src = options.image;
+
+    button.appendChild(img);
+    button.title = this.title;
 
     this.source = options.source || new ol.source.Vector({
       features: options.features

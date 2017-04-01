@@ -1,4 +1,6 @@
 import Control from './control.js';
+import rotatePng from '../../img/rotate.png';
+import rotateMapPng from '../../img/rotate_map.png';
 
 /**
  * Tool with CAD drawing functions.
@@ -16,7 +18,8 @@ export default class RotateControl extends Control {
   constructor(options) {
     super(Object.assign(options, {
       title: 'Rotate',
-      className: 'icon-rotate'
+      className: 'icon-rotate',
+      image: rotatePng
     }));
 
     this.pointerInteraction = new ol.interaction.Pointer({
@@ -36,7 +39,7 @@ export default class RotateControl extends Control {
             geometry: new ol.geom.Point(this._center),
             image: new ol.style.Icon({
               rotation: rotation,
-              src: 'img/rotate.svg'
+              src: rotateMapPng
             })
           })
         ];

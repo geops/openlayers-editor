@@ -1,6 +1,7 @@
 import Control from './control.js';
 import CadStyle from '../style/style.js';
 import mustache from 'mustache';
+import cadPng from '../../img/cad.png';
 
 export default class CadControl extends Control {
 
@@ -22,7 +23,8 @@ export default class CadControl extends Control {
   constructor(options) {
     super(Object.assign(options, {
       title: 'CAD control',
-      className: 'icon-cad'
+      className: 'icon-cad',
+      image: cadPng
     }));
 
     this.pointerInteraction = new ol.interaction.Pointer({

@@ -1,4 +1,7 @@
 import Control from './control.js';
+import drawPointPng from '../../img/draw_point.png';
+import drawPolygonPng from '../../img/draw_polygon.png';
+import drawLinePng from '../../img/draw_line.png';
 
 export default class DrawControl extends Control {
 
@@ -12,9 +15,18 @@ export default class DrawControl extends Control {
    * @param {ol.source.Vector} [source] Destination for drawing.
    */
   constructor(options) {
+    var image;
+
+    switch (options.type) {
+      case 'Polygon': image = drawPolygonPng; break;
+      case 'LineString': image = drawLinePng; break;
+      default: image = drawPointPng;
+    }
+
     super(Object.assign(options, {
       title: 'Draw ' + (options.type || 'Point'),
-      className: 'icon-draw'
+      className: 'icon-draw',
+      image: image
     }));
 
     this.drawInteraction = new ol.interaction.Draw({
