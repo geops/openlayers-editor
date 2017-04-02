@@ -2,7 +2,6 @@
   position: absolute;
   right: 20px;
   top: 20px;
-  padding: 8px;
 }
 
 #ole-toolbar button.ole-control {
@@ -38,11 +37,21 @@
   filter: brightness(90%);
 }
 
+/* buttons */
+#ole-toolbar button.ole-control {
+    padding: 5px;
+}
+
+#ole-toolbar button.ole-control img {
+  height: 35px;
+}
+
+
 /* dialog */
 .ole-dialog {
   background: #fafafa;
   border-radius: 4px;
-  right: 25px;
+  right: 20px;
   padding: 10px;
   position: absolute;
   top: 75px;

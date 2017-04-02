@@ -38,14 +38,13 @@ export default class DrawControl extends Control {
 
   setMap(map) {
     super.setMap(map);
-    this.map.addInteraction(this.drawInteraction);
   }
 
   /**
    * Activate the control
    */
   activate() {
-    this.drawInteraction.setActive(true);
+    this.map.addInteraction(this.drawInteraction);
     super.activate();
   }
 
@@ -53,7 +52,7 @@ export default class DrawControl extends Control {
    * Activate the control
    */
   deactivate() {
-    this.drawInteraction.setActive(false);
+    this.map.removeInteraction(this.drawInteraction);
     super.deactivate();
   }
 }

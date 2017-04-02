@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "dist";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -88,8 +88,15 @@ class Control extends ol.control.Control {
        element: button
     });
 
+    this.className = options.className;
     this.title = options.title;
-    button.innerText = this.title;
+
+
+    var img = document.createElement('img');
+    img.src = options.image;
+
+    button.appendChild(img);
+    button.title = this.title;
 
     this.source = options.source || new ol.source.Vector({
       features: options.features
@@ -172,107 +179,14 @@ class Control extends ol.control.Control {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/**
- * Default ole style
- */
-class Style {
-  constructor() {
-    this.pointStyle = this._getDefaultPointStyle();
-    this.strokeStyle = this._getDefaultStrokeStyle();
-
-    this.style = new ol.style.Style({
-      image: this.pointStyle,
-      stroke: this.strokeStyle
-    });
-  }
-
-  /**
-   * Getter for the default point style of ole.
-   * @returns {ol.style.Circle} The style.
-   */
-  _getDefaultPointStyle() {
-    return new ol.style.Circle({
-      fill: new ol.style.Fill({
-        color: 'rgba(97, 132, 156, 0.5)'
-      }),
-      stroke: this._getDefaultStrokeStyle()
-    });
-  }
-
-  /**
-   * Getter for the default stroke style of ole.
-   * @returns {ol.style.Circle} The style.
-   */
-  _getDefaultStrokeStyle() {
-    return new ol.style.Stroke({
-      width: 1,
-      color: 'rgb(97, 132, 156)'
-    });
-  }
-
-  /**
-   * Style function for this style.
-   * @returns {Array.<ol.style.Style} The feature style.
-   */
-  styleFunction() {
-    return [this.style];
-  }
-}
-/* unused harmony export Style */
-
-
-/**
- * Style for the CAD tool.
- * Features are invisible by default and become
- * visible on mouse over.
- */
-class CadStyle extends Style {
-  constructor() {
-    super();
-
-    this.strokeStyle.setLineDash([5, 5]);
-    this.hoverFeatures = [];
-  }
-
-  /**
-   * Adds a hover feature that should be styled.
-   * @param {ol.Feature} feature The hover feature.
-   */
-  addHoverFeature(feature) {
-    this.hoverFeatures.push(feature);
-  }
-
-  /**
-   * Removes all hover features.
-   */
-  clearHoverFeatures() {
-    this.hoverFeatures = [];
-  }
-
-  /**
-   * Style function for this style.
-   * @param {ol.Feature} Feature to style.
-   * @returns {Array.<ol.style.Style} The feature style.
-   */
-  styleFunction(feature) {
-    if (this.hoverFeatures.indexOf(feature) === -1) {
-      return [];
-    }
-
-    return [this.style];
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = CadStyle;
-
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__control_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__style_style_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__style_style_js__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_mustache__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_mustache___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_mustache__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_cad_png__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_cad_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__img_cad_png__);
+
+
 
 
 
@@ -281,21 +195,25 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
   /**
    * Tool with CAD drawing functions.
    * @param {Object} options Tool options.
-   *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
-   *   Default is 'Point'.
    * @param {ol.Collection<ol.Feature>} [options.features] Destination
    *   for drawing.
    * @param {ol.source.Vector} [options.source] Destination for drawing.
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
-   *   for auxiliary lines. Default is 2.
+   *   for auxiliary lines. Default is 10.
+   * @param {Boolean} [options.showAuxiliaryLines] Whether to show
+   *   auxiliary lines (default is true).
+   * @param {Boolean} [options.showDistancePoints] Whether to show
+   *   distance points (default is false).
+   * @param {Number} [options.distancePointDist] Distance of the
+   *   distance points in pixel (default is 30).
    */
   constructor(options) {
     super(Object.assign(options, {
       title: 'CAD control',
-      className: 'icon-cad'
+      className: 'icon-cad',
+      image: __WEBPACK_IMPORTED_MODULE_3__img_cad_png___default.a
     }));
 
-    // Number of draw engles
     this.pointerInteraction = new ol.interaction.Pointer({
       handleMoveEvent: this._onMove.bind(this)
     });
@@ -309,12 +227,25 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
       source: new ol.source.Vector()
     });
 
-    this.snapTolerance = options.snapTolerance || 20;
+    this.snapTolerance = options.snapTolerance || 10;
 
     this.snapInteraction = new ol.interaction.Snap({
       pixelTolerance: this.snapTolerance,
       source: this.snapLayer.getSource()
     });
+
+    // Whether to show the distance points
+    this.showDistancePoints = options.showDistancePoints;
+
+    // Whether to show auxiliary lines
+    if (typeof(options.showAuxiliaryLines) === 'undefined') {
+      this.showAuxiliaryLines = true;
+    } else {
+      this.showAuxiliaryLines = options.showAuxiliaryLines;
+    }
+
+    // Cell width of the snap grid in px
+    this.distancePointDist = options.distancePointDist || 30;
 
     // control can be activated together with
     // other controls, like Draw.
@@ -334,18 +265,14 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
    */
   _onMove(evt) {
     var features = this._getClosestFeatures(evt.coordinate, 4);
-    this._drawAuxiliaryLines(features);
+    this.snapLayer.getSource().clear();
 
-    // highlight lines
-    var lineFeats = this.snapLayer.getSource().getFeatures();
+    if (this.showAuxiliaryLines) {
+      this._drawAuxiliaryLines(features, evt.coordinate);
+    }
 
-    for (var i = 0, len = lineFeats.length; i < len; i++) {
-      var ext = lineFeats[i].getGeometry().getExtent();
-      var bufferExt = ol.extent.buffer(ext, this.snapTolerance);
-
-      if (ol.extent.containsCoordinate(bufferExt, evt.coordinate)) {
-        this.snapStyle.addHoverFeature(lineFeats[i]);
-      }
+    if (this.showDistancePoints && features.length) {
+      this._drawDistancePoints(evt.coordinate, features[0]);
     }
   }
 
@@ -385,62 +312,12 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
   }
 
   /**
-   * Returns an auxiliary line through a given coordinate
-   * in a given angle and a given length.
-   * @parma {ol.coordinate} coord The coordinate
-   * @param {Number} length Line length
-   * @param {Number} angle Line angle (rad).
-   * @returns {ol.geom.LineString} Auxiliary line
-   */
-  _getAuxiliaryLine(coord, length, angle) {
-    length /= 2;
-    return new ol.geom.LineString([
-      [
-        coord[0] + Math.cos(angle) * length,
-        coord[1] - Math.sin(angle) * length
-      ], [
-        coord[0] + Math.cos(angle - Math.PI) * length,
-        coord[1] - Math.sin(angle - Math.PI) * length
-      ]
-    ]);
-  }
-
-  /**
-   * Get auxiliary lines building the extent of
-   * two given coordinates.
-   * @param {ol.Coordinate} coord1 First coordinate.
-   * @param {ol.Coordinate} coord2 Second coordinate.
-   * @returns {Array.<ol.geom.LineString>} Set of lines.
-   */
-  _getAuxiliaryLines(coord1, coord2) {
-    var minX = Math.min(coord1[0], coord2[0]);
-    var minY = Math.min(coord1[1], coord2[1]);
-    var maxX = Math.max(coord1[0], coord2[0]);
-    var maxY = Math.max(coord1[1], coord2[1]);
-
-    var coords = [
-      [[minX, minY], [maxX, minY]],
-      [[maxX, minY], [maxX, maxY]],
-      [[maxX, maxY], [minX, maxY]],
-      [[minX, maxY], [minX, minY]]
-    ];
-
-    var lines = [];
-
-    for (var i = 0; i < coords.length; i++) {
-      lines.push(new ol.geom.LineString(coords[i]));
-    }
-
-    return lines;
-  }
-
-  /**
    * Draws auxiliary lines by building the extent for
    * a pair of features.
    * @param {Array.<ol.Feature>} features List of features.
+   * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
    */
-  _drawAuxiliaryLines(features) {
-    this.snapLayer.getSource().clear();
+  _drawAuxiliaryLines(features, coordinate) {
 
     var auxCoords = [];
     for (var i = 0; i < features.length; i++) {
@@ -455,17 +332,120 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
       }
     }
 
+    var px = this.map.getPixelFromCoordinate(coordinate);
+    var lineCoords;
+
     for (i = 0; i < auxCoords.length; i++) {
-      for (var j = 0; j < auxCoords.length; j++) {
-        if (auxCoords[i] !== auxCoords[j]) {
-            var l = this._getAuxiliaryLines(auxCoords[i], auxCoords[j]);
-            for (var k = 0; k < l.length; k++) {
-              var feat = new ol.Feature(l[k]);
-              this.snapLayer.getSource().addFeature(feat);
-            }
-          }
-        }
-     }
+      var auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
+      if (px[0] > auxPx[0] - this.snapTolerance / 2 &&
+          px[0] < auxPx[0] + this.snapTolerance / 2) {
+
+        var newY = px[1];
+        newY += px[1] < auxPx[1] ? -this.snapTolerance * 2 :
+          this.snapTolerance * 2;
+
+        lineCoords = [
+          this.map.getCoordinateFromPixel([auxPx[0], newY]),
+          auxCoords[i]
+        ];
+      } else if (px[1] > auxPx[1] - this.snapTolerance / 2 &&
+          px[1] < auxPx[1] + this.snapTolerance / 2) {
+
+        var newX = px[0];
+        newX += px[0] < auxPx[0] ? -this.snapTolerance* 2 :
+          this.snapTolerance * 2;
+
+        lineCoords = [
+          this.map.getCoordinateFromPixel([newX, auxPx[1]]),
+          auxCoords[i]
+        ];
+      }
+
+      if (lineCoords) {
+        var g = new ol.geom.LineString(lineCoords);
+        this.snapLayer.getSource().addFeature(new ol.Feature(g));
+      }
+    }
+  }
+
+  /**
+   * Adds distance points to the snapping layer.
+   * @param {ol.Coordinate} coordinateMouse cursor coordinate.
+   * @param {ol.eaturee} closestFeature Closest feature to cursor.
+   */
+  _drawDistancePoints(coordinate, closestFeature) {
+    var geom = closestFeature.getGeometry();
+    var featCoord = geom.getClosestPoint(coordinate);
+
+    var px = this.map.getPixelFromCoordinate(featCoord);
+    var snapPx = [
+      [px[0] - this.distancePointDist, px[1]],
+      [px[0] + this.distancePointDist, px[1]],
+      [px[0], px[1] - this.distancePointDist],
+      [px[0], px[1] + this.distancePointDist]
+    ];
+
+    var snapCoords = [];
+
+    for (var i = 0; i < snapPx.length; i++) {
+      snapCoords.push(this.map.getCoordinateFromPixel(snapPx[i]));
+    }
+
+    var snapGeom = new ol.geom.MultiPoint(snapCoords);
+    this.snapLayer.getSource().addFeature(new ol.Feature(snapGeom));
+  }
+
+  /**
+   * Open the control's dialog.
+   */
+  _openDialog() {
+
+    var tpl = [
+      '<div class="ole-dialog" id="{{className}}-dialog">' +
+        '<div><input type="checkbox" {{#c1}}checked{{/c1}} id="aux-cb">' +
+          '<label>Show auxiliary lines</label></div>' +
+        '<div><input type="checkbox" {{#c2}}checked{{/c2}} id="dist-cb">' +
+          '<label>Show distance points. Distance (px): </label>' +
+        '<input type="text" id="width-input" value="{{gridWidth}}"></div>' +
+      '</div>'
+    ].join('');
+
+    var div = document.createElement('div');
+    div.innerHTML = __WEBPACK_IMPORTED_MODULE_2_mustache___default.a.render(tpl, {
+      className: this.className,
+      gridWidth: this.distancePointDist,
+      c1: this.showAuxiliaryLines,
+      c2: this.showDistancePoints
+    });
+
+    this.map.getTargetElement().appendChild(div.firstChild);
+
+    var aCb = document.getElementById('aux-cb');
+    aCb.addEventListener('change', function(evt) {
+      this.showAuxiliaryLines = evt.target.checked;
+    }.bind(this));
+
+    var gCb = document.getElementById('dist-cb');
+    gCb.addEventListener('change', function(evt) {
+      this.showDistancePoints = evt.target.checked;
+    }.bind(this));
+
+    var widthInput = document.getElementById('width-input');
+    widthInput.addEventListener('keyup', function(evt) {
+      if (parseFloat(evt.target.value)) {
+        this.distancePointDist = parseFloat(evt.target.value);
+      }
+    }.bind(this));
+  }
+
+  /**
+   * Closes the control dialog.
+   */
+  _closeDialog() {
+    var div = document.getElementById(this.className + '-dialog');
+    if (div) {
+      this.map.getTargetElement().removeChild(div);
+    }
   }
 
   /**
@@ -475,6 +455,7 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
     this.map.addInteraction(this.pointerInteraction);
     this.map.addInteraction(this.snapInteraction);
     super.activate();
+    this._openDialog();
   }
 
   /**
@@ -484,6 +465,7 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
     this.map.removeInteraction(this.pointerInteraction);
     this.map.removeInteraction(this.snapInteraction);
     super.deactivate();
+    this._closeDialog();
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = CadControl;
@@ -491,11 +473,20 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
 
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__control_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_draw_point_png__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_draw_point_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__img_draw_point_png__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_draw_polygon_png__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_draw_polygon_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__img_draw_polygon_png__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_draw_line_png__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_draw_line_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__img_draw_line_png__);
+
+
+
 
 
 class DrawControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* default */] {
@@ -510,9 +501,18 @@ class DrawControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defau
    * @param {ol.source.Vector} [source] Destination for drawing.
    */
   constructor(options) {
+    var image;
+
+    switch (options.type) {
+      case 'Polygon': image = __WEBPACK_IMPORTED_MODULE_2__img_draw_polygon_png___default.a; break;
+      case 'LineString': image = __WEBPACK_IMPORTED_MODULE_3__img_draw_line_png___default.a; break;
+      default: image = __WEBPACK_IMPORTED_MODULE_1__img_draw_point_png___default.a;
+    }
+
     super(Object.assign(options, {
       title: 'Draw ' + (options.type || 'Point'),
-      className: 'icon-draw'
+      className: 'icon-draw',
+      image: image
     }));
 
     this.drawInteraction = new ol.interaction.Draw({
@@ -548,13 +548,15 @@ class DrawControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defau
 
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__control_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__style_rotate_js__ = __webpack_require__(16);
-throw new Error("Cannot find module \"../../img/rotate.svg\"");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_rotate_png__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_rotate_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__img_rotate_png__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_rotate_map_png__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_rotate_map_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__img_rotate_map_png__);
 
 
 
@@ -566,20 +568,18 @@ class RotateControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* def
 
   /**
    * Constructor.
-   * @param {ol.Collection<ol.Feature>} [options.features] Destination
+   * @param {ol.Collection<ol.Feature>} [options.features] Control features.
    *   for drawing.
-   * @param {ol.source.Vector} [options.source] Destination for drawing.
+   * @param {ol.source.Vector} [options.source] Control features.
+   * @param {string} [options.rotateAttribute] Name of a feature attribute
+   *   that is used for storing the rotation in rad.
    */
   constructor(options) {
     super(Object.assign(options, {
       title: 'Rotate',
-      className: 'icon-rotate'
+      className: 'icon-rotate',
+      image: __WEBPACK_IMPORTED_MODULE_1__img_rotate_png___default.a
     }));
-
-    // Number of draw engles
-    this.selectInteraction = new ol.interaction.Select({
-      source: this.source
-    });
 
     this.pointerInteraction = new ol.interaction.Pointer({
       handleDownEvent: this._onDown.bind(this),
@@ -587,63 +587,91 @@ class RotateControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* def
       handleUpEvent: this._onUp.bind(this)
     });
 
+    this.rotateAttribute = options.rotateAttribute || 'ole_rotation';
 
-
-    this.selectInteraction.on('select', this._onSelect, this);
-  }
-
-  _onDown(evt) {
-    var feature = this.map.forEachFeatureAtPixel(evt.pixel, function(f) {
-      return f;
+    this.rotateLayer = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: function(f) {
+        var rotation = f.get(this.rotateAttribute);
+        return [
+          new ol.style.Style({
+            geometry: new ol.geom.Point(this._center),
+            image: new ol.style.Icon({
+              rotation: rotation,
+              src: __WEBPACK_IMPORTED_MODULE_2__img_rotate_map_png___default.a
+            })
+          })
+        ];
+      }.bind(this)
     });
-
-    if (feature) {
-      this.coordinate_ = evt.coordinate;
-      this.feature_ = feature;
-    }
-
-    return !!feature;
-  }
-
-  _onDrag(evt) {
-    var map = evt.map;
-
-    this.feature_.set('ole_rotation', (this.feature_.get('ole_rotation') || 0) + .1);
-    var deltaX = evt.coordinate[0] - this.coordinate_[0];
-
-    var geometry = this.feature_.getGeometry();
-    geometry.rotate(this.feature_.get('ole_rotation'), ol.extent.getCenter(geometry.getExtent()));
-
-    this.coordinate_[0] = evt.coordinate[0];
-  }
-  _onUp(evt) {
-  
   }
 
   /**
-   * Called on feature selection.
-   * @param {ol.interaction.Select.Event} evt Select event.
+   * Handle a pointer down event.
+   * @param {ol.MapBrowserEvent} event Down event
    */
-  _onSelect(evt) {
-    var feature = evt.target.getFeatures().item(0);
-    var ext = feature.getGeometry().getExtent();
-    var x1 = this.map.getPixelFromCoordinate(ol.extent.getCenter(ext))[0];
-    var x2 = this.map.getPixelFromCoordinate(ol.extent.getTopLeft(ext))[0];
-
-    var style = new __WEBPACK_IMPORTED_MODULE_1__style_rotate_js__["a" /* default */]({radius: x1 - x2});
-    var self = this;
-
-    feature.setStyle(function() {
-      return style.styleFunction(this);
+  _onDown(evt) {
+    this._dragging = false;
+    this._feature = this.map.forEachFeatureAtPixel( evt.pixel, function(f) {
+      return f;
     });
+
+    if (this._center && this._feature) {
+      this._feature.set(this.rotateAttribute,
+        this._feature.get(this.rotateAttribute) || 0);
+
+      // rotation between clicked coordinate and feature center
+      this._initialRotation = Math.atan2(
+        evt.coordinate[1] - this._center[1],
+        evt.coordinate[0] - this._center[0]
+      ) + (this._feature.get(this.rotateAttribute));
+    }
+
+    return true;
+  }
+
+  /**
+   * Handle a pointer drag event.
+   * @param {ol.MapBrowserEvent} event Down event
+   */
+  _onDrag(evt) {
+    this._dragging = true;
+
+    if (this._feature) {
+      var rotation = Math.atan2(
+        evt.coordinate[1] - this._center[1],
+        evt.coordinate[0] - this._center[0]
+      );
+
+      var rotationDiff = this._initialRotation - rotation;
+      var geomRotation = rotationDiff - this._feature.get(this.rotateAttribute);
+      this._feature.getGeometry().rotate(-geomRotation, this._center);
+      this._feature.set(this.rotateAttribute, rotationDiff);
+    }
+  }
+
+  /**
+   * Handle a pointer up event.
+   * @param {ol.MapBrowserEvent} event Down event
+   */
+  _onUp(evt) {
+    if (!this._dragging) {
+      if (this._feature) {
+        this._center = evt.coordinate;
+        this.rotateLayer.getSource().clear();
+        this.rotateLayer.getSource().addFeature(this._feature);
+      } else {
+        this.rotateLayer.getSource().clear();
+      }
+    }
   }
 
   /**
    * Activate the control.
    */
   activate() {
-    this.map.addInteraction(this.selectInteraction);
     this.map.addInteraction(this.pointerInteraction);
+    this.map.addLayer(this.rotateLayer);
     super.activate();
   }
 
@@ -651,7 +679,7 @@ class RotateControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* def
    * Deactivate the control.
    */
   deactivate() {
-    this.map.removeInteraction(this.selectInteraction);
+    this.map.removeLayer(this.rotateLayer);
     this.map.removeInteraction(this.pointerInteraction);
     super.deactivate();
   }
@@ -661,11 +689,11 @@ class RotateControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* def
 
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toolbar_js__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toolbar_js__ = __webpack_require__(23);
 
 
 class Editor {
@@ -737,6 +765,127 @@ class Editor {
 
 
 /***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function placeHoldersCount (b64) {
+  var len = b64.length
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // the number of equal signs (place holders)
+  // if there are two placeholders, than the two characters before it
+  // represent one byte
+  // if there is only one, then the three characters before it represent 2 bytes
+  // this is just a cheap hack to not do indexOf twice
+  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+}
+
+function byteLength (b64) {
+  // base64 is 4/3 + up to two characters of the original data
+  return b64.length * 3 / 4 - placeHoldersCount(b64)
+}
+
+function toByteArray (b64) {
+  var i, j, l, tmp, placeHolders, arr
+  var len = b64.length
+  placeHolders = placeHoldersCount(b64)
+
+  arr = new Arr(len * 3 / 4 - placeHolders)
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  l = placeHolders > 0 ? len - 4 : len
+
+  var L = 0
+
+  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
+    arr[L++] = (tmp >> 16) & 0xFF
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  if (placeHolders === 2) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[L++] = tmp & 0xFF
+  } else if (placeHolders === 1) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var output = ''
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    output += lookup[tmp >> 2]
+    output += lookup[(tmp << 4) & 0x3F]
+    output += '=='
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
+    output += lookup[tmp >> 10]
+    output += lookup[(tmp >> 4) & 0x3F]
+    output += lookup[(tmp << 2) & 0x3F]
+    output += '='
+  }
+
+  parts.push(output)
+
+  return parts.join('')
+}
+
+
+/***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -745,7 +894,7 @@ exports = module.exports = __webpack_require__(7)(undefined);
 
 
 // module
-exports.push([module.i, "#ole-toolbar{position:absolute;right:20px;top:20px;padding:8px}#ole-toolbar button.ole-control{background:#fafafa;border:0;box-shadow:0 3px 3px 0 rgba(0,0,0,.2);color:#999;cursor:pointer;font-size:14px;line-height:36px;padding:0 8px;transition:all .3s ease-out}#ole-toolbar button.ole-control:first-child{border-radius:4px 0 0 4px}#ole-toolbar button.ole-control:last-child{border-radius:0 4px 4px 0}#ole-toolbar button.ole-control:hover{color:#5c5c5c}#ole-toolbar button.ole-control:focus{outline:0}#ole-toolbar button.ole-control.active{box-shadow:0 4px 4px 0 rgba(0,0,0,.3);color:#5c5c5c;filter:brightness(90%)}#ole-dialog{background:#fafafaf;right:20px;position:absolute;top:80px}", ""]);
+exports.push([module.i, "#ole-toolbar{position:absolute;right:20px;top:20px;padding:8px}#ole-toolbar button.ole-control{background:#fafafa;border:0;color:#999;cursor:pointer;font-size:14px;line-height:36px;padding:0 8px;transition:all .3s ease-out}#ole-toolbar button.ole-control:first-child{border-radius:4px 0 0 4px}#ole-toolbar button.ole-control:last-child{border-radius:0 4px 4px 0}#ole-toolbar button.ole-control:hover{color:#5c5c5c}#ole-toolbar button.ole-control:focus{outline:0}#ole-toolbar button.ole-control.active{box-shadow:0 4px 4px 0 rgba(0,0,0,.3);color:#5c5c5c;filter:brightness(90%)}#ole-toolbar button.ole-control{padding:5px}#ole-toolbar button.ole-control img{height:35px}.ole-dialog{background:#fafafa;border-radius:4px;right:25px;padding:10px;position:absolute;top:75px;width:310px;z-index:2}#ole-toolbar,.ole-dialog{font-family:Arial;font-size:14px}#ole-toolbar button.ole-control,.ole-dialog{box-shadow:0 3px 3px 0 rgba(0,0,0,.2)}#width-input{width:50px}", ""]);
 
 // exports
 
@@ -830,454 +979,786 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17).Buffer))
 
 /***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-var stylesInDom = {},
-	memoize = function(fn) {
-		var memo;
-		return function () {
-			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-			return memo;
-		};
-	},
-	isOldIE = memoize(function() {
-		// Test for IE <= 9 as proposed by Browserhacks
-		// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-		// Tests for existence of standard globals is to allow style-loader 
-		// to operate correctly into non-standard environments
-		// @see https://github.com/webpack-contrib/style-loader/issues/177
-		return window && document && document.all && !window.atob;
-	}),
-	getElement = (function(fn) {
-		var memo = {};
-		return function(selector) {
-			if (typeof memo[selector] === "undefined") {
-				memo[selector] = fn.call(this, selector);
-			}
-			return memo[selector]
-		};
-	})(function (styleTarget) {
-		return document.querySelector(styleTarget)
-	}),
-	singletonElement = null,
-	singletonCounter = 0,
-	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(9);
-
-module.exports = function(list, options) {
-	if(typeof DEBUG !== "undefined" && DEBUG) {
-		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
-
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-	// By default, add <style> tags to the <head> element
-	if (typeof options.insertInto === "undefined") options.insertInto = "head";
-
-	// By default, add <style> tags to the bottom of the target
-	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-	var styles = listToStyles(list);
-	addStylesToDom(styles, options);
-
-	return function update(newList) {
-		var mayRemove = [];
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-		if(newList) {
-			var newStyles = listToStyles(newList);
-			addStylesToDom(newStyles, options);
-		}
-		for(var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-			if(domStyle.refs === 0) {
-				for(var j = 0; j < domStyle.parts.length; j++)
-					domStyle.parts[j]();
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-};
-
-function addStylesToDom(styles, options) {
-	for(var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-		if(domStyle) {
-			domStyle.refs++;
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles(list) {
-	var styles = [];
-	var newStyles = {};
-	for(var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-		if(!newStyles[id])
-			styles.push(newStyles[id] = {id: id, parts: [part]});
-		else
-			newStyles[id].parts.push(part);
-	}
-	return styles;
-}
-
-function insertStyleElement(options, styleElement) {
-	var styleTarget = getElement(options.insertInto)
-	if (!styleTarget) {
-		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-	}
-	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-	if (options.insertAt === "top") {
-		if(!lastStyleElementInsertedAtTop) {
-			styleTarget.insertBefore(styleElement, styleTarget.firstChild);
-		} else if(lastStyleElementInsertedAtTop.nextSibling) {
-			styleTarget.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			styleTarget.appendChild(styleElement);
-		}
-		styleElementsInsertedAtTop.push(styleElement);
-	} else if (options.insertAt === "bottom") {
-		styleTarget.appendChild(styleElement);
-	} else {
-		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-	}
-}
-
-function removeStyleElement(styleElement) {
-	styleElement.parentNode.removeChild(styleElement);
-	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-	if(idx >= 0) {
-		styleElementsInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement(options) {
-	var styleElement = document.createElement("style");
-	options.attrs.type = "text/css";
-
-	attachTagAttrs(styleElement, options.attrs);
-	insertStyleElement(options, styleElement);
-	return styleElement;
-}
-
-function createLinkElement(options) {
-	var linkElement = document.createElement("link");
-	options.attrs.type = "text/css";
-	options.attrs.rel = "stylesheet";
-
-	attachTagAttrs(linkElement, options.attrs);
-	insertStyleElement(options, linkElement);
-	return linkElement;
-}
-
-function attachTagAttrs(element, attrs) {
-	Object.keys(attrs).forEach(function (key) {
-		element.setAttribute(key, attrs[key]);
-	});
-}
-
-function addStyle(obj, options) {
-	var styleElement, update, remove;
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-		styleElement = singletonElement || (singletonElement = createStyleElement(options));
-		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-	} else if(obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function") {
-		styleElement = createLinkElement(options);
-		update = updateLink.bind(null, styleElement, options);
-		remove = function() {
-			removeStyleElement(styleElement);
-			if(styleElement.href)
-				URL.revokeObjectURL(styleElement.href);
-		};
-	} else {
-		styleElement = createStyleElement(options);
-		update = applyToTag.bind(null, styleElement);
-		remove = function() {
-			removeStyleElement(styleElement);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle(newObj) {
-		if(newObj) {
-			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-				return;
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag(styleElement, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (styleElement.styleSheet) {
-		styleElement.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = styleElement.childNodes;
-		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-		if (childNodes.length) {
-			styleElement.insertBefore(cssNode, childNodes[index]);
-		} else {
-			styleElement.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag(styleElement, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		styleElement.setAttribute("media", media)
-	}
-
-	if(styleElement.styleSheet) {
-		styleElement.styleSheet.cssText = css;
-	} else {
-		while(styleElement.firstChild) {
-			styleElement.removeChild(styleElement.firstChild);
-		}
-		styleElement.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink(linkElement, options, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	/* If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
-	and there is no publicPath defined then lets turn convertToAbsoluteUrls
-	on by default.  Otherwise default to the convertToAbsoluteUrls option
-	directly
-	*/
-	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
-
-	if (options.convertToAbsoluteUrls || autoFixUrls){
-		css = fixUrls(css);
-	}
-
-	if(sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = linkElement.href;
-
-	linkElement.href = URL.createObjectURL(blob);
-
-	if(oldSrc)
-		URL.revokeObjectURL(oldSrc);
-}
-
+module.exports = __webpack_require__.p + "6e8dcf5d8d5eab7a5bcca8d39e7f1817.png";
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-
-/**
- * When source maps are enabled, `style-loader` uses a link element with a data-uri to
- * embed the css on the page. This breaks all relative urls because now they are relative to a
- * bundle instead of the current page.
- *
- * One solution is to only use full urls, but that may be impossible.
- *
- * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
- *
- * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
- *
- */
-
-module.exports = function (css) {
-  // get current location
-  var location = typeof window !== "undefined" && window.location;
-
-  if (!location) {
-    throw new Error("fixUrls requires window.location");
-  }
-
-	// blank or null?
-	if (!css || typeof css !== "string") {
-	  return css;
-  }
-
-  var baseUrl = location.protocol + "//" + location.host;
-  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
-
-	// convert each url(...)
-	/*
-	This regular expression is just a way to recursively match brackets within
-	a string.
-
-	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
-	   (  = Start a capturing group
-	     (?:  = Start a non-capturing group
-	         [^)(]  = Match anything that isn't a parentheses
-	         |  = OR
-	         \(  = Match a start parentheses
-	             (?:  = Start another non-capturing groups
-	                 [^)(]+  = Match anything that isn't a parentheses
-	                 |  = OR
-	                 \(  = Match a start parentheses
-	                     [^)(]*  = Match anything that isn't a parentheses
-	                 \)  = Match a end parentheses
-	             )  = End Group
-              *\) = Match anything and then a close parens
-          )  = Close non-capturing group
-          *  = Match anything
-       )  = Close capturing group
-	 \)  = Match a close parens
-
-	 /gi  = Get all matches, not the first.  Be case insensitive.
-	 */
-	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
-		// strip quotes (if they exist)
-		var unquotedOrigUrl = origUrl
-			.trim()
-			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
-			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
-
-		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
-		  return fullMatch;
-		}
-
-		// convert the url to a full url
-		var newUrl;
-
-		if (unquotedOrigUrl.indexOf("//") === 0) {
-		  	//TODO: should we add protocol?
-			newUrl = unquotedOrigUrl;
-		} else if (unquotedOrigUrl.indexOf("/") === 0) {
-			// path should be relative to the base url
-			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
-		} else {
-			// path should be relative to current directory
-			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
-		}
-
-		// send back the fixed url(...)
-		return "url(" + JSON.stringify(newUrl) + ")";
-	});
-
-	// send back the fixed css
-	return fixedCss;
-};
-
+module.exports = __webpack_require__.p + "b3b2d63e6c9c42644e5c40558e8bf2c4.png";
 
 /***/ }),
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(6);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(8)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../node_modules/css-loader/index.js!./ole.css", function() {
-			var newContent = require("!!../node_modules/css-loader/index.js!./ole.css");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
+module.exports = __webpack_require__.p + "45165595192052774d75c06fa85f76f9.png";
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
+module.exports = __webpack_require__.p + "33e29e00816754950bda947e9232780b.png";
 
 /***/ }),
 /* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "e9d610fdddd5f02e67b12e8889a457ff.png";
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "4e5c4f89a617a4f7e91d442976f7b17f.png";
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * mustache.js - Logic-less {{mustache}} templates with JavaScript
+ * http://github.com/janl/mustache.js
+ */
+
+/*global define: false Mustache: true*/
+
+(function defineMustache (global, factory) {
+  if (typeof exports === 'object' && exports && typeof exports.nodeName !== 'string') {
+    factory(exports); // CommonJS
+  } else if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)); // AMD
+  } else {
+    global.Mustache = {};
+    factory(global.Mustache); // script, wsh, asp
+  }
+}(this, function mustacheFactory (mustache) {
+
+  var objectToString = Object.prototype.toString;
+  var isArray = Array.isArray || function isArrayPolyfill (object) {
+    return objectToString.call(object) === '[object Array]';
+  };
+
+  function isFunction (object) {
+    return typeof object === 'function';
+  }
+
+  /**
+   * More correct typeof string handling array
+   * which normally returns typeof 'object'
+   */
+  function typeStr (obj) {
+    return isArray(obj) ? 'array' : typeof obj;
+  }
+
+  function escapeRegExp (string) {
+    return string.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
+  }
+
+  /**
+   * Null safe way of checking whether or not an object,
+   * including its prototype, has a given property
+   */
+  function hasProperty (obj, propName) {
+    return obj != null && typeof obj === 'object' && (propName in obj);
+  }
+
+  // Workaround for https://issues.apache.org/jira/browse/COUCHDB-577
+  // See https://github.com/janl/mustache.js/issues/189
+  var regExpTest = RegExp.prototype.test;
+  function testRegExp (re, string) {
+    return regExpTest.call(re, string);
+  }
+
+  var nonSpaceRe = /\S/;
+  function isWhitespace (string) {
+    return !testRegExp(nonSpaceRe, string);
+  }
+
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  function escapeHtml (string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap (s) {
+      return entityMap[s];
+    });
+  }
+
+  var whiteRe = /\s*/;
+  var spaceRe = /\s+/;
+  var equalsRe = /\s*=/;
+  var curlyRe = /\s*\}/;
+  var tagRe = /#|\^|\/|>|\{|&|=|!/;
+
+  /**
+   * Breaks up the given `template` string into a tree of tokens. If the `tags`
+   * argument is given here it must be an array with two string values: the
+   * opening and closing tags used in the template (e.g. [ "<%", "%>" ]). Of
+   * course, the default is to use mustaches (i.e. mustache.tags).
+   *
+   * A token is an array with at least 4 elements. The first element is the
+   * mustache symbol that was used inside the tag, e.g. "#" or "&". If the tag
+   * did not contain a symbol (i.e. {{myValue}}) this element is "name". For
+   * all text that appears outside a symbol this element is "text".
+   *
+   * The second element of a token is its "value". For mustache tags this is
+   * whatever else was inside the tag besides the opening symbol. For text tokens
+   * this is the text itself.
+   *
+   * The third and fourth elements of the token are the start and end indices,
+   * respectively, of the token in the original template.
+   *
+   * Tokens that are the root node of a subtree contain two more elements: 1) an
+   * array of tokens in the subtree and 2) the index in the original template at
+   * which the closing tag for that section begins.
+   */
+  function parseTemplate (template, tags) {
+    if (!template)
+      return [];
+
+    var sections = [];     // Stack to hold section tokens
+    var tokens = [];       // Buffer to hold the tokens
+    var spaces = [];       // Indices of whitespace tokens on the current line
+    var hasTag = false;    // Is there a {{tag}} on the current line?
+    var nonSpace = false;  // Is there a non-space char on the current line?
+
+    // Strips all whitespace tokens array for the current line
+    // if there was a {{#tag}} on it and otherwise only space.
+    function stripSpace () {
+      if (hasTag && !nonSpace) {
+        while (spaces.length)
+          delete tokens[spaces.pop()];
+      } else {
+        spaces = [];
+      }
+
+      hasTag = false;
+      nonSpace = false;
+    }
+
+    var openingTagRe, closingTagRe, closingCurlyRe;
+    function compileTags (tagsToCompile) {
+      if (typeof tagsToCompile === 'string')
+        tagsToCompile = tagsToCompile.split(spaceRe, 2);
+
+      if (!isArray(tagsToCompile) || tagsToCompile.length !== 2)
+        throw new Error('Invalid tags: ' + tagsToCompile);
+
+      openingTagRe = new RegExp(escapeRegExp(tagsToCompile[0]) + '\\s*');
+      closingTagRe = new RegExp('\\s*' + escapeRegExp(tagsToCompile[1]));
+      closingCurlyRe = new RegExp('\\s*' + escapeRegExp('}' + tagsToCompile[1]));
+    }
+
+    compileTags(tags || mustache.tags);
+
+    var scanner = new Scanner(template);
+
+    var start, type, value, chr, token, openSection;
+    while (!scanner.eos()) {
+      start = scanner.pos;
+
+      // Match any text between tags.
+      value = scanner.scanUntil(openingTagRe);
+
+      if (value) {
+        for (var i = 0, valueLength = value.length; i < valueLength; ++i) {
+          chr = value.charAt(i);
+
+          if (isWhitespace(chr)) {
+            spaces.push(tokens.length);
+          } else {
+            nonSpace = true;
+          }
+
+          tokens.push([ 'text', chr, start, start + 1 ]);
+          start += 1;
+
+          // Check for whitespace on the current line.
+          if (chr === '\n')
+            stripSpace();
+        }
+      }
+
+      // Match the opening tag.
+      if (!scanner.scan(openingTagRe))
+        break;
+
+      hasTag = true;
+
+      // Get the tag type.
+      type = scanner.scan(tagRe) || 'name';
+      scanner.scan(whiteRe);
+
+      // Get the tag value.
+      if (type === '=') {
+        value = scanner.scanUntil(equalsRe);
+        scanner.scan(equalsRe);
+        scanner.scanUntil(closingTagRe);
+      } else if (type === '{') {
+        value = scanner.scanUntil(closingCurlyRe);
+        scanner.scan(curlyRe);
+        scanner.scanUntil(closingTagRe);
+        type = '&';
+      } else {
+        value = scanner.scanUntil(closingTagRe);
+      }
+
+      // Match the closing tag.
+      if (!scanner.scan(closingTagRe))
+        throw new Error('Unclosed tag at ' + scanner.pos);
+
+      token = [ type, value, start, scanner.pos ];
+      tokens.push(token);
+
+      if (type === '#' || type === '^') {
+        sections.push(token);
+      } else if (type === '/') {
+        // Check section nesting.
+        openSection = sections.pop();
+
+        if (!openSection)
+          throw new Error('Unopened section "' + value + '" at ' + start);
+
+        if (openSection[1] !== value)
+          throw new Error('Unclosed section "' + openSection[1] + '" at ' + start);
+      } else if (type === 'name' || type === '{' || type === '&') {
+        nonSpace = true;
+      } else if (type === '=') {
+        // Set the tags for the next time around.
+        compileTags(value);
+      }
+    }
+
+    // Make sure there are no open sections when we're done.
+    openSection = sections.pop();
+
+    if (openSection)
+      throw new Error('Unclosed section "' + openSection[1] + '" at ' + scanner.pos);
+
+    return nestTokens(squashTokens(tokens));
+  }
+
+  /**
+   * Combines the values of consecutive text tokens in the given `tokens` array
+   * to a single token.
+   */
+  function squashTokens (tokens) {
+    var squashedTokens = [];
+
+    var token, lastToken;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      token = tokens[i];
+
+      if (token) {
+        if (token[0] === 'text' && lastToken && lastToken[0] === 'text') {
+          lastToken[1] += token[1];
+          lastToken[3] = token[3];
+        } else {
+          squashedTokens.push(token);
+          lastToken = token;
+        }
+      }
+    }
+
+    return squashedTokens;
+  }
+
+  /**
+   * Forms the given array of `tokens` into a nested tree structure where
+   * tokens that represent a section have two additional items: 1) an array of
+   * all tokens that appear in that section and 2) the index in the original
+   * template that represents the end of that section.
+   */
+  function nestTokens (tokens) {
+    var nestedTokens = [];
+    var collector = nestedTokens;
+    var sections = [];
+
+    var token, section;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      token = tokens[i];
+
+      switch (token[0]) {
+        case '#':
+        case '^':
+          collector.push(token);
+          sections.push(token);
+          collector = token[4] = [];
+          break;
+        case '/':
+          section = sections.pop();
+          section[5] = token[2];
+          collector = sections.length > 0 ? sections[sections.length - 1][4] : nestedTokens;
+          break;
+        default:
+          collector.push(token);
+      }
+    }
+
+    return nestedTokens;
+  }
+
+  /**
+   * A simple string scanner that is used by the template parser to find
+   * tokens in template strings.
+   */
+  function Scanner (string) {
+    this.string = string;
+    this.tail = string;
+    this.pos = 0;
+  }
+
+  /**
+   * Returns `true` if the tail is empty (end of string).
+   */
+  Scanner.prototype.eos = function eos () {
+    return this.tail === '';
+  };
+
+  /**
+   * Tries to match the given regular expression at the current position.
+   * Returns the matched text if it can match, the empty string otherwise.
+   */
+  Scanner.prototype.scan = function scan (re) {
+    var match = this.tail.match(re);
+
+    if (!match || match.index !== 0)
+      return '';
+
+    var string = match[0];
+
+    this.tail = this.tail.substring(string.length);
+    this.pos += string.length;
+
+    return string;
+  };
+
+  /**
+   * Skips all text until the given regular expression can be matched. Returns
+   * the skipped string, which is the entire tail if no match can be made.
+   */
+  Scanner.prototype.scanUntil = function scanUntil (re) {
+    var index = this.tail.search(re), match;
+
+    switch (index) {
+      case -1:
+        match = this.tail;
+        this.tail = '';
+        break;
+      case 0:
+        match = '';
+        break;
+      default:
+        match = this.tail.substring(0, index);
+        this.tail = this.tail.substring(index);
+    }
+
+    this.pos += match.length;
+
+    return match;
+  };
+
+  /**
+   * Represents a rendering context by wrapping a view object and
+   * maintaining a reference to the parent context.
+   */
+  function Context (view, parentContext) {
+    this.view = view;
+    this.cache = { '.': this.view };
+    this.parent = parentContext;
+  }
+
+  /**
+   * Creates a new context using the given view with this context
+   * as the parent.
+   */
+  Context.prototype.push = function push (view) {
+    return new Context(view, this);
+  };
+
+  /**
+   * Returns the value of the given name in this context, traversing
+   * up the context hierarchy if the value is absent in this context's view.
+   */
+  Context.prototype.lookup = function lookup (name) {
+    var cache = this.cache;
+
+    var value;
+    if (cache.hasOwnProperty(name)) {
+      value = cache[name];
+    } else {
+      var context = this, names, index, lookupHit = false;
+
+      while (context) {
+        if (name.indexOf('.') > 0) {
+          value = context.view;
+          names = name.split('.');
+          index = 0;
+
+          /**
+           * Using the dot notion path in `name`, we descend through the
+           * nested objects.
+           *
+           * To be certain that the lookup has been successful, we have to
+           * check if the last object in the path actually has the property
+           * we are looking for. We store the result in `lookupHit`.
+           *
+           * This is specially necessary for when the value has been set to
+           * `undefined` and we want to avoid looking up parent contexts.
+           **/
+          while (value != null && index < names.length) {
+            if (index === names.length - 1)
+              lookupHit = hasProperty(value, names[index]);
+
+            value = value[names[index++]];
+          }
+        } else {
+          value = context.view[name];
+          lookupHit = hasProperty(context.view, name);
+        }
+
+        if (lookupHit)
+          break;
+
+        context = context.parent;
+      }
+
+      cache[name] = value;
+    }
+
+    if (isFunction(value))
+      value = value.call(this.view);
+
+    return value;
+  };
+
+  /**
+   * A Writer knows how to take a stream of tokens and render them to a
+   * string, given a context. It also maintains a cache of templates to
+   * avoid the need to parse the same template twice.
+   */
+  function Writer () {
+    this.cache = {};
+  }
+
+  /**
+   * Clears all cached templates in this writer.
+   */
+  Writer.prototype.clearCache = function clearCache () {
+    this.cache = {};
+  };
+
+  /**
+   * Parses and caches the given `template` and returns the array of tokens
+   * that is generated from the parse.
+   */
+  Writer.prototype.parse = function parse (template, tags) {
+    var cache = this.cache;
+    var tokens = cache[template];
+
+    if (tokens == null)
+      tokens = cache[template] = parseTemplate(template, tags);
+
+    return tokens;
+  };
+
+  /**
+   * High-level method that is used to render the given `template` with
+   * the given `view`.
+   *
+   * The optional `partials` argument may be an object that contains the
+   * names and templates of partials that are used in the template. It may
+   * also be a function that is used to load partial templates on the fly
+   * that takes a single argument: the name of the partial.
+   */
+  Writer.prototype.render = function render (template, view, partials) {
+    var tokens = this.parse(template);
+    var context = (view instanceof Context) ? view : new Context(view);
+    return this.renderTokens(tokens, context, partials, template);
+  };
+
+  /**
+   * Low-level method that renders the given array of `tokens` using
+   * the given `context` and `partials`.
+   *
+   * Note: The `originalTemplate` is only ever used to extract the portion
+   * of the original template that was contained in a higher-order section.
+   * If the template doesn't use higher-order sections, this argument may
+   * be omitted.
+   */
+  Writer.prototype.renderTokens = function renderTokens (tokens, context, partials, originalTemplate) {
+    var buffer = '';
+
+    var token, symbol, value;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      value = undefined;
+      token = tokens[i];
+      symbol = token[0];
+
+      if (symbol === '#') value = this.renderSection(token, context, partials, originalTemplate);
+      else if (symbol === '^') value = this.renderInverted(token, context, partials, originalTemplate);
+      else if (symbol === '>') value = this.renderPartial(token, context, partials, originalTemplate);
+      else if (symbol === '&') value = this.unescapedValue(token, context);
+      else if (symbol === 'name') value = this.escapedValue(token, context);
+      else if (symbol === 'text') value = this.rawValue(token);
+
+      if (value !== undefined)
+        buffer += value;
+    }
+
+    return buffer;
+  };
+
+  Writer.prototype.renderSection = function renderSection (token, context, partials, originalTemplate) {
+    var self = this;
+    var buffer = '';
+    var value = context.lookup(token[1]);
+
+    // This function is used to render an arbitrary template
+    // in the current context by higher-order sections.
+    function subRender (template) {
+      return self.render(template, context, partials);
+    }
+
+    if (!value) return;
+
+    if (isArray(value)) {
+      for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
+        buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
+      }
+    } else if (typeof value === 'object' || typeof value === 'string' || typeof value === 'number') {
+      buffer += this.renderTokens(token[4], context.push(value), partials, originalTemplate);
+    } else if (isFunction(value)) {
+      if (typeof originalTemplate !== 'string')
+        throw new Error('Cannot use higher-order sections without the original template');
+
+      // Extract the portion of the original template that the section contains.
+      value = value.call(context.view, originalTemplate.slice(token[3], token[5]), subRender);
+
+      if (value != null)
+        buffer += value;
+    } else {
+      buffer += this.renderTokens(token[4], context, partials, originalTemplate);
+    }
+    return buffer;
+  };
+
+  Writer.prototype.renderInverted = function renderInverted (token, context, partials, originalTemplate) {
+    var value = context.lookup(token[1]);
+
+    // Use JavaScript's definition of falsy. Include empty arrays.
+    // See https://github.com/janl/mustache.js/issues/186
+    if (!value || (isArray(value) && value.length === 0))
+      return this.renderTokens(token[4], context, partials, originalTemplate);
+  };
+
+  Writer.prototype.renderPartial = function renderPartial (token, context, partials) {
+    if (!partials) return;
+
+    var value = isFunction(partials) ? partials(token[1]) : partials[token[1]];
+    if (value != null)
+      return this.renderTokens(this.parse(value), context, partials, value);
+  };
+
+  Writer.prototype.unescapedValue = function unescapedValue (token, context) {
+    var value = context.lookup(token[1]);
+    if (value != null)
+      return value;
+  };
+
+  Writer.prototype.escapedValue = function escapedValue (token, context) {
+    var value = context.lookup(token[1]);
+    if (value != null)
+      return mustache.escape(value);
+  };
+
+  Writer.prototype.rawValue = function rawValue (token) {
+    return token[1];
+  };
+
+  mustache.name = 'mustache.js';
+  mustache.version = '2.3.0';
+  mustache.tags = [ '{{', '}}' ];
+
+  // All high-level mustache.* functions use this writer.
+  var defaultWriter = new Writer();
+
+  /**
+   * Clears all cached templates in the default writer.
+   */
+  mustache.clearCache = function clearCache () {
+    return defaultWriter.clearCache();
+  };
+
+  /**
+   * Parses and caches the given template in the default writer and returns the
+   * array of tokens it contains. Doing this ahead of time avoids the need to
+   * parse templates on the fly as they are rendered.
+   */
+  mustache.parse = function parse (template, tags) {
+    return defaultWriter.parse(template, tags);
+  };
+
+  /**
+   * Renders the `template` with the given `view` and `partials` using the
+   * default writer.
+   */
+  mustache.render = function render (template, view, partials) {
+    if (typeof template !== 'string') {
+      throw new TypeError('Invalid template! Template should be a "string" ' +
+                          'but "' + typeStr(template) + '" was given as the first ' +
+                          'argument for mustache#render(template, view, partials)');
+    }
+
+    return defaultWriter.render(template, view, partials);
+  };
+
+  // This is here for backwards compatibility with 0.4.x.,
+  /*eslint-disable */ // eslint wants camel cased function name
+  mustache.to_html = function to_html (template, view, partials, send) {
+    /*eslint-enable*/
+
+    var result = mustache.render(template, view, partials);
+
+    if (isFunction(send)) {
+      send(result);
+    } else {
+      return result;
+    }
+  };
+
+  // Export the escaping function so that the user may override it.
+  // See https://github.com/janl/mustache.js/issues/244
+  mustache.escape = escapeHtml;
+
+  // Export these mainly for testing, but also for advanced usage.
+  mustache.Scanner = Scanner;
+  mustache.Context = Context;
+  mustache.Writer = Writer;
+
+  return mustache;
+}));
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1291,7 +1772,7 @@ module.exports = g;
 
 
 
-var base64 = __webpack_require__(13)
+var base64 = __webpack_require__(5)
 var ieee754 = __webpack_require__(14)
 var isArray = __webpack_require__(15)
 
@@ -3071,293 +3552,572 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)))
 
 /***/ }),
-/* 13 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+var stylesInDom = {},
+	memoize = function(fn) {
+		var memo;
+		return function () {
+			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+			return memo;
+		};
+	},
+	isOldIE = memoize(function() {
+		// Test for IE <= 9 as proposed by Browserhacks
+		// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+		// Tests for existence of standard globals is to allow style-loader 
+		// to operate correctly into non-standard environments
+		// @see https://github.com/webpack-contrib/style-loader/issues/177
+		return window && document && document.all && !window.atob;
+	}),
+	getElement = (function(fn) {
+		var memo = {};
+		return function(selector) {
+			if (typeof memo[selector] === "undefined") {
+				memo[selector] = fn.call(this, selector);
+			}
+			return memo[selector]
+		};
+	})(function (styleTarget) {
+		return document.querySelector(styleTarget)
+	}),
+	singletonElement = null,
+	singletonCounter = 0,
+	styleElementsInsertedAtTop = [],
+	fixUrls = __webpack_require__(19);
 
+module.exports = function(list, options) {
+	if(typeof DEBUG !== "undefined" && DEBUG) {
+		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
 
-exports.byteLength = byteLength
-exports.toByteArray = toByteArray
-exports.fromByteArray = fromByteArray
+	options = options || {};
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
 
-var lookup = []
-var revLookup = []
-var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
 
-var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-for (var i = 0, len = code.length; i < len; ++i) {
-  lookup[i] = code[i]
-  revLookup[code.charCodeAt(i)] = i
+	// By default, add <style> tags to the <head> element
+	if (typeof options.insertInto === "undefined") options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+	var styles = listToStyles(list);
+	addStylesToDom(styles, options);
+
+	return function update(newList) {
+		var mayRemove = [];
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+		if(newList) {
+			var newStyles = listToStyles(newList);
+			addStylesToDom(newStyles, options);
+		}
+		for(var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+			if(domStyle.refs === 0) {
+				for(var j = 0; j < domStyle.parts.length; j++)
+					domStyle.parts[j]();
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom(styles, options) {
+	for(var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+		if(domStyle) {
+			domStyle.refs++;
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
 }
 
-revLookup['-'.charCodeAt(0)] = 62
-revLookup['_'.charCodeAt(0)] = 63
-
-function placeHoldersCount (b64) {
-  var len = b64.length
-  if (len % 4 > 0) {
-    throw new Error('Invalid string. Length must be a multiple of 4')
-  }
-
-  // the number of equal signs (place holders)
-  // if there are two placeholders, than the two characters before it
-  // represent one byte
-  // if there is only one, then the three characters before it represent 2 bytes
-  // this is just a cheap hack to not do indexOf twice
-  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+function listToStyles(list) {
+	var styles = [];
+	var newStyles = {};
+	for(var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+		if(!newStyles[id])
+			styles.push(newStyles[id] = {id: id, parts: [part]});
+		else
+			newStyles[id].parts.push(part);
+	}
+	return styles;
 }
 
-function byteLength (b64) {
-  // base64 is 4/3 + up to two characters of the original data
-  return b64.length * 3 / 4 - placeHoldersCount(b64)
+function insertStyleElement(options, styleElement) {
+	var styleTarget = getElement(options.insertInto)
+	if (!styleTarget) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+	if (options.insertAt === "top") {
+		if(!lastStyleElementInsertedAtTop) {
+			styleTarget.insertBefore(styleElement, styleTarget.firstChild);
+		} else if(lastStyleElementInsertedAtTop.nextSibling) {
+			styleTarget.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			styleTarget.appendChild(styleElement);
+		}
+		styleElementsInsertedAtTop.push(styleElement);
+	} else if (options.insertAt === "bottom") {
+		styleTarget.appendChild(styleElement);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
 }
 
-function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
-  var len = b64.length
-  placeHolders = placeHoldersCount(b64)
-
-  arr = new Arr(len * 3 / 4 - placeHolders)
-
-  // if there are placeholders, only get up to the last complete 4 chars
-  l = placeHolders > 0 ? len - 4 : len
-
-  var L = 0
-
-  for (i = 0, j = 0; i < l; i += 4, j += 3) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-    arr[L++] = (tmp >> 16) & 0xFF
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
-  }
-
-  if (placeHolders === 2) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[L++] = tmp & 0xFF
-  } else if (placeHolders === 1) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
-  }
-
-  return arr
+function removeStyleElement(styleElement) {
+	styleElement.parentNode.removeChild(styleElement);
+	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+	if(idx >= 0) {
+		styleElementsInsertedAtTop.splice(idx, 1);
+	}
 }
 
-function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+function createStyleElement(options) {
+	var styleElement = document.createElement("style");
+	options.attrs.type = "text/css";
+
+	attachTagAttrs(styleElement, options.attrs);
+	insertStyleElement(options, styleElement);
+	return styleElement;
 }
 
-function encodeChunk (uint8, start, end) {
-  var tmp
-  var output = []
-  for (var i = start; i < end; i += 3) {
-    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-    output.push(tripletToBase64(tmp))
-  }
-  return output.join('')
+function createLinkElement(options) {
+	var linkElement = document.createElement("link");
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	attachTagAttrs(linkElement, options.attrs);
+	insertStyleElement(options, linkElement);
+	return linkElement;
 }
 
-function fromByteArray (uint8) {
-  var tmp
-  var len = uint8.length
-  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var output = ''
-  var parts = []
-  var maxChunkLength = 16383 // must be multiple of 3
+function attachTagAttrs(element, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		element.setAttribute(key, attrs[key]);
+	});
+}
 
-  // go through the array every three bytes, we'll deal with trailing stuff later
-  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
-  }
+function addStyle(obj, options) {
+	var styleElement, update, remove;
 
-  // pad the end with zeros, but make sure to not forget the extra bytes
-  if (extraBytes === 1) {
-    tmp = uint8[len - 1]
-    output += lookup[tmp >> 2]
-    output += lookup[(tmp << 4) & 0x3F]
-    output += '=='
-  } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
-    output += lookup[tmp >> 10]
-    output += lookup[(tmp >> 4) & 0x3F]
-    output += lookup[(tmp << 2) & 0x3F]
-    output += '='
-  }
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+		styleElement = singletonElement || (singletonElement = createStyleElement(options));
+		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+	} else if(obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function") {
+		styleElement = createLinkElement(options);
+		update = updateLink.bind(null, styleElement, options);
+		remove = function() {
+			removeStyleElement(styleElement);
+			if(styleElement.href)
+				URL.revokeObjectURL(styleElement.href);
+		};
+	} else {
+		styleElement = createStyleElement(options);
+		update = applyToTag.bind(null, styleElement);
+		remove = function() {
+			removeStyleElement(styleElement);
+		};
+	}
 
-  parts.push(output)
+	update(obj);
 
-  return parts.join('')
+	return function updateStyle(newObj) {
+		if(newObj) {
+			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+				return;
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag(styleElement, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = styleElement.childNodes;
+		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+		if (childNodes.length) {
+			styleElement.insertBefore(cssNode, childNodes[index]);
+		} else {
+			styleElement.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag(styleElement, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		styleElement.setAttribute("media", media)
+	}
+
+	if(styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = css;
+	} else {
+		while(styleElement.firstChild) {
+			styleElement.removeChild(styleElement.firstChild);
+		}
+		styleElement.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink(linkElement, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/* If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+	and there is no publicPath defined then lets turn convertToAbsoluteUrls
+	on by default.  Otherwise default to the convertToAbsoluteUrls option
+	directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls){
+		css = fixUrls(css);
+	}
+
+	if(sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = linkElement.href;
+
+	linkElement.href = URL.createObjectURL(blob);
+
+	if(oldSrc)
+		URL.revokeObjectURL(oldSrc);
 }
 
 
 /***/ }),
-/* 14 */
+/* 19 */
 /***/ (function(module, exports) {
 
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
 
-  i += d
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
 
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
 
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
   }
 
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
 
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
 
-  buffer[offset + i - d] |= s * 128
-}
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
 
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
 
-/***/ }),
-/* 15 */
-/***/ (function(module, exports) {
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
 
-var toString = {}.toString;
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
 
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
 };
 
 
 /***/ }),
-/* 16 */
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(6);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(18)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../node_modules/css-loader/index.js!./ole.css", function() {
+			var newContent = require("!!../node_modules/css-loader/index.js!./ole.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__style_js__ = __webpack_require__(1);
+/**
+ * Default ole style
+ */
+class Style {
+  constructor() {
+    this.pointStyle = this._getDefaultPointStyle();
+    this.strokeStyle = this._getDefaultStrokeStyle();
+
+    this.style = new ol.style.Style({
+      image: this.pointStyle,
+      stroke: this.strokeStyle
+    });
+  }
+
+  /**
+   * Getter for the default point style of ole.
+   * @returns {ol.style.Circle} The style.
+   */
+  _getDefaultPointStyle() {
+    return new ol.style.Circle({
+      radius: 5,
+      fill: new ol.style.Fill({
+        color: 'rgba(97, 132, 156, 0.5)'
+      }),
+      stroke: this._getDefaultStrokeStyle()
+    });
+  }
+
+  /**
+   * Getter for the default stroke style of ole.
+   * @returns {ol.style.Circle} The style.
+   */
+  _getDefaultStrokeStyle() {
+    return new ol.style.Stroke({
+      width: 1,
+      color: 'rgb(97, 132, 156)'
+    });
+  }
+
+  /**
+   * Style function for this style.
+   * @returns {Array.<ol.style.Style} The feature style.
+   */
+  styleFunction() {
+    return [this.style];
+  }
+}
+/* unused harmony export Style */
 
 
 /**
- * Style for the Rotate tool.
+ * Style for the CAD tool.
+ * Features are invisible by default and become
+ * visible on mouse over.
  */
-class RotateStyle extends __WEBPACK_IMPORTED_MODULE_0__style_js__["a" /* default */] {
-  /**
-   * Contructor
-   * @param {Object} opt_options Control options.
-   * @param {string} opt_optionsr.rotateAttribute The rotation attribute.
-   *   If undefined, the rotation of the geometry will be used.
-   * @param {string} opt_options.radius The rotation attribute.
-   *   If undefined, the rotation of the geometry will be used.
-   */
-  constructor(opt_options) {
+class CadStyle extends Style {
+  constructor() {
     super();
 
-    var options = opt_options || {};
-    this.rotateAttribute = options.rotateAttribute || 'ole_rotation';
-    this.radius = options.radius || 30;
+    this.style.setImage(
+      new ol.style.RegularShape({
+        fill: new ol.style.Fill({
+          color: '#E8841F'
+        }),
+        stroke: this.strokeStyle,
+        points: 4,
+        radius: 5,
+        radius2: 0,
+        angle: Math.PI / 4
+      })
+    );
+
+    this.strokeStyle.setLineDash([5, 5]);
+    this.hoverFeatures = [];
   }
 
-  styleFunction(feature) {
-    var rotation = feature.get(this.rotateAttribute);
-    console.log(rotation)
+  /**
+   * Adds a hover feature that should be styled.
+   * @param {ol.Feature} feature The hover feature.
+   */
+  addHoverFeature(feature) {
+    this.hoverFeatures.push(feature);
+  }
 
-    return [
-      new ol.style.Style({
-        image : new ol.style.Circle({
-          radius: this.radius,
-          stroke: new ol.style.Stroke({
-            color: 'rgb(97, 132, 156)',
-            width: 2
-          })
-        })
-      }),
-      new ol.style.Style({
-        text: new ol.style.Text({
-          rotation: rotation,
-          text: 'fooo',
-          offsetY: - this.radius,
-        })
-      })
-    ];
+  /**
+   * Removes all hover features.
+   */
+  clearHoverFeatures() {
+    this.hoverFeatures = [];
+  }
+
+  /**
+   * Style function for this style.
+   * @param {ol.Feature} Feature to style.
+   * @returns {Array.<ol.style.Style} The feature style.
+   */
+  styleFunction(feature) {
+    if (this.hoverFeatures.indexOf(feature) === -1) {
+     //  return [];
+    return [this.style];
+    }
+
+    return [this.style];
   }
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = RotateStyle;
-
+/* harmony export (immutable) */ __webpack_exports__["a"] = CadStyle;
 
 
 
 /***/ }),
-/* 17 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__style_ole_css__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__style_ole_css__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__style_ole_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__style_ole_css__);
 
 
@@ -3403,16 +4163,16 @@ class Toolbar extends ol.control.Control {
 
 
 /***/ }),
-/* 18 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__editor_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__editor_js__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__control_control_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__control_cad_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__control_rotate_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__control_draw_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__control_cad_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__control_rotate_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__control_draw_js__ = __webpack_require__(2);
 window.ole = {};
 
 
