@@ -2,7 +2,6 @@
  * Base control of ole.
  */
 export default class Control extends ol.control.Control {
-
   /**
    * Constructor.
    * @param {Object} options Control options.
@@ -12,12 +11,11 @@ export default class Control extends ol.control.Control {
     button.className = 'ole-control ' + options.className;
 
     super({
-       element: button
+      element: button
     });
 
     this.className = options.className;
     this.title = options.title;
-
 
     var img = document.createElement('img');
     img.src = options.image;
@@ -25,9 +23,10 @@ export default class Control extends ol.control.Control {
     button.appendChild(img);
     button.title = this.title;
 
-    this.source = options.source || new ol.source.Vector({
-      features: options.features
-    });
+    this.source = options.source ||
+      new ol.source.Vector({
+        features: options.features
+      });
 
     button.addEventListener('click', this._onClick.bind(this));
 

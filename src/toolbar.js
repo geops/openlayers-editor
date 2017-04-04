@@ -1,7 +1,6 @@
 import '../style/ole.css';
 
 export default class Toolbar extends ol.control.Control {
-
   /**
    * Constructor.
    * @param {ol.Map} map The map object.

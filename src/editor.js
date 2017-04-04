@@ -38,8 +38,9 @@ export default class Editor {
    *   Collection of controls.
    */
   addControls(controls) {
-    controls = controls instanceof ol.Collection ? controls :
-      new ol.Collection(controls);
+    controls = controls instanceof ol.Collection
+      ? controls
+      : new ol.Collection(controls);
 
     for (var i = 0; i < controls.getLength(); i++) {
       this.addControl(controls.item(i));
@@ -56,8 +57,9 @@ export default class Editor {
     // deactivate other controls that are not standalone
     if (ctrl.getActive() && ctrl.standalone) {
       for (var i = 0; i < this.controls.getLength(); i++) {
-        if (this.controls.item(i) !== ctrl &&
-            this.controls.item(i).standalone) {
+        if (
+          this.controls.item(i) !== ctrl && this.controls.item(i).standalone
+        ) {
           this.controls.item(i).deactivate();
         }
       }

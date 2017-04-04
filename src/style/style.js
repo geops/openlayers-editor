@@ -94,8 +94,8 @@ export default class CadStyle extends Style {
    */
   styleFunction(feature) {
     if (this.hoverFeatures.indexOf(feature) === -1) {
-     //  return [];
-    return [this.style];
+      //  return [];
+      return [this.style];
     }
 
     return [this.style];
