@@ -71,6 +71,17 @@ export default class CadControl extends Control {
   setMap(map) {
     super.setMap(map);
     this.map.addLayer(this.snapLayer);
+
+    // Ensure that the snap interaction is at the last position
+    // as it must be the first to handle the  pointermove event.
+    this.map.getInteractions().on('change:length', function(e) {
+      var pos = e.target.getArray().indexOf(this.snapInteraction);
+
+      if (this.active && pos > -1 && pos !== e.target.getLength() - 1) {
+        this.deactivate();
+        this.activate();
+      }
+    }, this);
   }
 
   /**
@@ -265,9 +276,9 @@ export default class CadControl extends Control {
    * Activate the control.
    */
   activate() {
+    super.activate();
     this.map.addInteraction(this.pointerInteraction);
     this.map.addInteraction(this.snapInteraction);
-    super.activate();
     this._openDialog();
   }
 
@@ -275,9 +286,9 @@ export default class CadControl extends Control {
    * Deactivate the control.
    */
   deactivate() {
+    super.deactivate();
     this.map.removeInteraction(this.pointerInteraction);
     this.map.removeInteraction(this.snapInteraction);
-    super.deactivate();
     this._closeDialog();
   }
 }
