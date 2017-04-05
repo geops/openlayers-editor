@@ -4,7 +4,6 @@ import drawPolygonPng from '../../img/draw_polygon.png';
 import drawLinePng from '../../img/draw_line.png';
 
 export default class DrawControl extends Control {
-
   /**
    * Tool with CAD drawing functions.
    * @param {Object} options Tool options.
@@ -18,16 +17,23 @@ export default class DrawControl extends Control {
     var image;
 
     switch (options.type) {
-      case 'Polygon': image = drawPolygonPng; break;
-      case 'LineString': image = drawLinePng; break;
-      default: image = drawPointPng;
+      case 'Polygon':
+        image = drawPolygonPng;
+        break;
+      case 'LineString':
+        image = drawLinePng;
+        break;
+      default:
+        image = drawPointPng;
     }
 
-    super(Object.assign(options, {
-      title: 'Draw ' + (options.type || 'Point'),
-      className: 'icon-draw',
-      image: image
-    }));
+    super(
+      Object.assign(options, {
+        title: 'Draw ' + (options.type || 'Point'),
+        className: 'icon-draw',
+        image: image
+      })
+    );
 
     this.drawInteraction = new ol.interaction.Draw({
       type: options.type || 'Point',

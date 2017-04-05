@@ -4,8 +4,9 @@
   "description": "OpenLayers Editor",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --progress --watch",
-    "build": "webpack"
+    "build": "webpack",
+    "precommit": "lint-staged",
+    "start": "webpack-dev-server --progress --watch"
   },
   "keywords": [
     "OpenLayers",
@@ -16,14 +17,20 @@
   "devDependencies": {
     "css-loader": "^0.27.3",
     "file-loader": "^0.11.0",
+    "husky": "^0.13.3",
     "image-webpack-loader": "^3.3.0",
+    "lint-staged": "^3.4.0",
     "openlayers": "^4.0.1",
+    "prettier": "^0.22.0",
+    "style-loader": "^0.16.0",
     "uglifyjs-webpack-plugin": "^0.4.0",
     "webpack": "~2.2.1",
     "webpack-dev-server": "^2.4.2"
   },
   "dependencies": {
-    "mustache": "^2.3.0",
-    "style-loader": "^0.16.0"
+    "mustache": "^2.3.0"
+  },
+  "lint-staged": {
+    "src/**/*.js": ["prettier --single-quote --write", "git add"]
   }
 }

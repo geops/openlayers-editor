@@ -6,7 +6,6 @@ import rotateMapPng from '../../img/rotate_map.png';
  * Tool with CAD drawing functions.
  */
 export default class RotateControl extends Control {
-
   /**
    * Constructor.
    * @param {ol.Collection<ol.Feature>} [options.features] Control features.
@@ -16,11 +15,13 @@ export default class RotateControl extends Control {
    *   that is used for storing the rotation in rad.
    */
   constructor(options) {
-    super(Object.assign(options, {
-      title: 'Rotate',
-      className: 'icon-rotate',
-      image: rotatePng
-    }));
+    super(
+      Object.assign(options, {
+        title: 'Rotate',
+        className: 'icon-rotate',
+        image: rotatePng
+      })
+    );
 
     this.pointerInteraction = new ol.interaction.Pointer({
       handleDownEvent: this._onDown.bind(this),
@@ -53,19 +54,21 @@ export default class RotateControl extends Control {
    */
   _onDown(evt) {
     this._dragging = false;
-    this._feature = this.map.forEachFeatureAtPixel( evt.pixel, function(f) {
+    this._feature = this.map.forEachFeatureAtPixel(evt.pixel, function(f) {
       return f;
     });
 
     if (this._center && this._feature) {
-      this._feature.set(this.rotateAttribute,
-        this._feature.get(this.rotateAttribute) || 0);
+      this._feature.set(
+        this.rotateAttribute,
+        this._feature.get(this.rotateAttribute) || 0
+      );
 
       // rotation between clicked coordinate and feature center
       this._initialRotation = Math.atan2(
         evt.coordinate[1] - this._center[1],
         evt.coordinate[0] - this._center[0]
-      ) + (this._feature.get(this.rotateAttribute));
+      ) + this._feature.get(this.rotateAttribute);
     }
 
     return true;
