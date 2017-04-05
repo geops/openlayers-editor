@@ -1,10 +1,8 @@
 import Control from './control.js';
-import CadStyle from '../style/style.js';
 import mustache from 'mustache';
 import cadPng from '../../img/cad.png';
 
 export default class CadControl extends Control {
-
   /**
    * Tool with CAD drawing functions.
    * @param {Object} options Tool options.
@@ -21,23 +19,42 @@ export default class CadControl extends Control {
    *   distance points in pixel (default is 30).
    */
   constructor(options) {
-    super(Object.assign(options, {
-      title: 'CAD control',
-      className: 'icon-cad',
-      image: cadPng
-    }));
+    super(
+      Object.assign(options, {
+        title: 'CAD control',
+        className: 'icon-cad',
+        image: cadPng
+      })
+    );
 
     this.pointerInteraction = new ol.interaction.Pointer({
       handleMoveEvent: this._onMove.bind(this)
     });
 
-    this.snapStyle = new CadStyle();
-
+    // layer with snapping geometries
     this.snapLayer = new ol.layer.Vector({
-      style: function(feature) {
-        return this.snapStyle.styleFunction(feature);
-      }.bind(this),
-      source: new ol.source.Vector()
+      source: new ol.source.Vector(),
+      style: [
+        new ol.style.Style({
+          image: new ol.style.RegularShape({
+            fill: new ol.style.Fill({
+              color: '#E8841F'
+            }),
+            stroke: new ol.style.Stroke({
+              width: 1,
+              color: '#618496'
+            }),
+            points: 4,
+            radius: 5,
+            radius2: 0,
+            angle: Math.PI / 4
+          }),
+          stroke: new ol.style.Stroke({
+            width: 1,
+            color: '#618496'
+          })
+        })
+      ]
     });
 
     this.snapTolerance = options.snapTolerance || 10;
@@ -50,15 +67,15 @@ export default class CadControl extends Control {
     // Whether to show the distance points
     this.showDistancePoints = options.showDistancePoints;
 
+    // Cell width of the snap grid in px
+    this.distancePointDist = options.distancePointDist || 30;
+
     // Whether to show auxiliary lines
-    if (typeof(options.showAuxiliaryLines) === 'undefined') {
+    if (typeof options.showAuxiliaryLines === 'undefined') {
       this.showAuxiliaryLines = true;
     } else {
       this.showAuxiliaryLines = options.showAuxiliaryLines;
     }
-
-    // Cell width of the snap grid in px
-    this.distancePointDist = options.distancePointDist || 30;
 
     // control can be activated together with
     // other controls, like Draw.
@@ -74,14 +91,18 @@ export default class CadControl extends Control {
 
     // Ensure that the snap interaction is at the last position
     // as it must be the first to handle the  pointermove event.
-    this.map.getInteractions().on('change:length', function(e) {
-      var pos = e.target.getArray().indexOf(this.snapInteraction);
+    this.map.getInteractions().on(
+      'change:length',
+      function(e) {
+        var pos = e.target.getArray().indexOf(this.snapInteraction);
 
-      if (this.active && pos > -1 && pos !== e.target.getLength() - 1) {
-        this.deactivate();
-        this.activate();
-      }
-    }, this);
+        if (this.active && pos > -1 && pos !== e.target.getLength() - 1) {
+          this.deactivate();
+          this.activate();
+        }
+      },
+      this
+    );
   }
 
   /**
@@ -107,7 +128,7 @@ export default class CadControl extends Control {
    * @param {Number} num Number of features to search.
    * @returns {Array.<ol.Feature>} List of closest features.
    */
-   _getClosestFeatures(coordinate, num) {
+  _getClosestFeatures(coordinate, num) {
     num = num || 1;
     var ext = [-Infinity, -Infinity, Infinity, Infinity];
     var featureDict = {};
@@ -142,7 +163,6 @@ export default class CadControl extends Control {
    * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
    */
   _drawAuxiliaryLines(features, coordinate) {
-
     var auxCoords = [];
     for (var i = 0; i < features.length; i++) {
       var geom = features[i].getGeometry();
@@ -150,8 +170,9 @@ export default class CadControl extends Control {
       if (geom instanceof ol.geom.Point) {
         auxCoords.push(geom.getCoordinates());
       } else {
-        var coords = ol.geom.Polygon.fromExtent(
-          geom.getExtent()).getCoordinates()[0];
+        var coords = ol.geom.Polygon
+          .fromExtent(geom.getExtent())
+          .getCoordinates()[0];
         auxCoords = auxCoords.concat(coords);
       }
     }
@@ -161,23 +182,27 @@ export default class CadControl extends Control {
 
     for (i = 0; i < auxCoords.length; i++) {
       var auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
-      if (px[0] > auxPx[0] - this.snapTolerance / 2 &&
-          px[0] < auxPx[0] + this.snapTolerance / 2) {
-
+      if (
+        px[0] > auxPx[0] - this.snapTolerance / 2 &&
+        px[0] < auxPx[0] + this.snapTolerance / 2
+      ) {
         var newY = px[1];
-        newY += px[1] < auxPx[1] ? -this.snapTolerance * 2 :
-          this.snapTolerance * 2;
+        newY += px[1] < auxPx[1]
+          ? -this.snapTolerance * 2
+          : this.snapTolerance * 2;
 
         lineCoords = [
           this.map.getCoordinateFromPixel([auxPx[0], newY]),
           auxCoords[i]
         ];
-      } else if (px[1] > auxPx[1] - this.snapTolerance / 2 &&
-          px[1] < auxPx[1] + this.snapTolerance / 2) {
-
+      } else if (
+        px[1] > auxPx[1] - this.snapTolerance / 2 &&
+        px[1] < auxPx[1] + this.snapTolerance / 2
+      ) {
         var newX = px[0];
-        newX += px[0] < auxPx[0] ? -this.snapTolerance* 2 :
-          this.snapTolerance * 2;
+        newX += px[0] < auxPx[0]
+          ? -this.snapTolerance * 2
+          : this.snapTolerance * 2;
 
         lineCoords = [
           this.map.getCoordinateFromPixel([newX, auxPx[1]]),
@@ -203,7 +228,6 @@ export default class CadControl extends Control {
 
     var px = this.map.getPixelFromCoordinate(featCoord);
     var snapPx = [
-      [px[0] - this.distancePointDist, px[1]],
       [px[0] + this.distancePointDist, px[1]],
       [px[0], px[1] - this.distancePointDist],
       [px[0], px[1] + this.distancePointDist]
@@ -223,15 +247,14 @@ export default class CadControl extends Control {
    * Open the control's dialog.
    */
   _openDialog() {
-
     var tpl = [
       '<div class="ole-dialog" id="{{className}}-dialog">' +
         '<div><input type="checkbox" {{#c1}}checked{{/c1}} id="aux-cb">' +
-          '<label>Show auxiliary lines</label></div>' +
+        '<label>Show auxiliary lines</label></div>' +
         '<div><input type="checkbox" {{#c2}}checked{{/c2}} id="dist-cb">' +
-          '<label>Show distance points. Distance (px): </label>' +
+        '<label>Show distance points. Distance (px): </label>' +
         '<input type="text" id="width-input" value="{{gridWidth}}"></div>' +
-      '</div>'
+        '</div>'
     ].join('');
 
     var div = document.createElement('div');
@@ -245,21 +268,30 @@ export default class CadControl extends Control {
     this.map.getTargetElement().appendChild(div.firstChild);
 
     var aCb = document.getElementById('aux-cb');
-    aCb.addEventListener('change', function(evt) {
-      this.showAuxiliaryLines = evt.target.checked;
-    }.bind(this));
+    aCb.addEventListener(
+      'change',
+      function(evt) {
+        this.showAuxiliaryLines = evt.target.checked;
+      }.bind(this)
+    );
 
     var gCb = document.getElementById('dist-cb');
-    gCb.addEventListener('change', function(evt) {
-      this.showDistancePoints = evt.target.checked;
-    }.bind(this));
+    gCb.addEventListener(
+      'change',
+      function(evt) {
+        this.showDistancePoints = evt.target.checked;
+      }.bind(this)
+    );
 
     var widthInput = document.getElementById('width-input');
-    widthInput.addEventListener('keyup', function(evt) {
-      if (parseFloat(evt.target.value)) {
-        this.distancePointDist = parseFloat(evt.target.value);
-      }
-    }.bind(this));
+    widthInput.addEventListener(
+      'keyup',
+      function(evt) {
+        if (parseFloat(evt.target.value)) {
+          this.distancePointDist = parseFloat(evt.target.value);
+        }
+      }.bind(this)
+    );
   }
 
   /**
