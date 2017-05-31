@@ -35,4 +35,14 @@ export default class Toolbar extends ol.control.Control {
       this.element.appendChild(btn);
     }
   }
+
+  /**
+   * Destroys the toolbar
+   */
+  _destroy() {
+    for (var i = 0; i < this.controls.getLength(); i++) {
+      var btn = this.controls.item(i).getElement();
+      this.element.removeChild(btn);
+    }
+  }
 }

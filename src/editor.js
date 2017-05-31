@@ -48,6 +48,17 @@ export default class Editor {
   }
 
   /**
+   * Removes the editor from the map.
+   */
+  remove() {
+    this.controls.forEach((c) => {
+      c.deactivate();
+    });
+
+    this.toolbar._destroy();
+  }
+
+  /**
    * Listener for activity state changes of controls.
    * @param {ol.control.Control} control Control.
    */
