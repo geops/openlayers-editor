@@ -54,7 +54,12 @@
         source: editLayer.getSource()
       });
 
-      editor.addControls([cad, draw, drawLine, drawPoly, rotate]);
+      var move = new ole.MoveControl({
+        type: 'Polygon',
+        source: editLayer.getSource()
+      });
+
+      editor.addControls([cad, draw, drawLine, drawPoly, move, rotate]);
 
     </script>
   </body>
