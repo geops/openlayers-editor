@@ -9,8 +9,7 @@ module.exports = {
 
   output: {
     filename: 'ole.js',
-    sourceMapFilename: 'ole.map',
-    publicPath: 'dist',
+    publicPath: '/dist/',
     path: path.resolve(__dirname, 'dist')
   },
 
@@ -21,17 +20,19 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.LoaderOptionsPlugin({
-      minimize: true,
-      debug: false
-    }),
-    new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
+    new webpack.optimize.UglifyJsPlugin({
+        sourceMap: true,
+        minimize: true
     })
   ],
 
   module: {
     rules: [
+      {
+        test: /\.(js|jsx)$/,
+        use: 'babel-loader?presets[]=es2015',
+        exclude: /(node_modules)/,
+      },
       {
         test: /\.css$/,
         use: [ 'style-loader', 'css-loader' ]
@@ -39,8 +40,16 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
-		  'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
-		  'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false',
+          'url-loader',
+          {
+            loader: 'image-webpack-loader',
+            query: {
+              pngquant: {
+                quality: '65-90',
+                speed: 4
+              }
+            }
+          }
         ]
       }
     ]

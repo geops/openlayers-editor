@@ -33,7 +33,7 @@ export default class RotateControl extends Control {
 
     this.rotateLayer = new ol.layer.Vector({
       source: new ol.source.Vector(),
-      style: function(f) {
+      style: (f) => {
         var rotation = f.get(this.rotateAttribute);
         return [
           new ol.style.Style({
@@ -44,7 +44,7 @@ export default class RotateControl extends Control {
             })
           })
         ];
-      }.bind(this)
+      }
     });
   }
 
@@ -54,8 +54,10 @@ export default class RotateControl extends Control {
    */
   _onDown(evt) {
     this._dragging = false;
-    this._feature = this.map.forEachFeatureAtPixel(evt.pixel, function(f) {
-      return f;
+    this._feature = this.map.forEachFeatureAtPixel(evt.pixel, (f) => {
+      if (this.source.getFeatures().indexOf(f) > -1) {
+        return f;
+      }
     });
 
     if (this._center && this._feature) {
@@ -89,8 +91,12 @@ export default class RotateControl extends Control {
 
       var rotationDiff = this._initialRotation - rotation;
       var geomRotation = rotationDiff - this._feature.get(this.rotateAttribute);
+
       this._feature.getGeometry().rotate(-geomRotation, this._center);
+      this._rotateFeature.getGeometry().rotate(-geomRotation, this._center);
+
       this._feature.set(this.rotateAttribute, rotationDiff);
+      this._rotateFeature.set(this.rotateAttribute, rotationDiff);
     }
   }
 
@@ -101,9 +107,10 @@ export default class RotateControl extends Control {
   _onUp(evt) {
     if (!this._dragging) {
       if (this._feature) {
+        this._rotateFeature = this._feature;
         this._center = evt.coordinate;
         this.rotateLayer.getSource().clear();
-        this.rotateLayer.getSource().addFeature(this._feature);
+        this.rotateLayer.getSource().addFeature(this._rotateFeature);
       } else {
         this.rotateLayer.getSource().clear();
       }

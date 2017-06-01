@@ -24,6 +24,7 @@
     "prettier": "^0.22.0",
     "style-loader": "^0.16.0",
     "uglifyjs-webpack-plugin": "^0.4.0",
+    "url-loader": "^0.5.8",
     "webpack": "~2.2.1",
     "webpack-dev-server": "^2.4.2"
   },
@@ -31,6 +32,9 @@
     "mustache": "^2.3.0"
   },
   "lint-staged": {
-    "src/**/*.js": ["prettier --single-quote --write", "git add"]
+    "src/**/*.js": [
+      "prettier --single-quote --write",
+      "git add"
+    ]
   }
 }

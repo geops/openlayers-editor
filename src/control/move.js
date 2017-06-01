@@ -25,7 +25,7 @@ export default class MoveControl extends Control {
     this._coordinate = null;
     this._cursor = 'pointer';
     this._feature = null;
-    this.__previousCursor = null;
+    this._previousCursor = null;
 
     this.pointerInteraction = new ol.interaction.Pointer({
         handleDownEvent: this.handleDownEvent.bind(this),

@@ -5,7 +5,7 @@ import drawLinePng from '../../img/draw_line.png';
 
 export default class DrawControl extends Control {
   /**
-   * Tool with CAD drawing functions.
+   * Tool for drawing features.
    * @param {Object} options Tool options.
    * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
@@ -40,10 +40,6 @@ export default class DrawControl extends Control {
       features: options.features,
       source: options.source
     });
-  }
-
-  setMap(map) {
-    super.setMap(map);
   }
 
   /**

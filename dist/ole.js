@@ -60,137 +60,200 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "dist";
+/******/ 	__webpack_require__.p = "/dist/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ 	return __webpack_require__(__webpack_require__.s = 23);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 /**
  * Base control of ole.
  */
-class Control extends ol.control.Control {
+var Control = function (_ol$control$Control) {
+  _inherits(Control, _ol$control$Control);
 
   /**
    * Constructor.
    * @param {Object} options Control options.
    */
-  constructor(options) {
+  function Control(options) {
+    _classCallCheck(this, Control);
+
     var button = document.createElement('button');
     button.className = 'ole-control ' + options.className;
 
-    super({
-       element: button
-    });
+    var _this = _possibleConstructorReturn(this, (Control.__proto__ || Object.getPrototypeOf(Control)).call(this, {
+      element: button
+    }));
 
-    this.className = options.className;
-    this.title = options.title;
-
+    _this.className = options.className;
+    _this.title = options.title;
 
     var img = document.createElement('img');
     img.src = options.image;
 
     button.appendChild(img);
-    button.title = this.title;
+    button.title = _this.title;
 
-    this.source = options.source || new ol.source.Vector({
+    _this.source = options.source || new ol.source.Vector({
       features: options.features
     });
 
-    button.addEventListener('click', this._onClick.bind(this));
+    button.addEventListener('click', _this._onClick.bind(_this));
 
     // standalone means that this control can only be active
     // together with controls that are not standalone.
-    this.standalone = true;
+    _this.standalone = true;
+    return _this;
   }
 
   /**
    * Returns the control's element.
    * @returns {Element} the control element.
    */
-  getElement() {
-    return this.element;
-  }
 
-  /**
-   * Click handler for the control element.
-   */
-  _onClick() {
-    if (this.active) {
-      this.deactivate();
-    } else {
-      this.activate();
+
+  _createClass(Control, [{
+    key: 'getElement',
+    value: function getElement() {
+      return this.element;
     }
-  }
 
-  /**
-   * Sets the map of the control.
-   */
-  setMap(map) {
-    this.map = map;
-    super.setMap(this.map);
-  }
+    /**
+     * Click handler for the control element.
+     */
 
-  /**
-   * Activate the control
-   */
-  activate() {
-    this.active = true;
-    this.element.className += ' active';
-    this._fireActiveStateChange();
-  }
+  }, {
+    key: '_onClick',
+    value: function _onClick() {
+      if (this.active) {
+        this.deactivate();
+      } else {
+        this.activate();
+      }
+    }
 
-  /**
-   * Dectivate the control
-   */
-  deactivate() {
-    this.active = false;
-    this.element.classList.remove('active');
-    this._fireActiveStateChange();
-  }
+    /**
+     * Sets the map of the control.
+     */
 
-  /**
-   * Returns the active state of the control.
-   * @returns {Boolean} Active state.
-   */
-  getActive() {
-    return this.active;
-  }
+  }, {
+    key: 'setMap',
+    value: function setMap(map) {
+      this.map = map;
+      _get(Control.prototype.__proto__ || Object.getPrototypeOf(Control.prototype), 'setMap', this).call(this, this.map);
+    }
 
-  /**
-   * Fires the 'change:active' event.
-   */
-  _fireActiveStateChange() {
-    var evt = new ol.events.Event('change:active');
-    this.dispatchEvent(evt);
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Control;
+    /**
+     * Activate the control
+     */
 
+  }, {
+    key: 'activate',
+    value: function activate() {
+      this.active = true;
+      this.element.className += ' active';
+      this._fireActiveStateChange();
+    }
 
+    /**
+     * Dectivate the control
+     */
+
+  }, {
+    key: 'deactivate',
+    value: function deactivate() {
+      this.active = false;
+      this.element.classList.remove('active');
+      this._fireActiveStateChange();
+    }
+
+    /**
+     * Returns the active state of the control.
+     * @returns {Boolean} Active state.
+     */
+
+  }, {
+    key: 'getActive',
+    value: function getActive() {
+      return this.active;
+    }
+
+    /**
+     * Fires the 'change:active' event.
+     */
+
+  }, {
+    key: '_fireActiveStateChange',
+    value: function _fireActiveStateChange() {
+      var evt = new ol.events.Event('change:active');
+      this.dispatchEvent(evt);
+    }
+  }]);
+
+  return Control;
+}(ol.control.Control);
+
+exports.default = Control;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__control_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__style_style_js__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_mustache__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_mustache___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_mustache__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_cad_png__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_cad_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__img_cad_png__);
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* default */] {
+var _control = __webpack_require__(0);
+
+var _control2 = _interopRequireDefault(_control);
+
+var _mustache = __webpack_require__(8);
+
+var _mustache2 = _interopRequireDefault(_mustache);
+
+var _cad = __webpack_require__(12);
+
+var _cad2 = _interopRequireDefault(_cad);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CadControl = function (_Control) {
+  _inherits(CadControl, _Control);
 
   /**
    * Tool with CAD drawing functions.
@@ -207,289 +270,343 @@ class CadControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defaul
    * @param {Number} [options.distancePointDist] Distance of the
    *   distance points in pixel (default is 30).
    */
-  constructor(options) {
-    super(Object.assign(options, {
+  function CadControl(options) {
+    _classCallCheck(this, CadControl);
+
+    var _this = _possibleConstructorReturn(this, (CadControl.__proto__ || Object.getPrototypeOf(CadControl)).call(this, Object.assign(options, {
       title: 'CAD control',
       className: 'icon-cad',
-      image: __WEBPACK_IMPORTED_MODULE_3__img_cad_png___default.a
-    }));
+      image: _cad2.default
+    })));
 
-    this.pointerInteraction = new ol.interaction.Pointer({
-      handleMoveEvent: this._onMove.bind(this)
+    _this.pointerInteraction = new ol.interaction.Pointer({
+      handleMoveEvent: _this._onMove.bind(_this)
     });
 
-    this.snapStyle = new __WEBPACK_IMPORTED_MODULE_1__style_style_js__["a" /* default */]();
-
-    this.snapLayer = new ol.layer.Vector({
-      style: function(feature) {
-        return this.snapStyle.styleFunction(feature);
-      }.bind(this),
-      source: new ol.source.Vector()
+    // layer with snapping geometries
+    _this.snapLayer = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: [new ol.style.Style({
+        image: new ol.style.RegularShape({
+          fill: new ol.style.Fill({
+            color: '#E8841F'
+          }),
+          stroke: new ol.style.Stroke({
+            width: 1,
+            color: '#618496'
+          }),
+          points: 4,
+          radius: 5,
+          radius2: 0,
+          angle: Math.PI / 4
+        }),
+        stroke: new ol.style.Stroke({
+          width: 1,
+          color: '#618496'
+        })
+      })]
     });
 
-    this.snapTolerance = options.snapTolerance || 10;
+    _this.snapTolerance = options.snapTolerance || 10;
 
-    this.snapInteraction = new ol.interaction.Snap({
-      pixelTolerance: this.snapTolerance,
-      source: this.snapLayer.getSource()
+    _this.snapInteraction = new ol.interaction.Snap({
+      pixelTolerance: _this.snapTolerance,
+      source: _this.snapLayer.getSource()
     });
 
     // Whether to show the distance points
-    this.showDistancePoints = options.showDistancePoints;
-
-    // Whether to show auxiliary lines
-    if (typeof(options.showAuxiliaryLines) === 'undefined') {
-      this.showAuxiliaryLines = true;
-    } else {
-      this.showAuxiliaryLines = options.showAuxiliaryLines;
-    }
+    _this.showDistancePoints = options.showDistancePoints;
 
     // Cell width of the snap grid in px
-    this.distancePointDist = options.distancePointDist || 30;
+    _this.distancePointDist = options.distancePointDist || 30;
+
+    // Whether to show auxiliary lines
+    if (typeof options.showAuxiliaryLines === 'undefined') {
+      _this.showAuxiliaryLines = true;
+    } else {
+      _this.showAuxiliaryLines = options.showAuxiliaryLines;
+    }
 
     // control can be activated together with
     // other controls, like Draw.
-    this.standalone = false;
+    _this.standalone = false;
+    return _this;
   }
 
   /**
    * Set the map of the control.
    */
-  setMap(map) {
-    super.setMap(map);
-    this.map.addLayer(this.snapLayer);
-  }
 
-  /**
-   * Handle move event.
-   */
-  _onMove(evt) {
-    var features = this._getClosestFeatures(evt.coordinate, 4);
-    this.snapLayer.getSource().clear();
 
-    if (this.showAuxiliaryLines) {
-      this._drawAuxiliaryLines(features, evt.coordinate);
+  _createClass(CadControl, [{
+    key: 'setMap',
+    value: function setMap(map) {
+      _get(CadControl.prototype.__proto__ || Object.getPrototypeOf(CadControl.prototype), 'setMap', this).call(this, map);
+      this.map.addLayer(this.snapLayer);
+
+      // Ensure that the snap interaction is at the last position
+      // as it must be the first to handle the  pointermove event.
+      this.map.getInteractions().on('change:length', function (e) {
+        var pos = e.target.getArray().indexOf(this.snapInteraction);
+
+        if (this.active && pos > -1 && pos !== e.target.getLength() - 1) {
+          this.deactivate();
+          this.activate();
+        }
+      }, this);
     }
 
-    if (this.showDistancePoints && features.length) {
-      this._drawDistancePoints(evt.coordinate, features[0]);
-    }
-  }
+    /**
+     * Handle move event.
+     */
 
-  /**
-   * Returns a list of the (num} closest features
-   * to a given coordinate.
-   * @param {ol.Coordinate} coordinate Coordinate.
-   * @param {Number} num Number of features to search.
-   * @returns {Array.<ol.Feature>} List of closest features.
-   */
-   _getClosestFeatures(coordinate, num) {
-    num = num || 1;
-    var ext = [-Infinity, -Infinity, Infinity, Infinity];
-    var featureDict = {};
+  }, {
+    key: '_onMove',
+    value: function _onMove(evt) {
+      var features = this._getClosestFeatures(evt.coordinate, 4);
+      this.snapLayer.getSource().clear();
 
-    this.source.forEachFeatureInExtent(ext, function(f) {
-      var cCoord = f.getGeometry().getClosestPoint(coordinate);
-      var dx = cCoord[0] - coordinate[0];
-      var dy = cCoord[1] - coordinate[1];
-      var dist = dx * dx + dy * dy;
-      featureDict[dist] = f;
-    });
+      if (this.showAuxiliaryLines) {
+        this._drawAuxiliaryLines(features, evt.coordinate);
+      }
 
-    var dists = Object.keys(featureDict);
-    var features = [];
-    var count = Math.min(dists.length, num);
-
-    dists.sort(function(a, b) {
-      return a - b;
-    });
-
-    for (var i = 0; i < count; i++) {
-      features.push(featureDict[dists[i]]);
-    }
-
-    return features;
-  }
-
-  /**
-   * Draws auxiliary lines by building the extent for
-   * a pair of features.
-   * @param {Array.<ol.Feature>} features List of features.
-   * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
-   */
-  _drawAuxiliaryLines(features, coordinate) {
-
-    var auxCoords = [];
-    for (var i = 0; i < features.length; i++) {
-      var geom = features[i].getGeometry();
-
-      if (geom instanceof ol.geom.Point) {
-        auxCoords.push(geom.getCoordinates());
-      } else {
-        var coords = ol.geom.Polygon.fromExtent(
-          geom.getExtent()).getCoordinates()[0];
-        auxCoords = auxCoords.concat(coords);
+      if (this.showDistancePoints && features.length) {
+        this._drawDistancePoints(evt.coordinate, features[0]);
       }
     }
 
-    var px = this.map.getPixelFromCoordinate(coordinate);
-    var lineCoords;
+    /**
+     * Returns a list of the (num} closest features
+     * to a given coordinate.
+     * @param {ol.Coordinate} coordinate Coordinate.
+     * @param {Number} num Number of features to search.
+     * @returns {Array.<ol.Feature>} List of closest features.
+     */
 
-    for (i = 0; i < auxCoords.length; i++) {
-      var auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
-      if (px[0] > auxPx[0] - this.snapTolerance / 2 &&
-          px[0] < auxPx[0] + this.snapTolerance / 2) {
+  }, {
+    key: '_getClosestFeatures',
+    value: function _getClosestFeatures(coordinate, num) {
+      num = num || 1;
+      var ext = [-Infinity, -Infinity, Infinity, Infinity];
+      var featureDict = {};
 
-        var newY = px[1];
-        newY += px[1] < auxPx[1] ? -this.snapTolerance * 2 :
-          this.snapTolerance * 2;
+      this.source.forEachFeatureInExtent(ext, function (f) {
+        var cCoord = f.getGeometry().getClosestPoint(coordinate);
+        var dx = cCoord[0] - coordinate[0];
+        var dy = cCoord[1] - coordinate[1];
+        var dist = dx * dx + dy * dy;
+        featureDict[dist] = f;
+      });
 
-        lineCoords = [
-          this.map.getCoordinateFromPixel([auxPx[0], newY]),
-          auxCoords[i]
-        ];
-      } else if (px[1] > auxPx[1] - this.snapTolerance / 2 &&
-          px[1] < auxPx[1] + this.snapTolerance / 2) {
+      var dists = Object.keys(featureDict);
+      var features = [];
+      var count = Math.min(dists.length, num);
 
-        var newX = px[0];
-        newX += px[0] < auxPx[0] ? -this.snapTolerance* 2 :
-          this.snapTolerance * 2;
+      dists.sort(function (a, b) {
+        return a - b;
+      });
 
-        lineCoords = [
-          this.map.getCoordinateFromPixel([newX, auxPx[1]]),
-          auxCoords[i]
-        ];
+      for (var i = 0; i < count; i++) {
+        features.push(featureDict[dists[i]]);
       }
 
-      if (lineCoords) {
-        var g = new ol.geom.LineString(lineCoords);
-        this.snapLayer.getSource().addFeature(new ol.Feature(g));
+      return features;
+    }
+
+    /**
+     * Draws auxiliary lines by building the extent for
+     * a pair of features.
+     * @param {Array.<ol.Feature>} features List of features.
+     * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
+     */
+
+  }, {
+    key: '_drawAuxiliaryLines',
+    value: function _drawAuxiliaryLines(features, coordinate) {
+      var auxCoords = [];
+      for (var i = 0; i < features.length; i++) {
+        var geom = features[i].getGeometry();
+
+        if (geom instanceof ol.geom.Point) {
+          auxCoords.push(geom.getCoordinates());
+        } else {
+          var coords = ol.geom.Polygon.fromExtent(geom.getExtent()).getCoordinates()[0];
+          auxCoords = auxCoords.concat(coords);
+        }
+      }
+
+      var px = this.map.getPixelFromCoordinate(coordinate);
+      var lineCoords;
+
+      for (i = 0; i < auxCoords.length; i++) {
+        var auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
+        if (px[0] > auxPx[0] - this.snapTolerance / 2 && px[0] < auxPx[0] + this.snapTolerance / 2) {
+          var newY = px[1];
+          newY += px[1] < auxPx[1] ? -this.snapTolerance * 2 : this.snapTolerance * 2;
+
+          lineCoords = [this.map.getCoordinateFromPixel([auxPx[0], newY]), auxCoords[i]];
+        } else if (px[1] > auxPx[1] - this.snapTolerance / 2 && px[1] < auxPx[1] + this.snapTolerance / 2) {
+          var newX = px[0];
+          newX += px[0] < auxPx[0] ? -this.snapTolerance * 2 : this.snapTolerance * 2;
+
+          lineCoords = [this.map.getCoordinateFromPixel([newX, auxPx[1]]), auxCoords[i]];
+        }
+
+        if (lineCoords) {
+          var g = new ol.geom.LineString(lineCoords);
+          this.snapLayer.getSource().addFeature(new ol.Feature(g));
+        }
       }
     }
-  }
 
-  /**
-   * Adds distance points to the snapping layer.
-   * @param {ol.Coordinate} coordinateMouse cursor coordinate.
-   * @param {ol.eaturee} closestFeature Closest feature to cursor.
-   */
-  _drawDistancePoints(coordinate, closestFeature) {
-    var geom = closestFeature.getGeometry();
-    var featCoord = geom.getClosestPoint(coordinate);
+    /**
+     * Adds distance points to the snapping layer.
+     * @param {ol.Coordinate} coordinateMouse cursor coordinate.
+     * @param {ol.eaturee} closestFeature Closest feature to cursor.
+     */
 
-    var px = this.map.getPixelFromCoordinate(featCoord);
-    var snapPx = [
-      [px[0] - this.distancePointDist, px[1]],
-      [px[0] + this.distancePointDist, px[1]],
-      [px[0], px[1] - this.distancePointDist],
-      [px[0], px[1] + this.distancePointDist]
-    ];
+  }, {
+    key: '_drawDistancePoints',
+    value: function _drawDistancePoints(coordinate, closestFeature) {
+      var geom = closestFeature.getGeometry();
+      var featCoord = geom.getClosestPoint(coordinate);
 
-    var snapCoords = [];
+      var px = this.map.getPixelFromCoordinate(featCoord);
+      var snapPx = [[px[0] + this.distancePointDist, px[1]], [px[0], px[1] - this.distancePointDist], [px[0], px[1] + this.distancePointDist]];
 
-    for (var i = 0; i < snapPx.length; i++) {
-      snapCoords.push(this.map.getCoordinateFromPixel(snapPx[i]));
-    }
+      var snapCoords = [];
 
-    var snapGeom = new ol.geom.MultiPoint(snapCoords);
-    this.snapLayer.getSource().addFeature(new ol.Feature(snapGeom));
-  }
-
-  /**
-   * Open the control's dialog.
-   */
-  _openDialog() {
-
-    var tpl = [
-      '<div class="ole-dialog" id="{{className}}-dialog">' +
-        '<div><input type="checkbox" {{#c1}}checked{{/c1}} id="aux-cb">' +
-          '<label>Show auxiliary lines</label></div>' +
-        '<div><input type="checkbox" {{#c2}}checked{{/c2}} id="dist-cb">' +
-          '<label>Show distance points. Distance (px): </label>' +
-        '<input type="text" id="width-input" value="{{gridWidth}}"></div>' +
-      '</div>'
-    ].join('');
-
-    var div = document.createElement('div');
-    div.innerHTML = __WEBPACK_IMPORTED_MODULE_2_mustache___default.a.render(tpl, {
-      className: this.className,
-      gridWidth: this.distancePointDist,
-      c1: this.showAuxiliaryLines,
-      c2: this.showDistancePoints
-    });
-
-    this.map.getTargetElement().appendChild(div.firstChild);
-
-    var aCb = document.getElementById('aux-cb');
-    aCb.addEventListener('change', function(evt) {
-      this.showAuxiliaryLines = evt.target.checked;
-    }.bind(this));
-
-    var gCb = document.getElementById('dist-cb');
-    gCb.addEventListener('change', function(evt) {
-      this.showDistancePoints = evt.target.checked;
-    }.bind(this));
-
-    var widthInput = document.getElementById('width-input');
-    widthInput.addEventListener('keyup', function(evt) {
-      if (parseFloat(evt.target.value)) {
-        this.distancePointDist = parseFloat(evt.target.value);
+      for (var i = 0; i < snapPx.length; i++) {
+        snapCoords.push(this.map.getCoordinateFromPixel(snapPx[i]));
       }
-    }.bind(this));
-  }
 
-  /**
-   * Closes the control dialog.
-   */
-  _closeDialog() {
-    var div = document.getElementById(this.className + '-dialog');
-    if (div) {
-      this.map.getTargetElement().removeChild(div);
+      var snapGeom = new ol.geom.MultiPoint(snapCoords);
+      this.snapLayer.getSource().addFeature(new ol.Feature(snapGeom));
     }
-  }
 
-  /**
-   * Activate the control.
-   */
-  activate() {
-    this.map.addInteraction(this.pointerInteraction);
-    this.map.addInteraction(this.snapInteraction);
-    super.activate();
-    this._openDialog();
-  }
+    /**
+     * Open the control's dialog.
+     */
 
-  /**
-   * Deactivate the control.
-   */
-  deactivate() {
-    this.map.removeInteraction(this.pointerInteraction);
-    this.map.removeInteraction(this.snapInteraction);
-    super.deactivate();
-    this._closeDialog();
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = CadControl;
+  }, {
+    key: '_openDialog',
+    value: function _openDialog() {
+      var tpl = ['<div class="ole-dialog" id="{{className}}-dialog">' + '<div><input type="checkbox" {{#c1}}checked{{/c1}} id="aux-cb">' + '<label>Show auxiliary lines</label></div>' + '<div><input type="checkbox" {{#c2}}checked{{/c2}} id="dist-cb">' + '<label>Show distance points. Distance (px): </label>' + '<input type="text" id="width-input" value="{{gridWidth}}"></div>' + '</div>'].join('');
 
+      var div = document.createElement('div');
+      div.innerHTML = _mustache2.default.render(tpl, {
+        className: this.className,
+        gridWidth: this.distancePointDist,
+        c1: this.showAuxiliaryLines,
+        c2: this.showDistancePoints
+      });
 
+      this.map.getTargetElement().appendChild(div.firstChild);
+
+      var aCb = document.getElementById('aux-cb');
+      aCb.addEventListener('change', function (evt) {
+        this.showAuxiliaryLines = evt.target.checked;
+      }.bind(this));
+
+      var gCb = document.getElementById('dist-cb');
+      gCb.addEventListener('change', function (evt) {
+        this.showDistancePoints = evt.target.checked;
+      }.bind(this));
+
+      var widthInput = document.getElementById('width-input');
+      widthInput.addEventListener('keyup', function (evt) {
+        if (parseFloat(evt.target.value)) {
+          this.distancePointDist = parseFloat(evt.target.value);
+        }
+      }.bind(this));
+    }
+
+    /**
+     * Closes the control dialog.
+     */
+
+  }, {
+    key: '_closeDialog',
+    value: function _closeDialog() {
+      var div = document.getElementById(this.className + '-dialog');
+      if (div) {
+        this.map.getTargetElement().removeChild(div);
+      }
+    }
+
+    /**
+     * Activate the control.
+     */
+
+  }, {
+    key: 'activate',
+    value: function activate() {
+      _get(CadControl.prototype.__proto__ || Object.getPrototypeOf(CadControl.prototype), 'activate', this).call(this);
+      this.map.addInteraction(this.pointerInteraction);
+      this.map.addInteraction(this.snapInteraction);
+      this._openDialog();
+    }
+
+    /**
+     * Deactivate the control.
+     */
+
+  }, {
+    key: 'deactivate',
+    value: function deactivate() {
+      _get(CadControl.prototype.__proto__ || Object.getPrototypeOf(CadControl.prototype), 'deactivate', this).call(this);
+      this.map.removeInteraction(this.pointerInteraction);
+      this.map.removeInteraction(this.snapInteraction);
+      this._closeDialog();
+    }
+  }]);
+
+  return CadControl;
+}(_control2.default);
+
+exports.default = CadControl;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__control_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_draw_point_png__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_draw_point_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__img_draw_point_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_draw_polygon_png__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_draw_polygon_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__img_draw_polygon_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_draw_line_png__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_draw_line_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__img_draw_line_png__);
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-class DrawControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* default */] {
+var _control = __webpack_require__(0);
+
+var _control2 = _interopRequireDefault(_control);
+
+var _draw_point = __webpack_require__(14);
+
+var _draw_point2 = _interopRequireDefault(_draw_point);
+
+var _draw_polygon = __webpack_require__(15);
+
+var _draw_polygon2 = _interopRequireDefault(_draw_polygon);
+
+var _draw_line = __webpack_require__(13);
+
+var _draw_line2 = _interopRequireDefault(_draw_line);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DrawControl = function (_Control) {
+  _inherits(DrawControl, _Control);
 
   /**
    * Tool with CAD drawing functions.
@@ -500,71 +617,110 @@ class DrawControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* defau
    * @param {ol.Collection<ol.Feature>} [features] Destination for drawing.
    * @param {ol.source.Vector} [source] Destination for drawing.
    */
-  constructor(options) {
+  function DrawControl(options) {
+    _classCallCheck(this, DrawControl);
+
     var image;
 
     switch (options.type) {
-      case 'Polygon': image = __WEBPACK_IMPORTED_MODULE_2__img_draw_polygon_png___default.a; break;
-      case 'LineString': image = __WEBPACK_IMPORTED_MODULE_3__img_draw_line_png___default.a; break;
-      default: image = __WEBPACK_IMPORTED_MODULE_1__img_draw_point_png___default.a;
+      case 'Polygon':
+        image = _draw_polygon2.default;
+        break;
+      case 'LineString':
+        image = _draw_line2.default;
+        break;
+      default:
+        image = _draw_point2.default;
     }
 
-    super(Object.assign(options, {
+    var _this = _possibleConstructorReturn(this, (DrawControl.__proto__ || Object.getPrototypeOf(DrawControl)).call(this, Object.assign(options, {
       title: 'Draw ' + (options.type || 'Point'),
       className: 'icon-draw',
       image: image
-    }));
+    })));
 
-    this.drawInteraction = new ol.interaction.Draw({
+    _this.drawInteraction = new ol.interaction.Draw({
       type: options.type || 'Point',
       features: options.features,
       source: options.source
     });
+    return _this;
   }
 
-  setMap(map) {
-    super.setMap(map);
-    this.map.addInteraction(this.drawInteraction);
-  }
+  _createClass(DrawControl, [{
+    key: 'setMap',
+    value: function setMap(map) {
+      _get(DrawControl.prototype.__proto__ || Object.getPrototypeOf(DrawControl.prototype), 'setMap', this).call(this, map);
+    }
 
-  /**
-   * Activate the control
-   */
-  activate() {
-    this.drawInteraction.setActive(true);
-    super.activate();
-  }
+    /**
+     * Activate the control
+     */
 
-  /**
-   * Activate the control
-   */
-  deactivate() {
-    this.drawInteraction.setActive(false);
-    super.deactivate();
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = DrawControl;
+  }, {
+    key: 'activate',
+    value: function activate() {
+      this.map.addInteraction(this.drawInteraction);
+      _get(DrawControl.prototype.__proto__ || Object.getPrototypeOf(DrawControl.prototype), 'activate', this).call(this);
+    }
 
+    /**
+     * Activate the control
+     */
 
+  }, {
+    key: 'deactivate',
+    value: function deactivate() {
+      this.map.removeInteraction(this.drawInteraction);
+      _get(DrawControl.prototype.__proto__ || Object.getPrototypeOf(DrawControl.prototype), 'deactivate', this).call(this);
+    }
+  }]);
+
+  return DrawControl;
+}(_control2.default);
+
+exports.default = DrawControl;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__control_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_rotate_png__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_rotate_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__img_rotate_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_rotate_map_png__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_rotate_map_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__img_rotate_map_png__);
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _control = __webpack_require__(0);
+
+var _control2 = _interopRequireDefault(_control);
+
+var _rotate = __webpack_require__(16);
+
+var _rotate2 = _interopRequireDefault(_rotate);
+
+var _rotate_map = __webpack_require__(17);
+
+var _rotate_map2 = _interopRequireDefault(_rotate_map);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
  * Tool with CAD drawing functions.
  */
-class RotateControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* default */] {
+var RotateControl = function (_Control) {
+  _inherits(RotateControl, _Control);
 
   /**
    * Constructor.
@@ -574,129 +730,163 @@ class RotateControl extends __WEBPACK_IMPORTED_MODULE_0__control_js__["a" /* def
    * @param {string} [options.rotateAttribute] Name of a feature attribute
    *   that is used for storing the rotation in rad.
    */
-  constructor(options) {
-    super(Object.assign(options, {
+  function RotateControl(options) {
+    _classCallCheck(this, RotateControl);
+
+    var _this = _possibleConstructorReturn(this, (RotateControl.__proto__ || Object.getPrototypeOf(RotateControl)).call(this, Object.assign(options, {
       title: 'Rotate',
       className: 'icon-rotate',
-      image: __WEBPACK_IMPORTED_MODULE_1__img_rotate_png___default.a
-    }));
+      image: _rotate2.default
+    })));
 
-    this.pointerInteraction = new ol.interaction.Pointer({
-      handleDownEvent: this._onDown.bind(this),
-      handleDragEvent: this._onDrag.bind(this),
-      handleUpEvent: this._onUp.bind(this)
+    _this.pointerInteraction = new ol.interaction.Pointer({
+      handleDownEvent: _this._onDown.bind(_this),
+      handleDragEvent: _this._onDrag.bind(_this),
+      handleUpEvent: _this._onUp.bind(_this)
     });
 
-    this.rotateAttribute = options.rotateAttribute || 'ole_rotation';
+    _this.rotateAttribute = options.rotateAttribute || 'ole_rotation';
 
-    this.rotateLayer = new ol.layer.Vector({
+    _this.rotateLayer = new ol.layer.Vector({
       source: new ol.source.Vector(),
-      style: function(f) {
-        var rotation = f.get(this.rotateAttribute);
-        return [
-          new ol.style.Style({
-            geometry: new ol.geom.Point(this._center),
-            image: new ol.style.Icon({
-              rotation: rotation,
-              src: __WEBPACK_IMPORTED_MODULE_2__img_rotate_map_png___default.a
-            })
+      style: function style(f) {
+        var rotation = f.get(_this.rotateAttribute);
+        return [new ol.style.Style({
+          geometry: new ol.geom.Point(_this._center),
+          image: new ol.style.Icon({
+            rotation: rotation,
+            src: _rotate_map2.default
           })
-        ];
-      }.bind(this)
+        })];
+      }
     });
+    return _this;
   }
 
   /**
    * Handle a pointer down event.
    * @param {ol.MapBrowserEvent} event Down event
    */
-  _onDown(evt) {
-    this._dragging = false;
-    this._feature = this.map.forEachFeatureAtPixel( evt.pixel, function(f) {
-      return f;
-    });
 
-    if (this._center && this._feature) {
-      this._feature.set(this.rotateAttribute,
-        this._feature.get(this.rotateAttribute) || 0);
 
-      // rotation between clicked coordinate and feature center
-      this._initialRotation = Math.atan2(
-        evt.coordinate[1] - this._center[1],
-        evt.coordinate[0] - this._center[0]
-      ) + (this._feature.get(this.rotateAttribute));
+  _createClass(RotateControl, [{
+    key: '_onDown',
+    value: function _onDown(evt) {
+      var _this2 = this;
+
+      this._dragging = false;
+      this._feature = this.map.forEachFeatureAtPixel(evt.pixel, function (f) {
+        if (_this2.source.getFeatures().indexOf(f) > -1) {
+          return f;
+        }
+      });
+
+      if (this._center && this._feature) {
+        this._feature.set(this.rotateAttribute, this._feature.get(this.rotateAttribute) || 0);
+
+        // rotation between clicked coordinate and feature center
+        this._initialRotation = Math.atan2(evt.coordinate[1] - this._center[1], evt.coordinate[0] - this._center[0]) + this._feature.get(this.rotateAttribute);
+      }
+
+      return true;
     }
 
-    return true;
-  }
+    /**
+     * Handle a pointer drag event.
+     * @param {ol.MapBrowserEvent} event Down event
+     */
 
-  /**
-   * Handle a pointer drag event.
-   * @param {ol.MapBrowserEvent} event Down event
-   */
-  _onDrag(evt) {
-    this._dragging = true;
+  }, {
+    key: '_onDrag',
+    value: function _onDrag(evt) {
+      this._dragging = true;
 
-    if (this._feature) {
-      var rotation = Math.atan2(
-        evt.coordinate[1] - this._center[1],
-        evt.coordinate[0] - this._center[0]
-      );
-
-      var rotationDiff = this._initialRotation - rotation;
-      var geomRotation = rotationDiff - this._feature.get(this.rotateAttribute);
-      this._feature.getGeometry().rotate(-geomRotation, this._center);
-      this._feature.set(this.rotateAttribute, rotationDiff);
-    }
-  }
-
-  /**
-   * Handle a pointer up event.
-   * @param {ol.MapBrowserEvent} event Down event
-   */
-  _onUp(evt) {
-    if (!this._dragging) {
       if (this._feature) {
-        this._center = evt.coordinate;
-        this.rotateLayer.getSource().clear();
-        this.rotateLayer.getSource().addFeature(this._feature);
-      } else {
-        this.rotateLayer.getSource().clear();
+        var rotation = Math.atan2(evt.coordinate[1] - this._center[1], evt.coordinate[0] - this._center[0]);
+
+        var rotationDiff = this._initialRotation - rotation;
+        var geomRotation = rotationDiff - this._feature.get(this.rotateAttribute);
+
+        this._feature.getGeometry().rotate(-geomRotation, this._center);
+        this._rotateFeature.getGeometry().rotate(-geomRotation, this._center);
+
+        this._feature.set(this.rotateAttribute, rotationDiff);
+        this._rotateFeature.set(this.rotateAttribute, rotationDiff);
       }
     }
-  }
 
-  /**
-   * Activate the control.
-   */
-  activate() {
-    this.map.addInteraction(this.pointerInteraction);
-    this.map.addLayer(this.rotateLayer);
-    super.activate();
-  }
+    /**
+     * Handle a pointer up event.
+     * @param {ol.MapBrowserEvent} event Down event
+     */
 
-  /**
-   * Deactivate the control.
-   */
-  deactivate() {
-    this.map.removeLayer(this.rotateLayer);
-    this.map.removeInteraction(this.pointerInteraction);
-    super.deactivate();
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = RotateControl;
+  }, {
+    key: '_onUp',
+    value: function _onUp(evt) {
+      if (!this._dragging) {
+        if (this._feature) {
+          this._rotateFeature = this._feature;
+          this._center = evt.coordinate;
+          this.rotateLayer.getSource().clear();
+          this.rotateLayer.getSource().addFeature(this._rotateFeature);
+        } else {
+          this.rotateLayer.getSource().clear();
+        }
+      }
+    }
 
+    /**
+     * Activate the control.
+     */
 
+  }, {
+    key: 'activate',
+    value: function activate() {
+      this.map.addInteraction(this.pointerInteraction);
+      this.map.addLayer(this.rotateLayer);
+      _get(RotateControl.prototype.__proto__ || Object.getPrototypeOf(RotateControl.prototype), 'activate', this).call(this);
+    }
+
+    /**
+     * Deactivate the control.
+     */
+
+  }, {
+    key: 'deactivate',
+    value: function deactivate() {
+      this.map.removeLayer(this.rotateLayer);
+      this.map.removeInteraction(this.pointerInteraction);
+      _get(RotateControl.prototype.__proto__ || Object.getPrototypeOf(RotateControl.prototype), 'deactivate', this).call(this);
+    }
+  }]);
+
+  return RotateControl;
+}(_control2.default);
+
+exports.default = RotateControl;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toolbar_js__ = __webpack_require__(23);
 
 
-class Editor {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _toolbar = __webpack_require__(5);
+
+var _toolbar2 = _interopRequireDefault(_toolbar);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Editor = function () {
   /**
    * Initialization of the editor.
    * @param {ol.Map} The map object.
@@ -704,7 +894,9 @@ class Editor {
    * @param {Boolean} opt_options.showToolbar Should there be a toolbar?
    *   Default is true.
    */
-  constructor(map, opt_options) {
+  function Editor(map, opt_options) {
+    _classCallCheck(this, Editor);
+
     this.map = map;
     this.controls = new ol.Collection();
     this.options = opt_options || {};
@@ -714,7 +906,7 @@ class Editor {
     }
 
     if (this.options.showToolbar) {
-      this.toolbar = new __WEBPACK_IMPORTED_MODULE_0__toolbar_js__["a" /* default */](this.map, this.controls);
+      this.toolbar = new _toolbar2.default(this.map, this.controls);
     }
   }
 
@@ -722,47 +914,71 @@ class Editor {
    * Adds a new control to the editor.
    * @param {ol.control.Control} control The control.
    */
-  addControl(control) {
-    control.setMap(this.map);
-    control.on('change:active', this._activeStateChange.bind(this));
-    this.controls.push(control);
-  }
 
-  /**
-   * Adds a collection of controls to the editor.
-   * @param {ol.Collection.<ol.control.Control>} controls
-   *   Collection of controls.
-   */
-  addControls(controls) {
-    controls = controls instanceof ol.Collection ? controls :
-      new ol.Collection(controls);
 
-    for (var i = 0; i < controls.getLength(); i++) {
-      this.addControl(controls.item(i));
+  _createClass(Editor, [{
+    key: 'addControl',
+    value: function addControl(control) {
+      control.setMap(this.map);
+      control.on('change:active', this._activeStateChange.bind(this));
+      this.controls.push(control);
     }
-  }
 
-  /**
-   * Listener for activity state changes of controls.
-   * @param {ol.control.Control} control Control.
-   */
-  _activeStateChange(evt) {
-    var ctrl = evt.target;
+    /**
+     * Adds a collection of controls to the editor.
+     * @param {ol.Collection.<ol.control.Control>} controls
+     *   Collection of controls.
+     */
 
-    // deactivate other controls that are not standalone
-    if (ctrl.getActive() && ctrl.standalone) {
-      for (var i = 0; i < this.controls.getLength(); i++) {
-        if (this.controls.item(i) !== ctrl &&
-            this.controls.item(i).standalone) {
-          this.controls.item(i).deactivate();
+  }, {
+    key: 'addControls',
+    value: function addControls(controls) {
+      controls = controls instanceof ol.Collection ? controls : new ol.Collection(controls);
+
+      for (var i = 0; i < controls.getLength(); i++) {
+        this.addControl(controls.item(i));
+      }
+    }
+
+    /**
+     * Removes the editor from the map.
+     */
+
+  }, {
+    key: 'remove',
+    value: function remove() {
+      this.controls.forEach(function (c) {
+        c.deactivate();
+      });
+
+      this.toolbar._destroy();
+    }
+
+    /**
+     * Listener for activity state changes of controls.
+     * @param {ol.control.Control} control Control.
+     */
+
+  }, {
+    key: '_activeStateChange',
+    value: function _activeStateChange(evt) {
+      var ctrl = evt.target;
+
+      // deactivate other controls that are not standalone
+      if (ctrl.getActive() && ctrl.standalone) {
+        for (var i = 0; i < this.controls.getLength(); i++) {
+          if (this.controls.item(i) !== ctrl && this.controls.item(i).standalone) {
+            this.controls.item(i).deactivate();
+          }
         }
       }
     }
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Editor;
+  }]);
 
+  return Editor;
+}();
 
+exports.default = Editor;
 
 /***/ }),
 /* 5 */
@@ -771,119 +987,83 @@ class Editor {
 "use strict";
 
 
-exports.byteLength = byteLength
-exports.toByteArray = toByteArray
-exports.fromByteArray = fromByteArray
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-var lookup = []
-var revLookup = []
-var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-for (var i = 0, len = code.length; i < len; ++i) {
-  lookup[i] = code[i]
-  revLookup[code.charCodeAt(i)] = i
-}
+__webpack_require__(11);
 
-revLookup['-'.charCodeAt(0)] = 62
-revLookup['_'.charCodeAt(0)] = 63
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function placeHoldersCount (b64) {
-  var len = b64.length
-  if (len % 4 > 0) {
-    throw new Error('Invalid string. Length must be a multiple of 4')
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Toolbar = function (_ol$control$Control) {
+  _inherits(Toolbar, _ol$control$Control);
+
+  /**
+   * Constructor.
+   * @param {ol.Map} map The map object.
+   * @param {ol.Collection.<ol.control.Control>} controls Controls.
+   */
+  function Toolbar(map, controls) {
+    _classCallCheck(this, Toolbar);
+
+    var element = document.createElement('div');
+    element.setAttribute('id', 'ole-toolbar');
+
+    var _this = _possibleConstructorReturn(this, (Toolbar.__proto__ || Object.getPrototypeOf(Toolbar)).call(this, {
+      element: element
+    }));
+
+    _this.controls = controls;
+    _this.map = map;
+
+    _this.map.getTargetElement().appendChild(_this.element);
+
+    if (_this.controls.getLength()) {
+      _this._load();
+    }
+
+    _this.controls.on('change:length', _this._load, _this);
+    return _this;
   }
 
-  // the number of equal signs (place holders)
-  // if there are two placeholders, than the two characters before it
-  // represent one byte
-  // if there is only one, then the three characters before it represent 2 bytes
-  // this is just a cheap hack to not do indexOf twice
-  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
-}
+  /**
+   * Loads the toolbar.
+   */
 
-function byteLength (b64) {
-  // base64 is 4/3 + up to two characters of the original data
-  return b64.length * 3 / 4 - placeHoldersCount(b64)
-}
 
-function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
-  var len = b64.length
-  placeHolders = placeHoldersCount(b64)
+  _createClass(Toolbar, [{
+    key: '_load',
+    value: function _load() {
+      for (var i = 0; i < this.controls.getLength(); i++) {
+        var btn = this.controls.item(i).getElement();
+        this.element.appendChild(btn);
+      }
+    }
 
-  arr = new Arr(len * 3 / 4 - placeHolders)
+    /**
+     * Destroys the toolbar
+     */
 
-  // if there are placeholders, only get up to the last complete 4 chars
-  l = placeHolders > 0 ? len - 4 : len
+  }, {
+    key: '_destroy',
+    value: function _destroy() {
+      for (var i = 0; i < this.controls.getLength(); i++) {
+        var btn = this.controls.item(i).getElement();
+        this.element.removeChild(btn);
+      }
+    }
+  }]);
 
-  var L = 0
+  return Toolbar;
+}(ol.control.Control);
 
-  for (i = 0, j = 0; i < l; i += 4, j += 3) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-    arr[L++] = (tmp >> 16) & 0xFF
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
-  }
-
-  if (placeHolders === 2) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[L++] = tmp & 0xFF
-  } else if (placeHolders === 1) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
-  }
-
-  return arr
-}
-
-function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
-}
-
-function encodeChunk (uint8, start, end) {
-  var tmp
-  var output = []
-  for (var i = start; i < end; i += 3) {
-    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-    output.push(tripletToBase64(tmp))
-  }
-  return output.join('')
-}
-
-function fromByteArray (uint8) {
-  var tmp
-  var len = uint8.length
-  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var output = ''
-  var parts = []
-  var maxChunkLength = 16383 // must be multiple of 3
-
-  // go through the array every three bytes, we'll deal with trailing stuff later
-  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
-  }
-
-  // pad the end with zeros, but make sure to not forget the extra bytes
-  if (extraBytes === 1) {
-    tmp = uint8[len - 1]
-    output += lookup[tmp >> 2]
-    output += lookup[(tmp << 4) & 0x3F]
-    output += '=='
-  } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
-    output += lookup[tmp >> 10]
-    output += lookup[(tmp >> 4) & 0x3F]
-    output += lookup[(tmp << 2) & 0x3F]
-    output += '='
-  }
-
-  parts.push(output)
-
-  return parts.join('')
-}
-
+exports.default = Toolbar;
 
 /***/ }),
 /* 6 */
@@ -894,7 +1074,7 @@ exports = module.exports = __webpack_require__(7)(undefined);
 
 
 // module
-exports.push([module.i, "#ole-toolbar{position:absolute;right:20px;top:20px;padding:8px}#ole-toolbar button.ole-control{background:#fafafa;border:0;color:#999;cursor:pointer;font-size:14px;line-height:36px;padding:0 8px;transition:all .3s ease-out}#ole-toolbar button.ole-control:first-child{border-radius:4px 0 0 4px}#ole-toolbar button.ole-control:last-child{border-radius:0 4px 4px 0}#ole-toolbar button.ole-control:hover{color:#5c5c5c}#ole-toolbar button.ole-control:focus{outline:0}#ole-toolbar button.ole-control.active{box-shadow:0 4px 4px 0 rgba(0,0,0,.3);color:#5c5c5c;filter:brightness(90%)}#ole-toolbar button.ole-control{padding:5px}#ole-toolbar button.ole-control img{height:35px}.ole-dialog{background:#fafafa;border-radius:4px;right:25px;padding:10px;position:absolute;top:75px;width:310px;z-index:2}#ole-toolbar,.ole-dialog{font-family:Arial;font-size:14px}#ole-toolbar button.ole-control,.ole-dialog{box-shadow:0 3px 3px 0 rgba(0,0,0,.2)}#width-input{width:50px}", ""]);
+exports.push([module.i, "#ole-toolbar {\n  position: absolute;\n  right: 20px;\n  top: 20px;\n}\n\n#ole-toolbar button.ole-control {\n  background: #fafafa;\n  border: 0;\n  color: #999;\n  cursor: pointer;\n  font-size: 14px;\n  line-height: 36px;\n  padding: 0 8px;\n  transition: all .3s ease-out;\n}\n\n#ole-toolbar button.ole-control:first-child {\n  border-radius: 4px 0 0 4px;\n}\n\n#ole-toolbar button.ole-control:last-child {\n  border-radius: 0 4px 4px 0;\n}\n\n#ole-toolbar button.ole-control:hover {\n  color: #5c5c5c;\n}\n\n#ole-toolbar button.ole-control:focus {\n  outline: 0;\n}\n\n#ole-toolbar button.ole-control.active {\n  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.3);\n  color: #5c5c5c;\n  filter: brightness(90%);\n}\n\n/* buttons */\n#ole-toolbar button.ole-control {\n    padding: 5px;\n}\n\n#ole-toolbar button.ole-control img {\n  height: 35px;\n}\n\n\n/* dialog */\n.ole-dialog {\n  background: #fafafa;\n  border-radius: 4px;\n  right: 20px;\n  padding: 10px;\n  position: absolute;\n  top: 75px;\n  width: 310px;\n  z-index: 2;\n}\n\n/* font */\n#ole-toolbar, .ole-dialog {\n  font-family: Arial;\n  font-size:  14px;\n}\n\n/* shadow */\n#ole-toolbar button.ole-control, .ole-dialog {\n  box-shadow: 0 3px 3px 0 rgba(0,0,0,0.2);\n}\n\n#width-input {\n  width: 50px;\n}\n", ""]);
 
 // exports
 
@@ -979,147 +1159,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19).Buffer))
 
 /***/ }),
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "6e8dcf5d8d5eab7a5bcca8d39e7f1817.png";
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "b3b2d63e6c9c42644e5c40558e8bf2c4.png";
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "45165595192052774d75c06fa85f76f9.png";
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "33e29e00816754950bda947e9232780b.png";
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "e9d610fdddd5f02e67b12e8889a457ff.png";
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "4e5c4f89a617a4f7e91d442976f7b17f.png";
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports) {
-
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports) {
-
-var toString = {}.toString;
-
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
-};
-
-
-/***/ }),
-/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -1758,7 +1801,487 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+var stylesInDom = {},
+	memoize = function(fn) {
+		var memo;
+		return function () {
+			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+			return memo;
+		};
+	},
+	isOldIE = memoize(function() {
+		// Test for IE <= 9 as proposed by Browserhacks
+		// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+		// Tests for existence of standard globals is to allow style-loader 
+		// to operate correctly into non-standard environments
+		// @see https://github.com/webpack-contrib/style-loader/issues/177
+		return window && document && document.all && !window.atob;
+	}),
+	getElement = (function(fn) {
+		var memo = {};
+		return function(selector) {
+			if (typeof memo[selector] === "undefined") {
+				memo[selector] = fn.call(this, selector);
+			}
+			return memo[selector]
+		};
+	})(function (styleTarget) {
+		return document.querySelector(styleTarget)
+	}),
+	singletonElement = null,
+	singletonCounter = 0,
+	styleElementsInsertedAtTop = [],
+	fixUrls = __webpack_require__(10);
+
+module.exports = function(list, options) {
+	if(typeof DEBUG !== "undefined" && DEBUG) {
+		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+	if (typeof options.insertInto === "undefined") options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+	var styles = listToStyles(list);
+	addStylesToDom(styles, options);
+
+	return function update(newList) {
+		var mayRemove = [];
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+		if(newList) {
+			var newStyles = listToStyles(newList);
+			addStylesToDom(newStyles, options);
+		}
+		for(var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+			if(domStyle.refs === 0) {
+				for(var j = 0; j < domStyle.parts.length; j++)
+					domStyle.parts[j]();
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom(styles, options) {
+	for(var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+		if(domStyle) {
+			domStyle.refs++;
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles(list) {
+	var styles = [];
+	var newStyles = {};
+	for(var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+		if(!newStyles[id])
+			styles.push(newStyles[id] = {id: id, parts: [part]});
+		else
+			newStyles[id].parts.push(part);
+	}
+	return styles;
+}
+
+function insertStyleElement(options, styleElement) {
+	var styleTarget = getElement(options.insertInto)
+	if (!styleTarget) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+	if (options.insertAt === "top") {
+		if(!lastStyleElementInsertedAtTop) {
+			styleTarget.insertBefore(styleElement, styleTarget.firstChild);
+		} else if(lastStyleElementInsertedAtTop.nextSibling) {
+			styleTarget.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			styleTarget.appendChild(styleElement);
+		}
+		styleElementsInsertedAtTop.push(styleElement);
+	} else if (options.insertAt === "bottom") {
+		styleTarget.appendChild(styleElement);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
+}
+
+function removeStyleElement(styleElement) {
+	styleElement.parentNode.removeChild(styleElement);
+	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+	if(idx >= 0) {
+		styleElementsInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement(options) {
+	var styleElement = document.createElement("style");
+	options.attrs.type = "text/css";
+
+	attachTagAttrs(styleElement, options.attrs);
+	insertStyleElement(options, styleElement);
+	return styleElement;
+}
+
+function createLinkElement(options) {
+	var linkElement = document.createElement("link");
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	attachTagAttrs(linkElement, options.attrs);
+	insertStyleElement(options, linkElement);
+	return linkElement;
+}
+
+function attachTagAttrs(element, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		element.setAttribute(key, attrs[key]);
+	});
+}
+
+function addStyle(obj, options) {
+	var styleElement, update, remove;
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+		styleElement = singletonElement || (singletonElement = createStyleElement(options));
+		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+	} else if(obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function") {
+		styleElement = createLinkElement(options);
+		update = updateLink.bind(null, styleElement, options);
+		remove = function() {
+			removeStyleElement(styleElement);
+			if(styleElement.href)
+				URL.revokeObjectURL(styleElement.href);
+		};
+	} else {
+		styleElement = createStyleElement(options);
+		update = applyToTag.bind(null, styleElement);
+		remove = function() {
+			removeStyleElement(styleElement);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle(newObj) {
+		if(newObj) {
+			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+				return;
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag(styleElement, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = styleElement.childNodes;
+		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+		if (childNodes.length) {
+			styleElement.insertBefore(cssNode, childNodes[index]);
+		} else {
+			styleElement.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag(styleElement, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		styleElement.setAttribute("media", media)
+	}
+
+	if(styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = css;
+	} else {
+		while(styleElement.firstChild) {
+			styleElement.removeChild(styleElement.firstChild);
+		}
+		styleElement.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink(linkElement, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/* If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+	and there is no publicPath defined then lets turn convertToAbsoluteUrls
+	on by default.  Otherwise default to the convertToAbsoluteUrls option
+	directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls){
+		css = fixUrls(css);
+	}
+
+	if(sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = linkElement.href;
+
+	linkElement.href = URL.createObjectURL(blob);
+
+	if(oldSrc)
+		URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(6);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(9)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../node_modules/css-loader/index.js!./ole.css", function() {
+			var newContent = require("!!../node_modules/css-loader/index.js!./ole.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAnCAMAAAC7faEHAAAAnFBMVEVMaXEAAAAAAAD///8AAAAAAAD///8AAAAAAAADAwP8/PwAAAD////////////////////////////////////y8vL///////////+GhoYAAACrq6utra3///////8xMTFaWlrl5eX///8AAAD///8LCwvAwMCgoKAYGBgGBgaFhYUmJiY+Pj5bW1t0dHTo6Ojb29u1tbUqKirQ0NBRXChKAAAAI3RSTlMA/X2cifoEsKqC/feuKQLtFgrAhVr4PttHr+TAxNCkkaHoXlHiwgoAAAE4SURBVDjLjdHXVoNgEATgEcivSyCUdLvOUtKjvv+7eRHBhD7X3zmzBRgUaxiTcZ8wIQBhnzPeMoSw1/mBLt9Ijvp6F4Ge8wEO73PNup15XQHC/VfS7abqroSXdLnwRd39AIfwo4RtzswASP6TJp3OeDqFkHnS3TuxVZ//yLird2KrbkmS1n2bMxEAyTTdkLTQ5owXRxDymJB00OoWqnFxXgftDjPVv3M46HJYuxfooHR3ldlsHxAeXM0K1uhsDXwheTjnBWt0fqDzb5LclKzRwZ/raVeu0OjMAoDsTlcrNDnj6SeE3FVY1UWx6vrqvK29Uazuoc5unJkAkFTTOrt2xrMnECbbpM4ujsVHbWmareIwVc1a2I3Dk+qxmd044TZNSI4e6nn8d0Jyw84UrC8ALA5ygxgHMv4CmZ9NJ4irko0AAAAASUVORK5CYII="
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAQlBMVEVMaXEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACxDQDWAAAAFXRSTlMAITmsupv1DsMF6Esset3QY4hwF1aOlBEGAAAA8UlEQVQ4y43USW7DMBBEUc6TqMnyv/9VswgsKEBIV68fCLK7msZ8rRrT3o1QL2BTYASoIgyCqw18FuAKRblhbuAUeIJX3JWgi72JirOJZBXo4VRch3QpMMCqOAdNmYkp8FLcApuSGrPDobgDduXAusEiboASr+y+xqv29+k3Zvmv9r36PfGp/+KVlzU+CGz+dIO8f6qF83B5suPQShyTu2XrcklDHbasHsfyjN172NDHIR1aVWCc5fgBcxotRrbWdtittfa3N3H4yLuMMdtw+n9g9uPeuBBCgRRCCMYz/zTuxyTm39UNC/Mlv2EvKVYB/gCouxJV7PjYLwAAAABJRU5ErkJggg=="
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAoCAMAAACyy+glAAAAPFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAABMaXEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACi6kPzAAAAE3RSTlMEphtW7MZAAFP4CnJm27SALY+Y9FUAqAAAARxJREFUOMvV1MmSgzAMRVF5BI8Y7v//ay/SlQQQpHddeRtvTlGykSTTb8YSWvKtFztdRh5HDDzTxy3Ohvek5QbbAOBNqXXpCcDkK5wD4EsWERGxawLMFTZAsPLMaEDRcQRClrdYD8mqOIC3sksENg0PoMghBpJyR1nA5yMewKzgAEZOabAquClViBj19SRBPeMVgoK9ijcdN1jOuOtldAhn7EHpJqmQ7NFGICrYAtsRB/Dq7zaQ4t7Wi06SySbwY1dEgpb1Fi2An1+2JEjxalI2gP4oJc8BoF6OlawA+G5MSACp3k238+8D2+L9KsjLk7cqH/bGNE1x2Xpfy5g+Lpnb2Bjjn/EMfBG2zjm3As455+TzR1/5N/yN77zHP1HKNEf4PUN+AAAAAElFTkSuQmCC"
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAS1BMVEVMaXEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxVY0NAAAAGHRSTlMABoQr9dEO79z8HuZIvHehr1JrkjoWXMehwfcqAAABa0lEQVQ4y4WU27aDIAwFoyKEorXe5/+/9DxoW7l4msesEXCyQaRY69SbWX7V47l7wD/+pZq65aznPbXUejBt3Xn0jprDm2pEpIclh6pxcAD4fjqPtsGQH/9Yy7y29dOzDlel4Ay4YbRRc4At3ThguuzrBfqkNcKr8HeaqXxBVwDrVOVqCFVpQiQqJ6iLZlOVLTRFcINrMhrYy7OyJlI5w3Qz1QHGSKK9Aburt7E004vK9YfETOXqCfcBHb9jfN5JfKeq/iVRRGwL/duPi6WmGdCPkNHf7l2Du+y2+Zv7NoLvkkyURtOYrP0Ev2VvRSgMok43Eal22POQzhk5gB7DM7Rx3yzxacz5wzEor0hF57/5SsCqh/AmG3cxloBidwjH7Vz1jOFDVRW8qmo8WF3PxVt7XsNPXc3pAcyfpR/OOQfeOeeiUCnsdkoEpGcUEWkC7D55m0qgNA7SMBVBWUz2XpVB6UKf3F1rrYjIH0kbHC53ruGLAAAAAElFTkSuQmCC"
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAATlBMVEVMaXEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABitQkNAAAAGXRSTlMA/CSB6o8wiAPymDwLHhXJT6nXV3mxvN5q4YmaCQAAAWNJREFUOMuVlduiRiAQhSlKpMix93/R3Uz5hRz2XHTBZ2ZaTUuWxVE142SEtcJMtKmyu2h5YaMoSpLEVJ3bU+R9e+WGwiZCrL6lvbk65NC0Y4Swjs4hfy+zijYbJ2f/PY9KqdHX0GS2G1h5rlbHbiTHrG7ZQKwrumvjTWichX2gGCwlBRERqOAzkeTY4jOSvXCX4mRfRGALHdd3p8VWgFEMDoVV9hBklSANZOfH0UiOQwNKHY+U0xRIQfzjo7JMgZMD6RfQOHD4Aor9hJ7BXXjYL+UutIGVnvaeX0GjT2BndPOltHTM8mUzILVAefgzODpkxvVFcJ8L8trHI1Q5juH7UEBNId/HTC5hXp8H13X8uzT3VwG1gTz92+Vy040v29fr2uI1XLNvBtD/VLizlBItZY7UklMwqcg6FQ0mJQ8aB9uzmg/e9vRue/8w0ldrrtu02dPli9ljq2zsTYG/j/H0+/gD5hMquPjJjUMAAAAASUVORK5CYII="
+
+/***/ }),
 /* 17 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAMAAAAPkIrYAAAAQlBMVEX///8AAAAREREAAAACAgIAAAAAAAACAgI/Pz8AAAAJCQkBAQEFBQUCAgICAgIAAAADAwMMDAwgICACAgIDAwMAAAAEaa4/AAAAFXRSTlMC2R7kpO+8mwj6Nq9DgW3OUSgQjGAGIDAPAAACg0lEQVRYw62YyaKDIAxFQQZBxPn8/6++hbX1tbaCkp1FbzNekgjxS6ohaiuNASP7EIfRiUvihlrxLkYvVTZSqw3H4u2Qo51b+p0qvQ0h2F75508qTqlQg9y+0V3z+so1S72dmDS05qGTmpuD07Hbjodz8+Jqyg+nNPX6SjiJwrj+q21+p8qKptqf0TMAsj1Vf7QAvns8Tp8qLh5gTgp5ZwBqt7p4+Tg+V/zDHdoJ0SmGI6g+Pa0nDRCm2vOO1QHYKac4ZgAJ8N+Y1gMhs3bjVgn/4l4ZwObSgLMHWK4H+lyoaoNifLPc5LLJs27xO6zGg28zoeKLlXZYrgfmbLJs5yDX0tyZtADyEv26Ngbpd1hOfmRIFl4zv9KyA6woI/I92a5LC4RCaulb3vpf7h7U7yCOc2IaD0D8/UpNnYZVn3tep2IpUKIMVgXoQlgD0BXCigkZkYoVgKkQlj13fTKWBFkKyyRwRCqW/1bYY/0UiXw9jBew6i895nxPL5WoVzF/OSEk9AWwGuU7YcEUwNJghAbcfSwJSsSEi+Mcy3mwhXiiAeZC/NUBSyFeDUC1Xml3+d6ZlSFK3EPDo7Ymf8o6p/fj07bAR0+d22v6zeft7TYnvtx0t89xCnxVpv+K8AyOU7c6ncrsm9/r/eoWxF3OXOqjd7m1Hw0af9nKyryTQwRUdSWG9iNw6zw05WPVB8PPaC6MfI+h76Nors+P8ZjOMifIyDcijZnztgt8N6UDMHl7gK9e6Tzg8/cTRfcmx1lcbp+TtmfS6yv6PLXL7b+EEGJ5bt90137Zy3WpieieaICSj30hV/aF6x7Tl9ljrnPl4X41LNNFznzsfcEYZfW8jD/f/gMwk0Q6mORLHgAAAABJRU5ErkJggg=="
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1772,9 +2295,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 
-var base64 = __webpack_require__(5)
-var ieee754 = __webpack_require__(14)
-var isArray = __webpack_require__(15)
+var base64 = __webpack_require__(20)
+var ieee754 = __webpack_require__(21)
+var isArray = __webpack_require__(22)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -3552,644 +4075,269 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)))
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-var stylesInDom = {},
-	memoize = function(fn) {
-		var memo;
-		return function () {
-			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-			return memo;
-		};
-	},
-	isOldIE = memoize(function() {
-		// Test for IE <= 9 as proposed by Browserhacks
-		// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-		// Tests for existence of standard globals is to allow style-loader 
-		// to operate correctly into non-standard environments
-		// @see https://github.com/webpack-contrib/style-loader/issues/177
-		return window && document && document.all && !window.atob;
-	}),
-	getElement = (function(fn) {
-		var memo = {};
-		return function(selector) {
-			if (typeof memo[selector] === "undefined") {
-				memo[selector] = fn.call(this, selector);
-			}
-			return memo[selector]
-		};
-	})(function (styleTarget) {
-		return document.querySelector(styleTarget)
-	}),
-	singletonElement = null,
-	singletonCounter = 0,
-	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(19);
-
-module.exports = function(list, options) {
-	if(typeof DEBUG !== "undefined" && DEBUG) {
-		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
-
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-	// By default, add <style> tags to the <head> element
-	if (typeof options.insertInto === "undefined") options.insertInto = "head";
-
-	// By default, add <style> tags to the bottom of the target
-	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-	var styles = listToStyles(list);
-	addStylesToDom(styles, options);
-
-	return function update(newList) {
-		var mayRemove = [];
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-		if(newList) {
-			var newStyles = listToStyles(newList);
-			addStylesToDom(newStyles, options);
-		}
-		for(var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-			if(domStyle.refs === 0) {
-				for(var j = 0; j < domStyle.parts.length; j++)
-					domStyle.parts[j]();
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-};
-
-function addStylesToDom(styles, options) {
-	for(var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-		if(domStyle) {
-			domStyle.refs++;
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles(list) {
-	var styles = [];
-	var newStyles = {};
-	for(var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-		if(!newStyles[id])
-			styles.push(newStyles[id] = {id: id, parts: [part]});
-		else
-			newStyles[id].parts.push(part);
-	}
-	return styles;
-}
-
-function insertStyleElement(options, styleElement) {
-	var styleTarget = getElement(options.insertInto)
-	if (!styleTarget) {
-		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-	}
-	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-	if (options.insertAt === "top") {
-		if(!lastStyleElementInsertedAtTop) {
-			styleTarget.insertBefore(styleElement, styleTarget.firstChild);
-		} else if(lastStyleElementInsertedAtTop.nextSibling) {
-			styleTarget.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			styleTarget.appendChild(styleElement);
-		}
-		styleElementsInsertedAtTop.push(styleElement);
-	} else if (options.insertAt === "bottom") {
-		styleTarget.appendChild(styleElement);
-	} else {
-		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-	}
-}
-
-function removeStyleElement(styleElement) {
-	styleElement.parentNode.removeChild(styleElement);
-	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-	if(idx >= 0) {
-		styleElementsInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement(options) {
-	var styleElement = document.createElement("style");
-	options.attrs.type = "text/css";
-
-	attachTagAttrs(styleElement, options.attrs);
-	insertStyleElement(options, styleElement);
-	return styleElement;
-}
-
-function createLinkElement(options) {
-	var linkElement = document.createElement("link");
-	options.attrs.type = "text/css";
-	options.attrs.rel = "stylesheet";
-
-	attachTagAttrs(linkElement, options.attrs);
-	insertStyleElement(options, linkElement);
-	return linkElement;
-}
-
-function attachTagAttrs(element, attrs) {
-	Object.keys(attrs).forEach(function (key) {
-		element.setAttribute(key, attrs[key]);
-	});
-}
-
-function addStyle(obj, options) {
-	var styleElement, update, remove;
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-		styleElement = singletonElement || (singletonElement = createStyleElement(options));
-		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-	} else if(obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function") {
-		styleElement = createLinkElement(options);
-		update = updateLink.bind(null, styleElement, options);
-		remove = function() {
-			removeStyleElement(styleElement);
-			if(styleElement.href)
-				URL.revokeObjectURL(styleElement.href);
-		};
-	} else {
-		styleElement = createStyleElement(options);
-		update = applyToTag.bind(null, styleElement);
-		remove = function() {
-			removeStyleElement(styleElement);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle(newObj) {
-		if(newObj) {
-			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-				return;
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag(styleElement, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (styleElement.styleSheet) {
-		styleElement.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = styleElement.childNodes;
-		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-		if (childNodes.length) {
-			styleElement.insertBefore(cssNode, childNodes[index]);
-		} else {
-			styleElement.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag(styleElement, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		styleElement.setAttribute("media", media)
-	}
-
-	if(styleElement.styleSheet) {
-		styleElement.styleSheet.cssText = css;
-	} else {
-		while(styleElement.firstChild) {
-			styleElement.removeChild(styleElement.firstChild);
-		}
-		styleElement.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink(linkElement, options, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	/* If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
-	and there is no publicPath defined then lets turn convertToAbsoluteUrls
-	on by default.  Otherwise default to the convertToAbsoluteUrls option
-	directly
-	*/
-	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
-
-	if (options.convertToAbsoluteUrls || autoFixUrls){
-		css = fixUrls(css);
-	}
-
-	if(sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = linkElement.href;
-
-	linkElement.href = URL.createObjectURL(blob);
-
-	if(oldSrc)
-		URL.revokeObjectURL(oldSrc);
-}
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-
-/**
- * When source maps are enabled, `style-loader` uses a link element with a data-uri to
- * embed the css on the page. This breaks all relative urls because now they are relative to a
- * bundle instead of the current page.
- *
- * One solution is to only use full urls, but that may be impossible.
- *
- * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
- *
- * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
- *
- */
-
-module.exports = function (css) {
-  // get current location
-  var location = typeof window !== "undefined" && window.location;
-
-  if (!location) {
-    throw new Error("fixUrls requires window.location");
-  }
-
-	// blank or null?
-	if (!css || typeof css !== "string") {
-	  return css;
-  }
-
-  var baseUrl = location.protocol + "//" + location.host;
-  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
-
-	// convert each url(...)
-	/*
-	This regular expression is just a way to recursively match brackets within
-	a string.
-
-	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
-	   (  = Start a capturing group
-	     (?:  = Start a non-capturing group
-	         [^)(]  = Match anything that isn't a parentheses
-	         |  = OR
-	         \(  = Match a start parentheses
-	             (?:  = Start another non-capturing groups
-	                 [^)(]+  = Match anything that isn't a parentheses
-	                 |  = OR
-	                 \(  = Match a start parentheses
-	                     [^)(]*  = Match anything that isn't a parentheses
-	                 \)  = Match a end parentheses
-	             )  = End Group
-              *\) = Match anything and then a close parens
-          )  = Close non-capturing group
-          *  = Match anything
-       )  = Close capturing group
-	 \)  = Match a close parens
-
-	 /gi  = Get all matches, not the first.  Be case insensitive.
-	 */
-	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
-		// strip quotes (if they exist)
-		var unquotedOrigUrl = origUrl
-			.trim()
-			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
-			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
-
-		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
-		  return fullMatch;
-		}
-
-		// convert the url to a full url
-		var newUrl;
-
-		if (unquotedOrigUrl.indexOf("//") === 0) {
-		  	//TODO: should we add protocol?
-			newUrl = unquotedOrigUrl;
-		} else if (unquotedOrigUrl.indexOf("/") === 0) {
-			// path should be relative to the base url
-			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
-		} else {
-			// path should be relative to current directory
-			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
-		}
-
-		// send back the fixed url(...)
-		return "url(" + JSON.stringify(newUrl) + ")";
-	});
-
-	// send back the fixed css
-	return fixedCss;
-};
-
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
 
 /***/ }),
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
+"use strict";
 
-// load the styles
-var content = __webpack_require__(6);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(18)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../node_modules/css-loader/index.js!./ole.css", function() {
-			var newContent = require("!!../node_modules/css-loader/index.js!./ole.css");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
 }
+
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function placeHoldersCount (b64) {
+  var len = b64.length
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // the number of equal signs (place holders)
+  // if there are two placeholders, than the two characters before it
+  // represent one byte
+  // if there is only one, then the three characters before it represent 2 bytes
+  // this is just a cheap hack to not do indexOf twice
+  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+}
+
+function byteLength (b64) {
+  // base64 is 4/3 + up to two characters of the original data
+  return b64.length * 3 / 4 - placeHoldersCount(b64)
+}
+
+function toByteArray (b64) {
+  var i, j, l, tmp, placeHolders, arr
+  var len = b64.length
+  placeHolders = placeHoldersCount(b64)
+
+  arr = new Arr(len * 3 / 4 - placeHolders)
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  l = placeHolders > 0 ? len - 4 : len
+
+  var L = 0
+
+  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
+    arr[L++] = (tmp >> 16) & 0xFF
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  if (placeHolders === 2) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[L++] = tmp & 0xFF
+  } else if (placeHolders === 1) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var output = ''
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    output += lookup[tmp >> 2]
+    output += lookup[(tmp << 4) & 0x3F]
+    output += '=='
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
+    output += lookup[tmp >> 10]
+    output += lookup[(tmp >> 4) & 0x3F]
+    output += lookup[(tmp << 2) & 0x3F]
+    output += '='
+  }
+
+  parts.push(output)
+
+  return parts.join('')
+}
+
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports) {
 
-var g;
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
+  i += d
 
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
 }
 
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
-module.exports = g;
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
 
 
 /***/ }),
 /* 22 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/**
- * Default ole style
- */
-class Style {
-  constructor() {
-    this.pointStyle = this._getDefaultPointStyle();
-    this.strokeStyle = this._getDefaultStrokeStyle();
+var toString = {}.toString;
 
-    this.style = new ol.style.Style({
-      image: this.pointStyle,
-      stroke: this.strokeStyle
-    });
-  }
-
-  /**
-   * Getter for the default point style of ole.
-   * @returns {ol.style.Circle} The style.
-   */
-  _getDefaultPointStyle() {
-    return new ol.style.Circle({
-      radius: 5,
-      fill: new ol.style.Fill({
-        color: 'rgba(97, 132, 156, 0.5)'
-      }),
-      stroke: this._getDefaultStrokeStyle()
-    });
-  }
-
-  /**
-   * Getter for the default stroke style of ole.
-   * @returns {ol.style.Circle} The style.
-   */
-  _getDefaultStrokeStyle() {
-    return new ol.style.Stroke({
-      width: 1,
-      color: 'rgb(97, 132, 156)'
-    });
-  }
-
-  /**
-   * Style function for this style.
-   * @returns {Array.<ol.style.Style} The feature style.
-   */
-  styleFunction() {
-    return [this.style];
-  }
-}
-/* unused harmony export Style */
-
-
-/**
- * Style for the CAD tool.
- * Features are invisible by default and become
- * visible on mouse over.
- */
-class CadStyle extends Style {
-  constructor() {
-    super();
-
-    this.style.setImage(
-      new ol.style.RegularShape({
-        fill: new ol.style.Fill({
-          color: '#E8841F'
-        }),
-        stroke: this.strokeStyle,
-        points: 4,
-        radius: 5,
-        radius2: 0,
-        angle: Math.PI / 4
-      })
-    );
-
-    this.strokeStyle.setLineDash([5, 5]);
-    this.hoverFeatures = [];
-  }
-
-  /**
-   * Adds a hover feature that should be styled.
-   * @param {ol.Feature} feature The hover feature.
-   */
-  addHoverFeature(feature) {
-    this.hoverFeatures.push(feature);
-  }
-
-  /**
-   * Removes all hover features.
-   */
-  clearHoverFeatures() {
-    this.hoverFeatures = [];
-  }
-
-  /**
-   * Style function for this style.
-   * @param {ol.Feature} Feature to style.
-   * @returns {Array.<ol.style.Style} The feature style.
-   */
-  styleFunction(feature) {
-    if (this.hoverFeatures.indexOf(feature) === -1) {
-     //  return [];
-    return [this.style];
-    }
-
-    return [this.style];
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = CadStyle;
-
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
 
 
 /***/ }),
 /* 23 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__style_ole_css__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__style_ole_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__style_ole_css__);
 
 
-class Toolbar extends ol.control.Control {
+var _editor = __webpack_require__(4);
 
-  /**
-   * Constructor.
-   * @param {ol.Map} map The map object.
-   * @param {ol.Collection.<ol.control.Control>} controls Controls.
-   */
-  constructor(map, controls) {
-    var element = document.createElement('div');
-    element.setAttribute('id', 'ole-toolbar');
+var _editor2 = _interopRequireDefault(_editor);
 
-    super({
-      element: element
-    });
+var _control = __webpack_require__(0);
 
-    this.controls = controls;
-    this.map = map;
+var _control2 = _interopRequireDefault(_control);
 
-    this.map.getTargetElement().appendChild(this.element);
+var _cad = __webpack_require__(1);
 
-    if (this.controls.getLength()) {
-      this._load();
-    }
+var _cad2 = _interopRequireDefault(_cad);
 
-    this.controls.on('change:length', this._load, this);
-  }
+var _rotate = __webpack_require__(3);
 
-  /**
-   * Loads the toolbar.
-   */
-  _load() {
-    for (var i = 0; i < this.controls.getLength(); i++) {
-      var btn = this.controls.item(i).getElement();
-      this.element.appendChild(btn);
-    }
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Toolbar;
+var _rotate2 = _interopRequireDefault(_rotate);
 
+var _draw = __webpack_require__(2);
 
+var _draw2 = _interopRequireDefault(_draw);
 
-/***/ }),
-/* 24 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__editor_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__control_control_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__control_cad_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__control_rotate_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__control_draw_js__ = __webpack_require__(2);
 window.ole = {};
 
-
-
-
-
-
-
 window.ole = {
-  Editor: __WEBPACK_IMPORTED_MODULE_0__editor_js__["a" /* default */],
-  Control: __WEBPACK_IMPORTED_MODULE_1__control_control_js__["a" /* default */],
-  CadControl: __WEBPACK_IMPORTED_MODULE_2__control_cad_js__["a" /* default */],
-  RotateControl: __WEBPACK_IMPORTED_MODULE_3__control_rotate_js__["a" /* default */],
-  DrawControl: __WEBPACK_IMPORTED_MODULE_4__control_draw_js__["a" /* default */]
+  Editor: _editor2.default,
+  Control: _control2.default,
+  CadControl: _cad2.default,
+  RotateControl: _rotate2.default,
+  DrawControl: _draw2.default
 };
-
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=ole.map
+//# sourceMappingURL=ole.js.map
