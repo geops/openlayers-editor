@@ -83,7 +83,7 @@ export default class RotateControl extends Control {
   _onDrag(evt) {
     this._dragging = true;
 
-    if (this._feature) {
+    if (this._feature && this._center) {
       var rotation = Math.atan2(
         evt.coordinate[1] - this._center[1],
         evt.coordinate[0] - this._center[0]
@@ -130,6 +130,7 @@ export default class RotateControl extends Control {
    * Deactivate the control.
    */
   deactivate() {
+    this.rotateLayer.getSource().clear();
     this.map.removeLayer(this.rotateLayer);
     this.map.removeInteraction(this.pointerInteraction);
     super.deactivate();

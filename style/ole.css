@@ -11,6 +11,7 @@
   cursor: pointer;
   font-size: 14px;
   line-height: 36px;
+  height: 45px;
   padding: 0 8px;
   transition: all .3s ease-out;
 }

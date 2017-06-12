@@ -45,8 +45,16 @@ export default class MoveControl extends Control {
     });
 
     if (feature) {
-      this._coordinate = evt.coordinate;
+      if (feature.getGeometry() instanceof ol.geom.Point) {
+        this._coordinate = ol.extent.getCenter(
+          feature.getGeometry().getExtent()
+        );
+      } else {
+        this._coordinate = evt.coordinate;
+      }
+
       this._feature = feature;
+      this.editor.setEditFeature(feature);
       return true;
     }
   }
@@ -97,6 +105,7 @@ export default class MoveControl extends Control {
   handleUpEvent() {
     this._coordinate = null;
     this._feature = null;
+    this.editor.setEditFeature(null);
     return false;
   }
 

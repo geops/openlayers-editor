@@ -14,7 +14,10 @@ export default class Control extends ol.control.Control {
       element: button
     });
 
+    // html class name of the control button
     this.className = options.className;
+
+    // control title
     this.title = options.title;
 
     var img = document.createElement('img');
@@ -23,10 +26,14 @@ export default class Control extends ol.control.Control {
     button.appendChild(img);
     button.title = this.title;
 
+    // source with edit features
     this.source = options.source ||
       new ol.source.Vector({
         features: options.features
       });
+
+    // ole editor instance
+    this.editor = null;
 
     button.addEventListener('click', this._onClick.bind(this));
 
@@ -63,12 +70,20 @@ export default class Control extends ol.control.Control {
   }
 
   /**
+   * Introduce the control to it's editor.
+   * @param {ole.Editor} editor OLE Editor.
+   */
+  setEditor(editor) {
+    this.editor = editor;
+  }
+
+  /**
    * Activate the control
    */
   activate() {
     this.active = true;
     this.element.className += ' active';
-    this._fireActiveStateChange();
+    this.editor._activeStateChange(this);
   }
 
   /**
@@ -77,7 +92,7 @@ export default class Control extends ol.control.Control {
   deactivate() {
     this.active = false;
     this.element.classList.remove('active');
-    this._fireActiveStateChange();
+    this.editor._activeStateChange(this);
   }
 
   /**
@@ -86,13 +101,5 @@ export default class Control extends ol.control.Control {
    */
   getActive() {
     return this.active;
-  }
-
-  /**
-   * Fires the 'change:active' event.
-   */
-  _fireActiveStateChange() {
-    var evt = new ol.events.Event('change:active');
-    this.dispatchEvent(evt);
   }
 }

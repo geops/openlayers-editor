@@ -10,13 +10,13 @@ export default class CadControl extends Control {
    *   for drawing.
    * @param {ol.source.Vector} [options.source] Destination for drawing.
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
-   *   for auxiliary lines. Default is 10.
-   * @param {Boolean} [options.showAuxiliaryLines] Whether to show
-   *   auxiliary lines (default is true).
-   * @param {Boolean} [options.showDistancePoints] Whether to show
-   *   distance points (default is false).
-   * @param {Number} [options.distancePointDist] Distance of the
-   *   distance points in pixel (default is 30).
+   *   for snap lines. Default is 10.
+   * @param {Boolean} [options.showSnapLines] Whether to show
+   *   snap lines (default is true).
+   * @param {Boolean} [options.showSnapPoints] Whether to show
+   *  snap points around the closest feature.
+   * @param {Number} [options.snapPointDist] Distance of the
+   *   snap points in pixel (default is 30).
    */
   constructor(options) {
     super(
@@ -51,30 +51,33 @@ export default class CadControl extends Control {
           }),
           stroke: new ol.style.Stroke({
             width: 1,
+            lineDash: [5, 10],
             color: '#618496'
           })
         })
       ]
     });
 
+    // Snap tolerance in pixel
     this.snapTolerance = options.snapTolerance || 10;
 
+    // The control's snap interaction
     this.snapInteraction = new ol.interaction.Snap({
       pixelTolerance: this.snapTolerance,
       source: this.snapLayer.getSource()
     });
 
-    // Whether to show the distance points
-    this.showDistancePoints = options.showDistancePoints;
+    // Whether to show the snap points
+    this.showSnapPoints = options.showSnapPoints;
 
     // Cell width of the snap grid in px
-    this.distancePointDist = options.distancePointDist || 30;
+    this.snapPointDist = options.snapPointDist || 30;
 
-    // Whether to show auxiliary lines
-    if (typeof options.showAuxiliaryLines === 'undefined') {
-      this.showAuxiliaryLines = true;
+    // Whether to show snap lines
+    if (typeof options.showSnapLines === 'undefined') {
+      this.showSnapLines = true;
     } else {
-      this.showAuxiliaryLines = options.showAuxiliaryLines;
+      this.showSnapLines = options.showSnapLines;
     }
 
     // control can be activated together with
@@ -107,17 +110,25 @@ export default class CadControl extends Control {
 
   /**
    * Handle move event.
+   * @param {ol.MapBrowserEvent} evt Move event.
    */
   _onMove(evt) {
-    var features = this._getClosestFeatures(evt.coordinate, 4);
-    this.snapLayer.getSource().clear();
+    var features = this._getClosestFeatures(evt.coordinate, 5);
 
-    if (this.showAuxiliaryLines) {
-      this._drawAuxiliaryLines(features, evt.coordinate);
+    // Don't snap on the edit feature
+    var editFeature = this.editor.getEditFeature();
+    if (editFeature && features.indexOf(editFeature) > -1) {
+      features.splice(features.indexOf(editFeature), 1);
     }
 
-    if (this.showDistancePoints && features.length) {
-      this._drawDistancePoints(evt.coordinate, features[0]);
+    this.snapLayer.getSource().clear();
+
+    if (this.showSnapLines) {
+      this._drawSnapLines(features, evt.coordinate);
+    }
+
+    if (this.showSnapPoints && features.length) {
+      this._drawSnapPoints(evt.coordinate, features[0]);
     }
   }
 
@@ -157,12 +168,12 @@ export default class CadControl extends Control {
   }
 
   /**
-   * Draws auxiliary lines by building the extent for
+   * Draws snap lines by building the extent for
    * a pair of features.
    * @param {Array.<ol.Feature>} features List of features.
    * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
    */
-  _drawAuxiliaryLines(features, coordinate) {
+  _drawSnapLines(features, coordinate) {
     var auxCoords = [];
     for (var i = 0; i < features.length; i++) {
       var geom = features[i].getGeometry();
@@ -218,25 +229,25 @@ export default class CadControl extends Control {
   }
 
   /**
-   * Adds distance points to the snapping layer.
+   * Adds snap points to the snapping layer.
    * @param {ol.Coordinate} coordinateMouse cursor coordinate.
-   * @param {ol.eaturee} closestFeature Closest feature to cursor.
+   * @param {ol.eaturee} feature Feature to draw the snap points for.
    */
-  _drawDistancePoints(coordinate, closestFeature) {
-    var geom = closestFeature.getGeometry();
-    var featCoord = geom.getClosestPoint(coordinate);
+  _drawSnapPoints(coordinate, feature) {
+    var featCoord = feature.getGeometry().getClosestPoint(coordinate);
 
     var px = this.map.getPixelFromCoordinate(featCoord);
     var snapPx = [
-      [px[0] + this.distancePointDist, px[1]],
-      [px[0], px[1] - this.distancePointDist],
-      [px[0], px[1] + this.distancePointDist]
+      [px[0] - this.snapPointDist, px[1]],
+      [px[0] + this.snapPointDist, px[1]],
+      [px[0], px[1] - this.snapPointDist],
+      [px[0], px[1] + this.snapPointDist]
     ];
 
     var snapCoords = [];
 
-    for (var i = 0; i < snapPx.length; i++) {
-      snapCoords.push(this.map.getCoordinateFromPixel(snapPx[i]));
+    for (var j = 0; j < snapPx.length; j++) {
+      snapCoords.push(this.map.getCoordinateFromPixel(snapPx[j]));
     }
 
     var snapGeom = new ol.geom.MultiPoint(snapCoords);
@@ -250,9 +261,9 @@ export default class CadControl extends Control {
     var tpl = [
       '<div class="ole-dialog" id="{{className}}-dialog">' +
         '<div><input type="checkbox" {{#c1}}checked{{/c1}} id="aux-cb">' +
-        '<label>Show auxiliary lines</label></div>' +
+        '<label>Show snap lines</label></div>' +
         '<div><input type="checkbox" {{#c2}}checked{{/c2}} id="dist-cb">' +
-        '<label>Show distance points. Distance (px): </label>' +
+        '<label>Show snap points. Distance (px): </label>' +
         '<input type="text" id="width-input" value="{{gridWidth}}"></div>' +
         '</div>'
     ].join('');
@@ -260,35 +271,32 @@ export default class CadControl extends Control {
     var div = document.createElement('div');
     div.innerHTML = mustache.render(tpl, {
       className: this.className,
-      gridWidth: this.distancePointDist,
-      c1: this.showAuxiliaryLines,
-      c2: this.showDistancePoints
+      gridWidth: this.snapPointDist,
+      c1: this.showSnapLines,
+      c2: this.showSnapPoints
     });
 
     this.map.getTargetElement().appendChild(div.firstChild);
 
-    var aCb = document.getElementById('aux-cb');
-    aCb.addEventListener(
+    document.getElementById('aux-cb').addEventListener(
       'change',
       function(evt) {
-        this.showAuxiliaryLines = evt.target.checked;
+        this.showSnapLines = evt.target.checked;
       }.bind(this)
     );
 
-    var gCb = document.getElementById('dist-cb');
-    gCb.addEventListener(
+    document.getElementById('dist-cb').addEventListener(
       'change',
       function(evt) {
-        this.showDistancePoints = evt.target.checked;
+        this.showSnapPoints = evt.target.checked;
       }.bind(this)
     );
 
-    var widthInput = document.getElementById('width-input');
-    widthInput.addEventListener(
+    document.getElementById('width-input').addEventListener(
       'keyup',
       function(evt) {
         if (parseFloat(evt.target.value)) {
-          this.distancePointDist = parseFloat(evt.target.value);
+          this.snapPointDist = parseFloat(evt.target.value);
         }
       }.bind(this)
     );

@@ -9,9 +9,21 @@ export default class Editor {
    *   Default is true.
    */
   constructor(map, opt_options) {
+
+    // editor map
     this.map = map;
+
+    // collection of editor controls
     this.controls = new ol.Collection();
+
+    // collection of active controls
+    this.activeControls = new ol.Collection();
+
+    // control options
     this.options = opt_options || {};
+
+    // feature that is currently edited
+    this.editFeature = null;
 
     if (typeof this.options.showToolbar === 'undefined') {
       this.options.showToolbar = true;
@@ -28,7 +40,7 @@ export default class Editor {
    */
   addControl(control) {
     control.setMap(this.map);
-    control.on('change:active', this._activeStateChange.bind(this));
+    control.setEditor(this);
     this.controls.push(control);
   }
 
@@ -59,12 +71,36 @@ export default class Editor {
   }
 
   /**
+   * Returns a list of active controls.
+   * @returns {ol.Collection.<ole.Control>} Active controls.
+   */
+  getActiveControls() {
+    return this.activeControls;
+  }
+
+  /**
+   * Sets an instance of the feature that is edited.
+   * Some control need information about the feature
+   * that is currently edited (e.g. for not snapping on them)
+   * @param {ol.Feature|null} feature The editfeature (or null if none)
+   */
+  setEditFeature(feature) {
+    this.editFeature = feature;
+  }
+
+  /**
+   * Returns the feature that is currently edited.
+   * @returns {ol.Feature|null} The edit feature.
+   */
+  getEditFeature(feature) {
+    return this.editFeature;
+  }
+
+  /**
    * Listener for activity state changes of controls.
    * @param {ol.control.Control} control Control.
    */
-  _activeStateChange(evt) {
-    var ctrl = evt.target;
-
+  _activeStateChange(ctrl) {
     // deactivate other controls that are not standalone
     if (ctrl.getActive() && ctrl.standalone) {
       for (var i = 0; i < this.controls.getLength(); i++) {
@@ -75,5 +111,12 @@ export default class Editor {
         }
       }
     }
+
+    var ctrls = this.controls.getArray().filter( c => {
+      return c.getActive();
+    });
+
+    this.activeControls.clear();
+    this.activeControls.extend(ctrls);
   }
 }
