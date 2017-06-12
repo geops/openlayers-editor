@@ -59,7 +59,11 @@
         source: editLayer.getSource()
       });
 
-      editor.addControls([cad, draw, drawLine, drawPoly, move, rotate]);
+      var modify = new ole.ModifyControl({
+        source: editLayer.getSource()
+      });
+
+      editor.addControls([cad, draw, drawLine, drawPoly, modify, move, rotate]);
 
     </script>
   </body>

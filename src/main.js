@@ -6,6 +6,7 @@ import CadControl from './control/cad.js';
 import RotateControl from './control/rotate.js';
 import DrawControl from './control/draw.js';
 import MoveControl from './control/move.js';
+import ModifyControl from './control/modify.js';
 
 window.ole = {
   Editor: Editor,
@@ -13,5 +14,6 @@ window.ole = {
   CadControl: CadControl,
   RotateControl: RotateControl,
   DrawControl: DrawControl,
-  MoveControl: MoveControl
+  MoveControl: MoveControl,
+  ModifyControl: ModifyControl
 };
