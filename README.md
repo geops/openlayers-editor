@@ -2,10 +2,11 @@
 
 OpenLayers Editor (OLE) provides a set of controls for extended editing of spatial data.
 This is the new version of OLE which is based on OpenLayers 4.
-The old version using OpenLayers 2 is contained in branch v1.
+The old version using OpenLayers 2 can be found [here](https://github.com/geops/ole).
 
 Contributions are welcome! Feel free to add more controls and to extend the current functionality.
 Additionally, the build process is currently very basic and could be optimized.
+Translations would be nice, too.
 
 ## Features
 - CAD tool for geometry alignment
@@ -13,6 +14,9 @@ Additionally, the build process is currently very basic and could be optimized.
 - Moving and rotating geometries
 - Modifying geometries
 - Toolbar for activating and deactivating controls
+
+## Demo
+For a demo, visit [http://ole.geops.de](http://ole.geops.de).
 
 ## Dependencies
 - node & npm

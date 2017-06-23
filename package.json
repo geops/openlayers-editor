@@ -1,8 +1,7 @@
 {
   "name": "ole.git",
-  "version": "0.0.0",
-  "description": "OpenLayers Editor",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "OpenLayers Editor 2",
   "scripts": {
     "build": "webpack",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
@@ -13,7 +12,6 @@
     "OpenLayers",
     "Editor"
   ],
-  "author": "Mario Härtwig | geOps",
   "license": "BSD-2-Clause",
   "devDependencies": {
     "css-loader": "^0.27.3",
