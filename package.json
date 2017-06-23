@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
+    "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "precommit": "lint-staged",
     "start": "webpack-dev-server --progress --watch"
   },
@@ -19,6 +20,7 @@
     "file-loader": "^0.11.0",
     "husky": "^0.13.3",
     "image-webpack-loader": "^3.3.0",
+    "jsdoc-export-default-interop": "^0.3.1",
     "lint-staged": "^3.4.0",
     "openlayers": "^4.0.1",
     "prettier": "^0.22.0",
@@ -29,6 +31,7 @@
     "webpack-dev-server": "^2.4.2"
   },
   "dependencies": {
+    "jsdoc": "^3.4.3",
     "mustache": "^2.3.0"
   },
   "lint-staged": {

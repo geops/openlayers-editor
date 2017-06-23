@@ -1,9 +1,13 @@
 import Control from './control.js';
 import image from '../../img/modify_geometry.png';
 
+/**
+ * Control for modifying geometries.
+ * @extends {ole.Control}
+ * @alias ole.ModifyControl
+ */
 export default class ModifyControl extends Control {
   /**
-   * Tool for drawing features.
    * @param {Object} options Tool options.
    * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
@@ -15,23 +19,31 @@ export default class ModifyControl extends Control {
     super(
       Object.assign(options, {
         title: 'Modify geometry',
-        className: 'icon-modify',
+        className: 'ole-control-modify',
         image: image
       })
     );
 
+    /**
+     * @type {ol.interaction.Select}
+     * @private
+     */
     this.selectInteraction = new ol.interaction.Select({
         source: this.source,
         features: this.features
     });
 
+    /**
+     * @type {ol.interaction.Modify}
+     * @private
+     */
     this.modifyInteraction = new ol.interaction.Modify({
       features: this.selectInteraction.getFeatures()
     });
   }
 
   /**
-   * Activate the control
+   * @inheritdoc
    */
   activate() {
     this.map.addInteraction(this.selectInteraction);
@@ -40,7 +52,7 @@ export default class ModifyControl extends Control {
   }
 
   /**
-   * Activate the control
+   * @inheritdoc
    */
   deactivate() {
     this.map.removeInteraction(this.selectInteraction);

@@ -1,12 +1,19 @@
 import '../style/ole.css';
 
+/**
+ * The editor's toolbar.
+ * @class
+ * @alias ole.Toolbar
+ */
 export default class Toolbar extends ol.control.Control {
   /**
    * Constructor.
    * @param {ol.Map} map The map object.
-   * @param {ol.Collection.<ol.control.Control>} controls Controls.
+   * @param {ol.Collection.<ol.control.Control>} controls Controls
+   *   to display in the toolbar.
    */
   constructor(map, controls) {
+
     var element = document.createElement('div');
     element.setAttribute('id', 'ole-toolbar');
 
@@ -14,22 +21,28 @@ export default class Toolbar extends ol.control.Control {
       element: element
     });
 
+    /**
+     * @private
+     * @type {ol.Collection.<ol.control.Control>}
+     */
     this.controls = controls;
+
+    /**
+     * @private
+     * @type {ol.Map}
+     */
     this.map = map;
 
     this.map.getTargetElement().appendChild(this.element);
-
-    if (this.controls.getLength()) {
-      this._load();
-    }
-
-    this.controls.on('change:length', this._load, this);
+    this.load();
+    this.controls.on('change:length', this.load, this);
   }
 
   /**
-   * Loads the toolbar.
+   * Load the toolbar.
+   * @private
    */
-  _load() {
+  load() {
     for (var i = 0; i < this.controls.getLength(); i++) {
       var btn = this.controls.item(i).getElement();
       this.element.appendChild(btn);
@@ -37,9 +50,10 @@ export default class Toolbar extends ol.control.Control {
   }
 
   /**
-   * Destroys the toolbar
+   * Destroy the toolbar.
+   * @private
    */
-  _destroy() {
+  destroy() {
     for (var i = 0; i < this.controls.getLength(); i++) {
       var btn = this.controls.item(i).getElement();
       this.element.removeChild(btn);

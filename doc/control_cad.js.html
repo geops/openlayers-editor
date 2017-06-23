@@ -1,4 +1,32 @@
-import Control from './control.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: control/cad.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: control/cad.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Control from './control.js';
 import mustache from 'mustache';
 import cadPng from '../../img/cad.png';
 
@@ -127,7 +155,7 @@ export default class CadControl extends Control {
       function(e) {
         var pos = e.target.getArray().indexOf(this.snapInteraction);
 
-        if (this.active && pos > -1 && pos !== e.target.getLength() - 1) {
+        if (this.active &amp;&amp; pos > -1 &amp;&amp; pos !== e.target.getLength() - 1) {
           this.deactivate();
           this.activate();
         }
@@ -146,7 +174,7 @@ export default class CadControl extends Control {
 
     // Don't snap on the edit feature
     var editFeature = this.editor.getEditFeature();
-    if (editFeature && features.indexOf(editFeature) > -1) {
+    if (editFeature &amp;&amp; features.indexOf(editFeature) > -1) {
       features.splice(features.indexOf(editFeature), 1);
     }
 
@@ -156,7 +184,7 @@ export default class CadControl extends Control {
       this.drawSnapLines(features, evt.coordinate);
     }
 
-    if (this.showSnapPoints && features.length) {
+    if (this.showSnapPoints &amp;&amp; features.length) {
       this.drawSnapPoints(evt.coordinate, features[0]);
     }
   }
@@ -167,7 +195,7 @@ export default class CadControl extends Control {
    * @private
    * @param {ol.Coordinate} coordinate Coordinate.
    * @param {Number} num Number of features to search.
-   * @returns {Array.<ol.Feature>} List of closest features.
+   * @returns {Array.&lt;ol.Feature>} List of closest features.
    */
   getClosestFeatures(coordinate, num) {
     num = num || 1;
@@ -190,7 +218,7 @@ export default class CadControl extends Control {
       return a - b;
     });
 
-    for (var i = 0; i < count; i++) {
+    for (var i = 0; i &lt; count; i++) {
       features.push(featureDict[dists[i]]);
     }
 
@@ -201,12 +229,12 @@ export default class CadControl extends Control {
    * Draws snap lines by building the extent for
    * a pair of features.
    * @private
-   * @param {Array.<ol.Feature>} features List of features.
+   * @param {Array.&lt;ol.Feature>} features List of features.
    * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
    */
   drawSnapLines(features, coordinate) {
     var auxCoords = [];
-    for (var i = 0; i < features.length; i++) {
+    for (var i = 0; i &lt; features.length; i++) {
       var geom = features[i].getGeometry();
 
       if (geom instanceof ol.geom.Point) {
@@ -222,14 +250,14 @@ export default class CadControl extends Control {
     var px = this.map.getPixelFromCoordinate(coordinate);
     var lineCoords;
 
-    for (i = 0; i < auxCoords.length; i++) {
+    for (i = 0; i &lt; auxCoords.length; i++) {
       var auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
       if (
-        px[0] > auxPx[0] - this.snapTolerance / 2 &&
-        px[0] < auxPx[0] + this.snapTolerance / 2
+        px[0] > auxPx[0] - this.snapTolerance / 2 &amp;&amp;
+        px[0] &lt; auxPx[0] + this.snapTolerance / 2
       ) {
         var newY = px[1];
-        newY += px[1] < auxPx[1]
+        newY += px[1] &lt; auxPx[1]
           ? -this.snapTolerance * 2
           : this.snapTolerance * 2;
 
@@ -238,11 +266,11 @@ export default class CadControl extends Control {
           auxCoords[i]
         ];
       } else if (
-        px[1] > auxPx[1] - this.snapTolerance / 2 &&
-        px[1] < auxPx[1] + this.snapTolerance / 2
+        px[1] > auxPx[1] - this.snapTolerance / 2 &amp;&amp;
+        px[1] &lt; auxPx[1] + this.snapTolerance / 2
       ) {
         var newX = px[0];
-        newX += px[0] < auxPx[0]
+        newX += px[0] &lt; auxPx[0]
           ? -this.snapTolerance * 2
           : this.snapTolerance * 2;
 
@@ -278,7 +306,7 @@ export default class CadControl extends Control {
 
     var snapCoords = [];
 
-    for (var j = 0; j < snapPx.length; j++) {
+    for (var j = 0; j &lt; snapPx.length; j++) {
       snapCoords.push(this.map.getCoordinateFromPixel(snapPx[j]));
     }
 
@@ -292,13 +320,13 @@ export default class CadControl extends Control {
    */
   openDialog() {
     var tpl = [
-      '<div class="ole-dialog" id="{{className}}-dialog">' +
-        '<div><input type="checkbox" {{#c1}}checked{{/c1}} id="aux-cb">' +
-        '<label>Show snap lines</label></div>' +
-        '<div><input type="checkbox" {{#c2}}checked{{/c2}} id="dist-cb">' +
-        '<label>Show snap points. Distance (px): </label>' +
-        '<input type="text" id="width-input" value="{{gridWidth}}"></div>' +
-        '</div>'
+      '&lt;div class="ole-dialog" id="{{className}}-dialog">' +
+        '&lt;div>&lt;input type="checkbox" {{#c1}}checked{{/c1}} id="aux-cb">' +
+        '&lt;label>Show snap lines&lt;/label>&lt;/div>' +
+        '&lt;div>&lt;input type="checkbox" {{#c2}}checked{{/c2}} id="dist-cb">' +
+        '&lt;label>Show snap points. Distance (px): &lt;/label>' +
+        '&lt;input type="text" id="width-input" value="{{gridWidth}}">&lt;/div>' +
+        '&lt;/div>'
     ].join('');
 
     var div = document.createElement('div');
@@ -366,3 +394,26 @@ export default class CadControl extends Control {
     this.closeDialog();
   }
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Editor.html">Editor</a></li><li><a href="ole.CadControl.html">CadControl</a></li><li><a href="ole.Control.html">Control</a></li><li><a href="ole.DrawControl.html">DrawControl</a></li><li><a href="ole.ModifyControl.html">ModifyControl</a></li><li><a href="ole.MoveControl.html">MoveControl</a></li><li><a href="ole.RotateControl.html">RotateControl</a></li><li><a href="ole.Toolbar.html">Toolbar</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jun 23 2017 12:03:29 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

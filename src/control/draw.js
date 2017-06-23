@@ -3,15 +3,17 @@ import drawPointPng from '../../img/draw_point.png';
 import drawPolygonPng from '../../img/draw_polygon.png';
 import drawLinePng from '../../img/draw_line.png';
 
+/**
+ * Control for drawing features.
+ * @extends {ole.Control}
+ * @alias ole.DrawControl
+ */
 export default class DrawControl extends Control {
   /**
-   * Tool for drawing features.
    * @param {Object} options Tool options.
    * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
-   * @param {ol.Collection<ol.Feature>} [features] Destination for drawing.
-   * @param {ol.source.Vector} [source] Destination for drawing.
    */
   constructor(options) {
     var image;
@@ -30,11 +32,15 @@ export default class DrawControl extends Control {
     super(
       Object.assign(options, {
         title: 'Draw ' + (options.type || 'Point'),
-        className: 'icon-draw',
+        className: 'ole-control-draw',
         image: image
       })
     );
 
+    /**
+     * @type {ol.interaction.Draw}
+     * @private
+     */
     this.drawInteraction = new ol.interaction.Draw({
       type: options.type || 'Point',
       features: options.features,
@@ -43,7 +49,7 @@ export default class DrawControl extends Control {
   }
 
   /**
-   * Activate the control
+   * @inheritdoc
    */
   activate() {
     this.map.addInteraction(this.drawInteraction);
@@ -51,7 +57,7 @@ export default class DrawControl extends Control {
   }
 
   /**
-   * Activate the control
+   * @inheritdoc
    */
   deactivate() {
     this.map.removeInteraction(this.drawInteraction);
