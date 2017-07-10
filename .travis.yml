@@ -1,7 +1,8 @@
 dist: trusty
 language: node_js
 node_js:
-  - "7"
+  - "node"
+  - "6"
 install:
   - npm install
 script: npm run build
