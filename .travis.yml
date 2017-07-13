@@ -8,11 +8,11 @@ install:
 script: npm run build
 after_success:
   - npm run-script doc
-
+  - rm .gitignore
 deploy:
+  provider: pages
   skip_cleanup: true
-  provider: script
-  script: scripts/deploy.sh
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
   on:
     branch: enable-travis-ci
-    node: 'node'
+node: 'node'
