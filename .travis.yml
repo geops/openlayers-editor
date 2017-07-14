@@ -8,7 +8,8 @@ install:
 script: npm run build
 after_success:
   - npm run-script doc
-  - rm .gitignore
+  - git add -f dist
+  - git add -f node_modules/openlayers/dist/ol-debug.js
 deploy:
   provider: pages
   skip_cleanup: true
