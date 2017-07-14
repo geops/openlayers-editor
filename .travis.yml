@@ -1,0 +1,20 @@
+dist: trusty
+language: node_js
+node_js:
+  - "node"
+  - "6"
+install:
+  - npm install
+script: npm run build
+after_success:
+  - npm run-script doc
+  - echo 'node_modules' > .gitignore
+  - cp node_modules/openlayers/dist/ol-debug.js dist/ol-debug.js
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: enable-travis-ci
+node: 'node'
