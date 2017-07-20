@@ -293,9 +293,9 @@ export default class CadControl extends Control {
   openDialog() {
     var tpl = [
       '<div class="ole-dialog" id="{{className}}-dialog">' +
-        '<div><input type="checkbox" {{#c1}}checked{{/c1}} id="aux-cb">' +
+        '<div><input type="radio" name="radioBtn" {{#c1}}checked{{/c1}} id="aux-cb">' +
         '<label>Show snap lines</label></div>' +
-        '<div><input type="checkbox" {{#c2}}checked{{/c2}} id="dist-cb">' +
+        '<div><input type="radio" name="radioBtn" {{#c2}}checked{{/c2}} id="dist-cb">' +
         '<label>Show snap points. Distance (px): </label>' +
         '<input type="text" id="width-input" value="{{gridWidth}}"></div>' +
         '</div>'
@@ -310,7 +310,6 @@ export default class CadControl extends Control {
     });
 
     this.map.getTargetElement().appendChild(div.firstChild);
-
     document.getElementById('aux-cb').addEventListener(
       'change',
       function(evt) {
@@ -337,7 +336,7 @@ export default class CadControl extends Control {
 
   /**
    * Closes the control dialog.
-   * @pribate
+   * @private
    */
   closeDialog() {
     var div = document.getElementById(this.className + '-dialog');
