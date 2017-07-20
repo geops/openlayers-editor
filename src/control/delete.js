@@ -14,7 +14,8 @@ export default class DeleteControl extends Control {
    * @param {string} [options.title] Title of the control toolbar button
    * @param {Image} [options.image] Control toolbar image.
    * @param {ol.source.Vector} [source] vector to delete.
-   * @param {boolean} [multi] select multiple if set to true.
+   * @param {boolean} [multi] select multiple if set to true
+   *   (default is false).
    */
   constructor(options) {
     super(
@@ -31,7 +32,7 @@ export default class DeleteControl extends Control {
      */
     this.selectInteraction = new ol.interaction.Select({
       source: this.source,
-      multi: false
+      multi: options.multi || false
     });
 
     /**
