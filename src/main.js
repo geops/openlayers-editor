@@ -7,6 +7,7 @@ import RotateControl from './control/rotate.js';
 import DrawControl from './control/draw.js';
 import MoveControl from './control/move.js';
 import ModifyControl from './control/modify.js';
+import DeleteControl from './control/delete.js';
 
 window.ole = {
   Editor: Editor,
@@ -15,5 +16,6 @@ window.ole = {
   RotateControl: RotateControl,
   DrawControl: DrawControl,
   MoveControl: MoveControl,
-  ModifyControl: ModifyControl
+  ModifyControl: ModifyControl,
+  DeleteControl: DeleteControl
 };
