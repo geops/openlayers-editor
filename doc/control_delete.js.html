@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: control/modify.js</title>
+    <title>JSDoc: Source: control/delete.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: control/modify.js</h1>
+    <h1 class="page-title">Source: control/delete.js</h1>
 
     
 
@@ -27,28 +27,27 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import Control from './control.js';
-import image from '../../img/modify_geometry.png';
+import delPng from '../../img/delete.png';
 
 /**
- * Control for modifying geometries.
- * @extends {ole.Control}
- * @alias ole.ModifyControl
- */
-export default class ModifyControl extends Control {
+* Control for deleting geometries.
+* @extends {ole.Control}
+* @alias ole.DeleteControl
+*/
+export default class DeleteControl extends Control {
   /**
-   * @param {Object} options Tool options.
-   * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
-   *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
-   *   Default is 'Point'.
-   * @param {ol.Collection&lt;ol.Feature>} [features] Destination for drawing.
-   * @param {ol.source.Vector} [source] Destination for drawing.
+   * @inheritdoc
+   * @prram {Object} [options] Control options.
+   * @param {ol.source.Vector} [source] vector to delete.
+   * @param {boolean} [multi] select multiple if set to true
+   *   (default is false).
    */
   constructor(options) {
     super(
       Object.assign(options, {
-        title: 'Modify geometry',
-        className: 'ole-control-modify',
-        image: image
+        title: 'Delete geometry',
+        className: 'ole-control-delete',
+        image: delPng
       })
     );
 
@@ -57,16 +56,19 @@ export default class ModifyControl extends Control {
      * @private
      */
     this.selectInteraction = new ol.interaction.Select({
-        source: this.source,
-        features: this.features
+      source: this.source,
+      multi: options.multi || false
     });
 
     /**
-     * @type {ol.interaction.Modify}
+     * Select Interaction to clear and remove features
      * @private
      */
-    this.modifyInteraction = new ol.interaction.Modify({
-      features: this.selectInteraction.getFeatures()
+    this.selectInteraction.on('select', evt => {
+      evt.selected.forEach(f => {
+        this.source.removeFeature(f);
+        this.selectInteraction.getFeatures().clear();
+      });
     });
   }
 
@@ -75,7 +77,6 @@ export default class ModifyControl extends Control {
    */
   activate() {
     this.map.addInteraction(this.selectInteraction);
-    this.map.addInteraction(this.modifyInteraction);
     super.activate();
   }
 
@@ -84,7 +85,6 @@ export default class ModifyControl extends Control {
    */
   deactivate() {
     this.map.removeInteraction(this.selectInteraction);
-    this.map.removeInteraction(this.modifyInteraction);
     super.deactivate();
   }
 }

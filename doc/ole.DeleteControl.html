@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Control</title>
+    <title>JSDoc: Class: DeleteControl</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Control</h1>
+    <h1 class="page-title">Class: DeleteControl</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2>Control</h2>
+        <h2>DeleteControl</h2>
         
-            <div class="class-description">OLE control base class.</div>
+            <div class="class-description">Control for deleting geometries.</div>
         
     
 </header>
@@ -44,7 +44,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="Control"><span class="type-signature"></span>new Control<span class="signature">(options, standalone<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DeleteControl"><span class="type-signature"></span>new DeleteControl<span class="signature">(source<span class="signature-attributes">opt</span>, multi<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -85,151 +85,6 @@
 
         <tr>
             
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Control options.
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>className</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Name of the control's HTML class.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>title</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Title of the control toolbar button.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>image</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Image</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Control toolbar image.</td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>source</code></td>
             
 
@@ -256,56 +111,14 @@
 
             
 
-            <td class="description last">Vector source holding
-  edit features. If undefined, options.features must be passed.</td>
+            <td class="description last">vector to delete.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>features</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">ol.Collection.&lt;ol.Feature></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Collection of
-  edit features. If undefined, options.source must be set.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>standalone</code></td>
+                <td class="name"><code>multi</code></td>
             
 
             <td class="type">
@@ -331,8 +144,8 @@
 
             
 
-            <td class="description last">Boolean indicating whether the Control
-  can be  activated together with other controls, like ole.Draw.</td>
+            <td class="description last">select multiple if set to true
+  (default is false).</td>
         </tr>
 
     
@@ -373,7 +186,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="control_control.js.html">control/control.js</a>, <a href="control_control.js.html#line6">line 6</a>
+        <a href="control_delete.js.html">control/delete.js</a>, <a href="control_delete.js.html#line9">line 9</a>
     </li></ul></dd>
     
 
@@ -409,7 +222,7 @@
 
 
     <ul>
-        <li>ol.control.Control</li>
+        <li><a href="ole.Control.html">ole.Control</a></li>
     </ul>
 
 
@@ -463,6 +276,11 @@
 
     
 
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ole.Control.html#activate">ole.Control#activate</a>
+    </li></ul></dd>
     
 
     
@@ -546,6 +364,11 @@
     
 
     
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ole.Control.html#deactivate">ole.Control#deactivate</a>
+    </li></ul></dd>
+    
 
     
 
@@ -625,6 +448,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="ole.Control.html#getActive">ole.Control#getActive</a>
+    </li></ul></dd>
     
 
     
@@ -730,6 +558,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="ole.Control.html#getElement">ole.Control#getElement</a>
+    </li></ul></dd>
+    
 
     
 
@@ -833,6 +666,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="ole.Control.html#onClick">ole.Control#onClick</a>
+    </li></ul></dd>
     
 
     
@@ -965,6 +803,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="ole.Control.html#setEditor">ole.Control#setEditor</a>
+    </li></ul></dd>
+    
 
     
 
@@ -1095,6 +938,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="ole.Control.html#setMap">ole.Control#setMap</a>
+    </li></ul></dd>
     
 
     

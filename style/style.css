@@ -1,0 +1,88 @@
+<style>
+html {
+  margin:0px;
+  padding:0px;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin:0px;
+  padding:0px;
+  height: 100%;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a.active {
+  font-weight: bold;
+}
+
+#header {
+  border-bottom: 2px solid #61849c;
+  color: #61849c;
+  height: 20px;
+  padding: 20px;
+  text-align: right;
+}
+
+#header a {
+  color: #61849c;
+  margin-right: 10px;
+}
+
+#header a:last-child {
+    margin-right: 0;
+}
+
+#map {
+  position: absolute;
+  left: 0;
+  top: 62px;
+  bottom: 0;
+  right: 0;
+ }
+
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  min-height: 100%;
+}
+
+#brand {
+  font-size: 20px;
+  font-weight: bold;
+  height: 60px;
+  line-height: 60px;
+  left: 10px;
+  position: absolute;
+  top: 0;
+}
+
+#promo {
+  position: absolute;
+  bottom: 50px;
+  background-color: red;
+  right: -65px;
+  transform: rotate(-45deg);
+}
+
+#promo-text {
+  border: 2px solid white;
+  color: white;
+  font-weight: bold;
+  margin: 2px;
+  padding: 0 70px;
+}
+
+</style>
