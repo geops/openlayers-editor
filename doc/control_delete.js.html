@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: control/draw.js</title>
+    <title>JSDoc: Source: control/delete.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: control/draw.js</h1>
+    <h1 class="page-title">Source: control/delete.js</h1>
 
     
 
@@ -27,52 +27,48 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import Control from './control.js';
-import drawPointPng from '../../img/draw_point.png';
-import drawPolygonPng from '../../img/draw_polygon.png';
-import drawLinePng from '../../img/draw_line.png';
+import delPng from '../../img/delete.png';
 
 /**
- * Control for drawing features.
- * @extends {ole.Control}
- * @alias ole.DrawControl
- */
-export default class DrawControl extends Control {
+* Control for deleting geometries.
+* @extends {ole.Control}
+* @alias ole.DeleteControl
+*/
+export default class DeleteControl extends Control {
   /**
-   * @param {Object} options Tool options.
-   * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
-   *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
-   *   Default is 'Point'.
+   * @inheritdoc
+   * @prram {Object} [options] Control options.
+   * @param {ol.source.Vector} [source] vector to delete.
+   * @param {boolean} [multi] select multiple if set to true
+   *   (default is false).
    */
   constructor(options) {
-    var image;
-
-    switch (options.type) {
-      case 'Polygon':
-        image = drawPolygonPng;
-        break;
-      case 'LineString':
-        image = drawLinePng;
-        break;
-      default:
-        image = drawPointPng;
-    }
-
     super(
       Object.assign(options, {
-        title: 'Draw ' + (options.type || 'Point'),
-        className: 'ole-control-draw',
-        image: image
+        title: 'Delete geometry',
+        className: 'ole-control-delete',
+        image: delPng
       })
     );
 
     /**
-     * @type {ol.interaction.Draw}
+     * @type {ol.interaction.Select}
      * @private
      */
-    this.drawInteraction = new ol.interaction.Draw({
-      type: options.type || 'Point',
-      features: options.features,
-      source: options.source
+    this.selectInteraction = new ol.interaction.Select({
+      source: this.source,
+      multi: options.multi || false
+    });
+
+    /**
+     * Select Interaction to clear and remove features
+     * @private
+     */
+    this.selectInteraction.on('select', evt => {
+      evt.selected.forEach(f => {
+        this.source.removeFeature(f);
+        this.selectInteraction.getFeatures().clear();
+      });
     });
   }
 
@@ -80,7 +76,7 @@ export default class DrawControl extends Control {
    * @inheritdoc
    */
   activate() {
-    this.map.addInteraction(this.drawInteraction);
+    this.map.addInteraction(this.selectInteraction);
     super.activate();
   }
 
@@ -88,7 +84,7 @@ export default class DrawControl extends Control {
    * @inheritdoc
    */
   deactivate() {
-    this.map.removeInteraction(this.drawInteraction);
+    this.map.removeInteraction(this.selectInteraction);
     super.deactivate();
   }
 }

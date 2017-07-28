@@ -10,9 +10,6 @@ export default class DeleteControl extends Control {
   /**
    * @inheritdoc
    * @prram {Object} [options] Control options.
-   * @param {string} [options.className] Name of the control's HTML class.
-   * @param {string} [options.title] Title of the control toolbar button
-   * @param {Image} [options.image] Control toolbar image.
    * @param {ol.source.Vector} [source] vector to delete.
    * @param {boolean} [multi] select multiple if set to true
    *   (default is false).

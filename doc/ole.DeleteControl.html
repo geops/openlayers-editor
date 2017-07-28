@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: DrawControl</title>
+    <title>JSDoc: Class: DeleteControl</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: DrawControl</h1>
+    <h1 class="page-title">Class: DeleteControl</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2>DrawControl</h2>
+        <h2>DeleteControl</h2>
         
-            <div class="class-description">Control for drawing features.</div>
+            <div class="class-description">Control for deleting geometries.</div>
         
     
 </header>
@@ -44,7 +44,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="DrawControl"><span class="type-signature"></span>new DrawControl<span class="signature">(options, type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DeleteControl"><span class="type-signature"></span>new DeleteControl<span class="signature">(source<span class="signature-attributes">opt</span>, multi<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -85,44 +85,13 @@
 
         <tr>
             
-                <td class="name"><code>options</code></td>
+                <td class="name"><code>source</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Tool options.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
+<span class="param-type">ol.source.Vector</span>
 
 
             
@@ -142,9 +111,41 @@
 
             
 
-            <td class="description last">Geometry type ('Point', 'LineString', 'Polygon',
-  'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
-  Default is 'Point'.</td>
+            <td class="description last">vector to delete.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>multi</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">select multiple if set to true
+  (default is false).</td>
         </tr>
 
     
@@ -185,7 +186,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="control_draw.js.html">control/draw.js</a>, <a href="control_draw.js.html#line11">line 11</a>
+        <a href="control_delete.js.html">control/delete.js</a>, <a href="control_delete.js.html#line9">line 9</a>
     </li></ul></dd>
     
 
