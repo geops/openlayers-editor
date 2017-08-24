@@ -40,7 +40,7 @@
 
 /* buttons */
 #ole-toolbar button.ole-control {
-    padding: 5px;
+  padding: 5px;
 }
 
 #ole-toolbar button.ole-control img {
@@ -55,8 +55,9 @@
   right: 20px;
   padding: 10px;
   position: absolute;
+  text-align: left;
   top: 75px;
-  width: 310px;
+  width: 330px;
   z-index: 2;
 }
 

@@ -18,6 +18,8 @@ export default class CadControl extends Control {
    *  snap points around the closest feature.
    * @param {Number} [options.snapPointDist] Distance of the
    *   snap points in pixel (default is 30).
+   * @param {Boolean} [options.useMapUnits] Whether to use map units
+   *   as measurement for point snapping. Default is false (pixel are used).
    */
   constructor(options) {
     super(
@@ -27,6 +29,12 @@ export default class CadControl extends Control {
         image: cadPng
       })
     );
+
+    /**
+     * If true, map units are used for point snapping.
+     * The default measurement are pixels.
+     */
+    this.useMapUnits = options.useMapUnits;
 
     /**
      * Interaction for handling move events.
@@ -269,17 +277,26 @@ export default class CadControl extends Control {
     var featCoord = feature.getGeometry().getClosestPoint(coordinate);
 
     var px = this.map.getPixelFromCoordinate(featCoord);
-    var snapPx = [
-      [px[0] - this.snapPointDist, px[1]],
-      [px[0] + this.snapPointDist, px[1]],
-      [px[0], px[1] - this.snapPointDist],
-      [px[0], px[1] + this.snapPointDist]
-    ];
-
     var snapCoords = [];
 
-    for (var j = 0; j < snapPx.length; j++) {
-      snapCoords.push(this.map.getCoordinateFromPixel(snapPx[j]));
+    if (this.useMapUnits) {
+      snapCoords = [
+        [featCoord[0] - this.snapPointDist, px[1]],
+        [featCoord[0] + this.snapPointDist, px[1]],
+        [featCoord[0], featCoord[1] - this.snapPointDist],
+        [featCoord[0], featCoord[1] + this.snapPointDist]
+      ];
+    } else {
+      var snapPx = [
+        [px[0] - this.snapPointDist, px[1]],
+        [px[0] + this.snapPointDist, px[1]],
+        [px[0], px[1] - this.snapPointDist],
+        [px[0], px[1] + this.snapPointDist]
+      ];
+
+      for (var j = 0; j < snapPx.length; j++) {
+        snapCoords.push(this.map.getCoordinateFromPixel(snapPx[j]));
+      }
     }
 
     var snapGeom = new ol.geom.MultiPoint(snapCoords);
@@ -291,12 +308,16 @@ export default class CadControl extends Control {
    * @private
    */
   openDialog() {
+    var distLabel = this.useMapUnits ? 'map units' : 'px';
+
     var tpl = [
       '<div class="ole-dialog" id="{{className}}-dialog">' +
         '<div><input type="radio" name="radioBtn" {{#c1}}checked{{/c1}} id="aux-cb">' +
         '<label>Show snap lines</label></div>' +
         '<div><input type="radio" name="radioBtn" {{#c2}}checked{{/c2}} id="dist-cb">' +
-        '<label>Show snap points. Distance (px): </label>' +
+        '<label>Show snap points. Distance (' +
+        distLabel +
+        '): </label>' +
         '<input type="text" id="width-input" value="{{gridWidth}}"></div>' +
         '</div>'
     ].join('');
@@ -310,6 +331,7 @@ export default class CadControl extends Control {
     });
 
     this.map.getTargetElement().appendChild(div.firstChild);
+
     document.getElementById('aux-cb').addEventListener(
       'change',
       function(evt) {
