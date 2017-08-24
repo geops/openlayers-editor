@@ -12,7 +12,6 @@ export default class MoveControl extends Control {
    * @param {Object} options Tool options.
    */
   constructor(options) {
-
     super(
       Object.assign(options, {
         title: 'Move geometries',
@@ -45,10 +44,10 @@ export default class MoveControl extends Control {
      * @private
      */
     this.pointerInteraction = new ol.interaction.Pointer({
-        handleDownEvent: this.handleDownEvent.bind(this),
-        handleDragEvent: this.handleDragEvent.bind(this),
-        handleMoveEvent: this.handleMoveEvent.bind(this),
-        handleUpEvent: this.handleUpEvent.bind(this)
+      handleDownEvent: this.handleDownEvent.bind(this),
+      handleDragEvent: this.handleDragEvent.bind(this),
+      handleMoveEvent: this.handleMoveEvent.bind(this),
+      handleUpEvent: this.handleUpEvent.bind(this)
     });
   }
 
@@ -58,8 +57,10 @@ export default class MoveControl extends Control {
    * @private
    */
   handleDownEvent(evt) {
-    var feature = evt.map.forEachFeatureAtPixel(evt.pixel, function(f) {
-      return f;
+    var feature = evt.map.forEachFeatureAtPixel(evt.pixel, f => {
+      if (this.source.getFeatures().indexOf(f) > -1) {
+        return f;
+      }
     });
 
     if (feature) {
@@ -101,8 +102,7 @@ export default class MoveControl extends Control {
     if (this.cursor_) {
       var element = evt.map.getTargetElement();
 
-      var feature = evt.map.forEachFeatureAtPixel(evt.pixel,
-        function(f) {
+      var feature = evt.map.forEachFeatureAtPixel(evt.pixel, function(f) {
         return f;
       });
 
