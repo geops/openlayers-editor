@@ -14,7 +14,6 @@ export default class Editor {
    *   Default is true.
    */
   constructor(map, opt_options) {
-
     /**
      * @private
      * @type {ol.Map}
@@ -83,11 +82,11 @@ export default class Editor {
    * Removes the editor from the map.
    */
   remove() {
-    this.controls.forEach((c) => {
+    this.controls.forEach(c => {
       c.deactivate();
     });
 
-    this.toolbar._destroy();
+    this.toolbar.destroy();
   }
 
   /**
@@ -134,7 +133,7 @@ export default class Editor {
       }
     }
 
-    var ctrls = this.controls.getArray().filter( c => {
+    var ctrls = this.controls.getArray().filter(c => {
       return c.getActive();
     });
 
