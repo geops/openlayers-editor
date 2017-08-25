@@ -336,6 +336,7 @@ export default class CadControl extends Control {
       'change',
       function(evt) {
         this.showSnapLines = evt.target.checked;
+        this.showSnapPoints = !this.showSnapLines;
       }.bind(this)
     );
 
@@ -343,6 +344,7 @@ export default class CadControl extends Control {
       'change',
       function(evt) {
         this.showSnapPoints = evt.target.checked;
+        this.showSnapLines = !this.showSnapPoints;
       }.bind(this)
     );
 
