@@ -17,7 +17,7 @@ export default class CadControl extends Control {
    * @param {Boolean} [options.showSnapPoints] Whether to show
    *  snap points around the closest feature.
    * @param {Number} [options.snapPointDist] Distance of the
-   *   snap points in pixel (default is 30).
+   *   snap points (default is 30).
    * @param {Boolean} [options.useMapUnits] Whether to use map units
    *   as measurement for point snapping. Default is false (pixel are used).
    */
@@ -281,8 +281,8 @@ export default class CadControl extends Control {
 
     if (this.useMapUnits) {
       snapCoords = [
-        [featCoord[0] - this.snapPointDist, px[1]],
-        [featCoord[0] + this.snapPointDist, px[1]],
+        [featCoord[0] - this.snapPointDist, featCoord[1]],
+        [featCoord[0] + this.snapPointDist, featCoord[1]],
         [featCoord[0], featCoord[1] - this.snapPointDist],
         [featCoord[0], featCoord[1] + this.snapPointDist]
       ];
