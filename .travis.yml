@@ -10,6 +10,7 @@ after_success:
   - npm run-script doc
   - echo 'node_modules' > .gitignore
   - cp node_modules/openlayers/dist/ol-debug.js dist/ol-debug.js
+  - echo 'ole.geops.de' > CNAME
 
 deploy:
   provider: pages
