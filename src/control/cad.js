@@ -235,12 +235,28 @@ export default class CadControl extends Control {
    */
   drawSnapLines(features, coordinate) {
     var auxCoords = [];
+
     for (var i = 0; i < features.length; i++) {
       var geom = features[i].getGeometry();
+      var featureCoord = geom.getCoordinates();
 
       if (geom instanceof ol.geom.Point) {
-        auxCoords.push(geom.getCoordinates());
+        auxCoords.push(featureCoord);
       } else {
+        //filling snapLayer with features vertex
+        let source = this.snapLayer.getSource();
+
+        if (geom instanceof ol.geom.LineString) {
+          for (i = 0; i < featureCoord.length; i++) {
+            auxCoords.push(featureCoord[i]);
+          }
+        } else if (geom instanceof ol.geom.Polygon) {
+          for (i = 0; i < featureCoord[0].length; i++) {
+            auxCoords.push(featureCoord[0][i]);
+          }
+        }
+
+        //filling auxCoords
         var coords = ol.geom.Polygon
           .fromExtent(geom.getExtent())
           .getCoordinates()[0];
@@ -285,9 +301,9 @@ export default class CadControl extends Control {
 
     var vertArray;
     var horiArray;
-    var snapLayerLength = this.snapLayer.getSource().getFeatures().length;
-    if (snapLayerLength) {
-      this.snapLayer.getSource().getFeatures().forEach(function(feature) {
+    var snapFeatures = this.snapLayer.getSource().getFeatures();
+    if (snapFeatures.length) {
+      snapFeatures.forEach(function(feature) {
         let featureCoord = feature.getGeometry().getCoordinates();
         let x0 = featureCoord[0][0];
         let x1 = featureCoord[1][0];
@@ -307,9 +323,7 @@ export default class CadControl extends Control {
       if (vertArray && horiArray) {
         snapPt.push(vertArray);
         snapPt.push(horiArray);
-        this.linesLayer
-          .getSource()
-          .addFeatures(this.snapLayer.getSource().getFeatures());
+        this.linesLayer.getSource().addFeatures(snapFeatures);
 
         this.snapLayer.getSource().clear();
         var snapGeom = new ol.geom.Point(snapPt);
