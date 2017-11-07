@@ -80,9 +80,28 @@ a.active {
 #promo-text {
   border: 2px solid white;
   color: white;
+  font-size: 14px;
+  font-family: Sans-Serif;
   font-weight: bold;
   margin: 2px;
   padding: 0 70px;
 }
+
+#promo a:hover {
+  text-decoration: none;
+}
+
+#copyrightDiv {
+  font-family: Arial;
+  font-size: 12px;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.7);
+  position: absolute;
+  padding: 5px;
+  bottom: 0;
+  left:0;
+  right: 0;
+}
+
 
 </style>
