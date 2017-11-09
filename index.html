@@ -4,10 +4,10 @@
     <link rel="stylesheet" type="text/css" href="style/style.css">
   </head>
   <body>
-    <script src="dist/ol-debug.js"></script>
+    <script src="node_modules/openlayers/dist/ol-debug.js"></script>
     <script src="dist/ole.js"></script>
     <div id="app">
-     <div id="header">
+      <div id="header">
         <nav>
           <div id="brand">OpenLayers Editor</div>
           <a href="#" class="active" >Demo</a>
@@ -15,8 +15,10 @@
           <a target="_blank" href="https://github.com/geops/ole2">Code</a>
         </nav>
       </div>
-     <div id="map">
-      </div>
+      <div id="map"></div>
+    </div>
+    <div id="copyrightDiv">
+      © OpenStreetMap contributors © geOps MapTiles © SBB CFF FFS
     </div>
     <div id="promo">
       <a href="http://geops.de/karriere" target="_blank">
@@ -28,10 +30,35 @@
           source: new ol.source.Vector({})
       });
 
+      const PROJECTION = ol.proj.get('EPSG:3857');
+      const PROJECTION_EXTENT = PROJECTION.getExtent();
+
       var map = new ol.Map({
         layers: [
           new ol.layer.Tile({
-            source: new ol.source.OSM()
+            source: new ol.source.WMTS({
+              url: 'https://api.mapbox.com/v4/geops.db9390ee/' +
+              '{TileMatrix}/{TileCol}/{TileRow}.png?access_token=' +
+              'pk.eyJ1IjoiZ2VvcHMiLCJhIjoiVnlkeXdzayJ9.aGtp4w0C-0vZZae1HneLGg',
+              requestEncoding: 'REST',
+              crossOrigin: 'anonymous',
+              layer: '0',
+              format: 'image/png',
+              PROJECTION,
+              tileGrid: new ol.tilegrid.WMTS({
+                origin: ol.extent.getTopLeft(PROJECTION_EXTENT),
+                resolutions: [156543.03392811998, 78271.51696419998,
+                  39135.758481959994, 19567.879241008, 9783.939620504,
+                  4891.969810252, 2445.984905126, 1222.9924525644,
+                  611.4962262807999, 305.74811314039994, 152.87405657047998,
+                  76.43702828523999, 38.21851414248, 19.109257071295996,
+                  9.554628535647998, 4.777314267823999, 2.3886571339119995,
+                  1.1943285669559998, 0.5971642834779999, 0.29858214174039993
+                ],
+                matrixIds: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                  '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
+              })
+            })
           }),
           editLayer
         ],

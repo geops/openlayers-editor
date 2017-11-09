@@ -77,6 +77,25 @@ export default class CadControl extends Control {
     });
 
     /**
+     * Layer for colored lines indicating
+     * intesection point between snapping lines.
+     * @type {ol.layer.Vector}
+     * @private
+     */
+    this.linesLayer = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: [
+        new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            width: 1,
+            lineDash: [5, 10],
+            color: '#FF530D'
+          })
+        })
+      ]
+    });
+
+    /**
      * Snap tolerance in pixel.
      * @type {Number}
      * @private
@@ -127,6 +146,7 @@ export default class CadControl extends Control {
   setMap(map) {
     super.setMap(map);
     this.map.addLayer(this.snapLayer);
+    this.map.addLayer(this.linesLayer);
 
     // Ensure that the snap interaction is at the last position
     // as it must be the first to handle the  pointermove event.
@@ -158,6 +178,7 @@ export default class CadControl extends Control {
       features.splice(features.indexOf(editFeature), 1);
     }
 
+    this.linesLayer.getSource().clear();
     this.snapLayer.getSource().clear();
 
     if (this.showSnapLines) {
@@ -214,12 +235,28 @@ export default class CadControl extends Control {
    */
   drawSnapLines(features, coordinate) {
     var auxCoords = [];
+
     for (var i = 0; i < features.length; i++) {
       var geom = features[i].getGeometry();
+      var featureCoord = geom.getCoordinates();
 
       if (geom instanceof ol.geom.Point) {
-        auxCoords.push(geom.getCoordinates());
+        auxCoords.push(featureCoord);
       } else {
+        //filling snapLayer with features vertex
+        let source = this.snapLayer.getSource();
+
+        if (geom instanceof ol.geom.LineString) {
+          for (i = 0; i < featureCoord.length; i++) {
+            auxCoords.push(featureCoord[i]);
+          }
+        } else if (geom instanceof ol.geom.Polygon) {
+          for (i = 0; i < featureCoord[0].length; i++) {
+            auxCoords.push(featureCoord[0][i]);
+          }
+        }
+
+        //filling auxCoords
         var coords = ol.geom.Polygon
           .fromExtent(geom.getExtent())
           .getCoordinates()[0];
@@ -241,10 +278,8 @@ export default class CadControl extends Control {
           ? -this.snapTolerance * 2
           : this.snapTolerance * 2;
 
-        lineCoords = [
-          this.map.getCoordinateFromPixel([auxPx[0], newY]),
-          auxCoords[i]
-        ];
+        let newPt = this.map.getCoordinateFromPixel([auxPx[0], newY]);
+        lineCoords = [[auxCoords[i][0], newPt[1]], auxCoords[i]];
       } else if (
         px[1] > auxPx[1] - this.snapTolerance / 2 &&
         px[1] < auxPx[1] + this.snapTolerance / 2
@@ -254,15 +289,45 @@ export default class CadControl extends Control {
           ? -this.snapTolerance * 2
           : this.snapTolerance * 2;
 
-        lineCoords = [
-          this.map.getCoordinateFromPixel([newX, auxPx[1]]),
-          auxCoords[i]
-        ];
+        let newPt = this.map.getCoordinateFromPixel([newX, auxPx[1]]);
+        lineCoords = [[newPt[0], auxCoords[i][1]], auxCoords[i]];
       }
 
       if (lineCoords) {
         var g = new ol.geom.LineString(lineCoords);
         this.snapLayer.getSource().addFeature(new ol.Feature(g));
+      }
+    }
+
+    var vertArray;
+    var horiArray;
+    var snapFeatures = this.snapLayer.getSource().getFeatures();
+    if (snapFeatures.length) {
+      snapFeatures.forEach(function(feature) {
+        let featureCoord = feature.getGeometry().getCoordinates();
+        let x0 = featureCoord[0][0];
+        let x1 = featureCoord[1][0];
+        let y0 = featureCoord[0][1];
+        let y1 = featureCoord[1][1];
+
+        if (x0 === x1) {
+          vertArray = x0;
+        }
+        if (y0 === y1) {
+          horiArray = y0;
+        }
+      });
+
+      var snapPt = [];
+
+      if (vertArray && horiArray) {
+        snapPt.push(vertArray);
+        snapPt.push(horiArray);
+        this.linesLayer.getSource().addFeatures(snapFeatures);
+
+        this.snapLayer.getSource().clear();
+        var snapGeom = new ol.geom.Point(snapPt);
+        this.snapLayer.getSource().addFeature(new ol.Feature(snapGeom));
       }
     }
   }
