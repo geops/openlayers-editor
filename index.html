@@ -4,7 +4,7 @@
     <link rel="stylesheet" type="text/css" href="style/style.css">
   </head>
   <body>
-    <script src="node_modules/openlayers/dist/ol-debug.js"></script>
+    <script src="dist/ol-debug.js"></script>
     <script src="dist/ole.js"></script>
     <div id="app">
       <div id="header">
@@ -18,7 +18,7 @@
       <div id="map"></div>
     </div>
     <div id="copyrightDiv">
-      © OpenStreetMap contributors © geOps MapTiles © SBB CFF FFS
+      © OpenStreetMap contributors © geOps MapTiles
     </div>
     <div id="promo">
       <a href="http://geops.de/karriere" target="_blank">
@@ -27,7 +27,7 @@
     </div>
     <script type="text/javascript">
       var editLayer = new ol.layer.Vector({
-          source: new ol.source.Vector({})
+        source: new ol.source.Vector()
       });
 
       const PROJECTION = ol.proj.get('EPSG:3857');
