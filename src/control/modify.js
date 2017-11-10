@@ -17,11 +17,14 @@ export default class ModifyControl extends Control {
    */
   constructor(options) {
     super(
-      Object.assign(options, {
-        title: 'Modify geometry',
-        className: 'ole-control-modify',
-        image: image
-      })
+      Object.assign(
+        {
+          title: 'Modify geometry',
+          className: 'ole-control-modify',
+          image: image
+        },
+        options
+      )
     );
 
     /**
@@ -29,8 +32,8 @@ export default class ModifyControl extends Control {
      * @private
      */
     this.selectInteraction = new ol.interaction.Select({
-        source: this.source,
-        features: this.features
+      source: this.source,
+      features: this.features
     });
 
     /**
