@@ -16,11 +16,14 @@ export default class DeleteControl extends Control {
    */
   constructor(options) {
     super(
-      Object.assign(options, {
-        title: 'Delete geometry',
-        className: 'ole-control-delete',
-        image: delPng
-      })
+      Object.assign(
+        {
+          title: 'Delete geometry',
+          className: 'ole-control-delete',
+          image: delPng
+        },
+        options
+      )
     );
 
     /**

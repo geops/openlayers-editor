@@ -13,11 +13,14 @@ export default class MoveControl extends Control {
    */
   constructor(options) {
     super(
-      Object.assign(options, {
-        title: 'Move geometries',
-        className: 'icon-move',
-        image: movePng
-      })
+      Object.assign(
+        {
+          title: 'Move geometries',
+          className: 'icon-move',
+          image: movePng
+        },
+        options
+      )
     );
 
     /**

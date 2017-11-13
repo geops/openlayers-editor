@@ -23,11 +23,14 @@ export default class CadControl extends Control {
    */
   constructor(options) {
     super(
-      Object.assign(options, {
-        title: 'CAD control',
-        className: 'ole-control-cad',
-        image: cadPng
-      })
+      Object.assign(
+        {
+          title: 'CAD control',
+          className: 'ole-control-cad',
+          image: cadPng
+        },
+        options
+      )
     );
 
     /**

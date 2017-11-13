@@ -14,11 +14,14 @@ export default class RotateControl extends Control {
    */
   constructor(options) {
     super(
-      Object.assign(options, {
-        title: 'Rotate',
-        className: 'icon-rotate',
-        image: rotatePng
-      })
+      Object.assign(
+        {
+          title: 'Rotate',
+          className: 'icon-rotate',
+          image: rotatePng
+        },
+        options
+      )
     );
 
     /**
@@ -44,7 +47,7 @@ export default class RotateControl extends Control {
      */
     this.rotateLayer = new ol.layer.Vector({
       source: new ol.source.Vector(),
-      style: (f) => {
+      style: f => {
         var rotation = f.get(this.rotateAttribute);
         return [
           new ol.style.Style({
@@ -66,7 +69,7 @@ export default class RotateControl extends Control {
    */
   onDown(evt) {
     this.dragging = false;
-    this.feature = this.map.forEachFeatureAtPixel(evt.pixel, (f) => {
+    this.feature = this.map.forEachFeatureAtPixel(evt.pixel, f => {
       if (this.source.getFeatures().indexOf(f) > -1) {
         return f;
       }

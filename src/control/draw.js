@@ -30,11 +30,14 @@ export default class DrawControl extends Control {
     }
 
     super(
-      Object.assign(options, {
-        title: 'Draw ' + (options.type || 'Point'),
-        className: 'ole-control-draw',
-        image: image
-      })
+      Object.assign(
+        {
+          title: 'Draw ' + (options.type || 'Point'),
+          className: 'ole-control-draw',
+          image: image
+        },
+        options
+      )
     );
 
     /**
