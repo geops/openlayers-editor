@@ -2,6 +2,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
@@ -31,7 +32,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         use: 'babel-loader?presets[]=es2015',
-        exclude: /(node_modules)/,
+        exclude: /node_modules(?!\/webpack-dev-server)/,
       },
       {
         test: /\.css$/,
