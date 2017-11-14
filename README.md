@@ -1,5 +1,7 @@
 # Openlayers Editor
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/geops/ole2.svg)](https://greenkeeper.io/)
+
 OpenLayers Editor (OLE) provides a set of controls for extended editing of spatial data.
 This is the new version of OLE which is based on OpenLayers 4.
 The old version using OpenLayers 2 can be found [here](https://github.com/geops/ole).
