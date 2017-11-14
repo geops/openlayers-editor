@@ -1,7 +1,7 @@
 {
-  "name": "ole.git",
-  "version": "2.0.0",
-  "description": "OpenLayers Editor 2",
+  "name": "ole",
+  "version": "0.0.1",
+  "description": "OpenLayers Editor",
   "scripts": {
     "build": "webpack",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
