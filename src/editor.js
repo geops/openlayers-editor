@@ -1,11 +1,10 @@
 import Toolbar from './toolbar.js';
 
 /**
- * Core component of ole.
+ * Core component of OLE.
  * All controls are added to this class.
- * @class
  */
-export default class Editor {
+class Editor {
   /**
    * Initialization of the editor.
    * @param {ol.Map} map The map object.
@@ -69,9 +68,10 @@ export default class Editor {
    * @param {ol.Collection<ole.Control>} controls Collection of controls.
    */
   addControls(controls) {
-    controls = controls instanceof ol.Collection
-      ? controls
-      : new ol.Collection(controls);
+    controls =
+      controls instanceof ol.Collection
+        ? controls
+        : new ol.Collection(controls);
 
     for (var i = 0; i < controls.getLength(); i++) {
       this.addControl(controls.item(i));
@@ -126,7 +126,8 @@ export default class Editor {
     if (ctrl.getActive() && ctrl.standalone) {
       for (var i = 0; i < this.controls.getLength(); i++) {
         if (
-          this.controls.item(i) !== ctrl && this.controls.item(i).standalone
+          this.controls.item(i) !== ctrl &&
+          this.controls.item(i).standalone
         ) {
           this.controls.item(i).deactivate();
         }
@@ -141,3 +142,5 @@ export default class Editor {
     this.activeControls.extend(ctrls);
   }
 }
+
+export default Editor;

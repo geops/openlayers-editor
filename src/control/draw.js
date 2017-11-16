@@ -8,7 +8,7 @@ import drawLinePng from '../../img/draw_line.png';
  * @extends {ole.Control}
  * @alias ole.DrawControl
  */
-export default class DrawControl extends Control {
+class DrawControl extends Control {
   /**
    * @param {Object} options Tool options.
    * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
@@ -67,3 +67,5 @@ export default class DrawControl extends Control {
     super.deactivate();
   }
 }
+
+export default DrawControl;

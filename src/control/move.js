@@ -2,11 +2,11 @@ import Control from './control.js';
 import movePng from '../../img/move.png';
 
 /**
-* Control for moving geometries.
-* @extends {ole.Control}
-* @alias ole.MoveControl
-*/
-export default class MoveControl extends Control {
+ * Control for moving geometries.
+ * @extends {ole.Control}
+ * @alias ole.MoveControl
+ */
+class MoveControl extends Control {
   /**
    * Control for moving geometries,
    * @param {Object} options Tool options.
@@ -149,3 +149,5 @@ export default class MoveControl extends Control {
     super.deactivate();
   }
 }
+
+export default MoveControl;

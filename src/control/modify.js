@@ -6,7 +6,7 @@ import image from '../../img/modify_geometry.png';
  * @extends {ole.Control}
  * @alias ole.ModifyControl
  */
-export default class ModifyControl extends Control {
+class ModifyControl extends Control {
   /**
    * @param {Object} options Tool options.
    * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
@@ -63,3 +63,5 @@ export default class ModifyControl extends Control {
     super.deactivate();
   }
 }
+
+export default ModifyControl;
