@@ -18,7 +18,7 @@ script: npm run build
 after_script: greenkeeper-lockfile-upload
 
 after_success:
-  - npm run-script doc
+  - npm run doc
   - echo 'node_modules' > .gitignore
   - cp node_modules/openlayers/dist/ol-debug.js dist/ol-debug.js
   - echo $CNAME > CNAME
