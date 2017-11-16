@@ -22,6 +22,11 @@ after_success:
   - echo 'node_modules' > .gitignore
   - echo $CNAME > CNAME
 
+cache:
+  yarn: true
+  directories:
+    - "node_modules"
+
 deploy:
   provider: pages
   skip_cleanup: true
