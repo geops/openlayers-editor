@@ -10,6 +10,8 @@ module.exports = {
 
   output: {
     filename: 'ole.js',
+    library: 'ole',
+    libraryTarget: 'window',
     publicPath: '/dist/',
     path: path.resolve(__dirname, 'dist')
   },

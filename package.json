@@ -13,6 +13,7 @@
     "Editor"
   ],
   "license": "BSD-2-Clause",
+  "main" : "dist/ole.js",
   "repository": "github:geops/ole2",
   "devDependencies": {
     "babel": "^6.23.0",

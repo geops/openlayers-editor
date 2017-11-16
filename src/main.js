@@ -1,5 +1,3 @@
-window.ole = {};
-
 import Editor from './editor.js';
 import Control from './control/control.js';
 import CadControl from './control/cad.js';
@@ -9,7 +7,7 @@ import MoveControl from './control/move.js';
 import ModifyControl from './control/modify.js';
 import DeleteControl from './control/delete.js';
 
-window.ole = {
+const ole = {
   Editor: Editor,
   Control: Control,
   CadControl: CadControl,
@@ -19,3 +17,5 @@ window.ole = {
   ModifyControl: ModifyControl,
   DeleteControl: DeleteControl
 };
+
+module.exports = ole;
