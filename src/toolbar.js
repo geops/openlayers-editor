@@ -5,7 +5,7 @@ import '../style/ole.css';
  * @class
  * @alias ole.Toolbar
  */
-export default class Toolbar extends ol.control.Control {
+class Toolbar extends ol.control.Control {
   /**
    * Constructor.
    * @param {ol.Map} map The map object.
@@ -13,7 +13,6 @@ export default class Toolbar extends ol.control.Control {
    *   to display in the toolbar.
    */
   constructor(map, controls) {
-
     var element = document.createElement('div');
     element.setAttribute('id', 'ole-toolbar');
 
@@ -60,3 +59,5 @@ export default class Toolbar extends ol.control.Control {
     }
   }
 }
+
+export default Toolbar;

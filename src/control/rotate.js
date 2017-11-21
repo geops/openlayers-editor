@@ -7,7 +7,7 @@ import rotateMapPng from '../../img/rotate_map.png';
  * @extends {ole.Control}
  * @alias ole.RotateControl
  */
-export default class RotateControl extends Control {
+class RotateControl extends Control {
   /**
    * @param {string} [options.rotateAttribute] Name of a feature attribute
    *   that is used for storing the rotation in rad.
@@ -82,10 +82,11 @@ export default class RotateControl extends Control {
       );
 
       // rotation between clicked coordinate and feature center
-      this.initialRotation = Math.atan2(
-        evt.coordinate[1] - this.center[1],
-        evt.coordinate[0] - this.center[0]
-      ) + this.feature.get(this.rotateAttribute);
+      this.initialRotation =
+        Math.atan2(
+          evt.coordinate[1] - this.center[1],
+          evt.coordinate[0] - this.center[0]
+        ) + this.feature.get(this.rotateAttribute);
     }
 
     return true;
@@ -153,3 +154,5 @@ export default class RotateControl extends Control {
     super.deactivate();
   }
 }
+
+export default RotateControl;

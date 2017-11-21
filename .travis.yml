@@ -18,7 +18,7 @@ script: npm run build
 after_script: greenkeeper-lockfile-upload
 
 after_success:
-  - npm run-script doc
+  - npm run doc
   - echo 'node_modules' > .gitignore
   - echo $CNAME > CNAME
 

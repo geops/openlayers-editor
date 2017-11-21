@@ -7,7 +7,7 @@ import cadPng from '../../img/cad.png';
  * @extends {ole.Control}
  * @alias ole.CadControl
  */
-export default class CadControl extends Control {
+class CadControl extends Control {
   /**
    * @param {Object} options Tool options.
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
@@ -260,9 +260,9 @@ export default class CadControl extends Control {
         }
 
         //filling auxCoords
-        var coords = ol.geom.Polygon
-          .fromExtent(geom.getExtent())
-          .getCoordinates()[0];
+        var coords = ol.geom.Polygon.fromExtent(
+          geom.getExtent()
+        ).getCoordinates()[0];
         auxCoords = auxCoords.concat(coords);
       }
     }
@@ -277,9 +277,8 @@ export default class CadControl extends Control {
         px[0] < auxPx[0] + this.snapTolerance / 2
       ) {
         var newY = px[1];
-        newY += px[1] < auxPx[1]
-          ? -this.snapTolerance * 2
-          : this.snapTolerance * 2;
+        newY +=
+          px[1] < auxPx[1] ? -this.snapTolerance * 2 : this.snapTolerance * 2;
 
         let newPt = this.map.getCoordinateFromPixel([auxPx[0], newY]);
         lineCoords = [[auxCoords[i][0], newPt[1]], auxCoords[i]];
@@ -288,9 +287,8 @@ export default class CadControl extends Control {
         px[1] < auxPx[1] + this.snapTolerance / 2
       ) {
         var newX = px[0];
-        newX += px[0] < auxPx[0]
-          ? -this.snapTolerance * 2
-          : this.snapTolerance * 2;
+        newX +=
+          px[0] < auxPx[0] ? -this.snapTolerance * 2 : this.snapTolerance * 2;
 
         let newPt = this.map.getCoordinateFromPixel([newX, auxPx[1]]);
         lineCoords = [[newPt[0], auxCoords[i][1]], auxCoords[i]];
@@ -457,3 +455,5 @@ export default class CadControl extends Control {
     this.closeDialog();
   }
 }
+
+export default CadControl;
