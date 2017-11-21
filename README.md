@@ -16,6 +16,7 @@ Translations would be nice, too.
 - Drawing line, point and polygon features
 - Moving and rotating geometries
 - Modifying geometries
+- Deleting geometries
 - Toolbar for activating and deactivating controls
 
 ## Demo
