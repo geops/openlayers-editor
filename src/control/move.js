@@ -34,13 +34,13 @@ class MoveControl extends Control {
      * @private
      */
     this.cursor = 'pointer';
+    this.previousCursor = null;
 
     /**
      * @type {ol.Feature}
      * @private
      */
     this.feature = null;
-    this.previousCursor = null;
 
     /**
      * @type {ol.interaction.Pointer}
@@ -102,7 +102,7 @@ class MoveControl extends Control {
    * @private
    */
   handleMoveEvent(evt) {
-    if (this.cursor_) {
+    if (this.cursor) {
       var element = evt.map.getTargetElement();
 
       var feature = evt.map.forEachFeatureAtPixel(evt.pixel, function(f) {
@@ -110,13 +110,13 @@ class MoveControl extends Control {
       });
 
       if (feature) {
-        if (element.style.cursor !== this.cursor_) {
-          this.previousCursor_ = element.style.cursor;
-          element.style.cursor = this.cursor_;
+        if (element.style.cursor !== this.cursor) {
+          this.previousCursor = element.style.cursor;
+          element.style.cursor = this.cursor;
         }
-      } else if (this.previousCursor_ !== null) {
-        element.style.cursor = this.previousCursor_;
-        this.previousCursor_ = null;
+      } else if (this.previousCursor !== null) {
+        element.style.cursor = this.previousCursor;
+        this.previousCursor = null;
       }
     }
   }
