@@ -23,7 +23,7 @@
     "css-loader": "^0.28.7",
     "file-loader": "^1.1.5",
     "husky": "^0.14.3",
-    "image-webpack-loader": "^3.3.0",
+    "image-webpack-loader": "^4.0.0",
     "jsdoc": "^3.4.3",
     "jsdoc-export-default-interop": "^0.3.1",
     "lint-staged": "^6.0.0",
