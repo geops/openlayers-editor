@@ -89,7 +89,11 @@ class RotateControl extends Control {
         ) + this.feature.get(this.rotateAttribute);
     }
 
-    return true;
+    if (this.feature) {
+      return true;
+    }
+
+    return false;
   }
 
   /**
