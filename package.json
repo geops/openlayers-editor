@@ -33,7 +33,7 @@
     "pngquant-bin": "^3.1.1",
     "prettier": "^1.8.2",
     "style-loader": "^0.20.0",
-    "uglifyjs-webpack-plugin": "^1.0.1",
+    "uglifyjs-webpack-plugin": "^1.1.8",
     "url-loader": "^0.6.2",
     "webpack": "~3.10.0",
     "webpack-dev-server": "^2.4.2"
