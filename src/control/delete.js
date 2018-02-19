@@ -2,11 +2,11 @@ import Control from './control.js';
 import delPng from '../../img/delete.png';
 
 /**
-* Control for deleting geometries.
-* @extends {ole.Control}
-* @alias ole.DeleteControl
-*/
-export default class DeleteControl extends Control {
+ * Control for deleting geometries.
+ * @extends {ole.Control}
+ * @alias ole.DeleteControl
+ */
+class DeleteControl extends Control {
   /**
    * @inheritdoc
    * @prram {Object} [options] Control options.
@@ -63,3 +63,5 @@ export default class DeleteControl extends Control {
     super.deactivate();
   }
 }
+
+export default DeleteControl;

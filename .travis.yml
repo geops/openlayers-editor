@@ -5,22 +5,19 @@ node_js:
   - 6
   - 4
 
-before_install:
-  - npm install -g npm
-  - npm install -g greenkeeper-lockfile@1
-install:
-  - npm install
+install: npm install
 
-before_script: greenkeeper-lockfile-update
 script: npm run build
-# Only the node version 6 job will upload the lockfile
-after_script: greenkeeper-lockfile-upload
 
 after_success:
-  - npm run-script doc
+  - npm run doc
   - echo 'node_modules' > .gitignore
-  - cp node_modules/openlayers/dist/ol-debug.js dist/ol-debug.js
   - echo $CNAME > CNAME
+
+cache:
+  yarn: true
+  directories:
+    - "node_modules"
 
 deploy:
   provider: pages
@@ -28,4 +25,4 @@ deploy:
   github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
   on:
     branch: master
-  node: '8'
+    node: '8'

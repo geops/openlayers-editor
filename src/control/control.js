@@ -3,7 +3,7 @@
  * @extends ol.control.Control
  * @alias ole.Control
  */
-export default class Control extends ol.control.Control {
+class Control extends ol.control.Control {
   /**
    * @inheritdoc
    * @param {Object} options Control options.
@@ -50,7 +50,8 @@ export default class Control extends ol.control.Control {
      * @type {ol.source.Vector}
      * @private
      */
-    this.source = options.source ||
+    this.source =
+      options.source ||
       new ol.source.Vector({
         features: options.features
       });
@@ -136,3 +137,5 @@ export default class Control extends ol.control.Control {
     return this.active;
   }
 }
+
+export default Control;

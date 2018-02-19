@@ -3,14 +3,12 @@ html {
   margin:0px;
   padding:0px;
   height: 100%;
-  overflow: hidden;
 }
 
 body {
   margin:0px;
   padding:0px;
   height: 100%;
-  overflow: hidden;
 }
 
 a {
@@ -54,9 +52,12 @@ a.active {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   min-height: 100%;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 #brand {
@@ -75,6 +76,7 @@ a.active {
   background-color: red;
   right: -65px;
   transform: rotate(-45deg);
+  z-index: 1;
 }
 
 #promo-text {
@@ -102,6 +104,5 @@ a.active {
   left:0;
   right: 0;
 }
-
 
 </style>
