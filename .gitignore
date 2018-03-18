@@ -1,6 +1,6 @@
 node_modules
 *.swp
-dist
+build
 doc
 package-lock.json
 yarn.lock
