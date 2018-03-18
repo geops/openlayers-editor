@@ -1,4 +1,4 @@
-import Control from './control.js';
+import Control from './control';
 import delPng from '../../img/delete.png';
 
 /**
@@ -15,16 +15,11 @@ class DeleteControl extends Control {
    *   (default is false).
    */
   constructor(options) {
-    super(
-      Object.assign(
-        {
-          title: 'Delete geometry',
-          className: 'ole-control-delete',
-          image: delPng
-        },
-        options
-      )
-    );
+    super(Object.assign({
+      title: 'Delete geometry',
+      className: 'ole-control-delete',
+      image: delPng,
+    }, options));
 
     /**
      * @type {ol.interaction.Select}
@@ -32,15 +27,15 @@ class DeleteControl extends Control {
      */
     this.selectInteraction = new ol.interaction.Select({
       source: this.source,
-      multi: options.multi || false
+      multi: options.multi || false,
     });
 
     /**
      * Select Interaction to clear and remove features
      * @private
      */
-    this.selectInteraction.on('select', evt => {
-      evt.selected.forEach(f => {
+    this.selectInteraction.on('select', (evt) => {
+      evt.selected.forEach((f) => {
         this.source.removeFeature(f);
         this.selectInteraction.getFeatures().clear();
       });

@@ -1,4 +1,4 @@
-import Control from './control.js';
+import Control from './control';
 import drawPointPng from '../../img/draw_point.png';
 import drawPolygonPng from '../../img/draw_polygon.png';
 import drawLinePng from '../../img/draw_line.png';
@@ -16,7 +16,7 @@ class DrawControl extends Control {
    *   Default is 'Point'.
    */
   constructor(options) {
-    var image;
+    let image = null;
 
     switch (options.type) {
       case 'Polygon':
@@ -29,16 +29,11 @@ class DrawControl extends Control {
         image = drawPointPng;
     }
 
-    super(
-      Object.assign(
-        {
-          title: 'Draw ' + (options.type || 'Point'),
-          className: 'ole-control-draw',
-          image: image
-        },
-        options
-      )
-    );
+    super(Object.assign({
+      title: `Draw ${(options.type || 'Point')}`,
+      className: 'ole-control-draw',
+      image,
+    }, options));
 
     /**
      * @type {ol.interaction.Draw}
@@ -47,7 +42,7 @@ class DrawControl extends Control {
     this.drawInteraction = new ol.interaction.Draw({
       type: options.type || 'Point',
       features: options.features,
-      source: options.source
+      source: options.source,
     });
   }
 

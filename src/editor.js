@@ -1,4 +1,4 @@
-import Toolbar from './toolbar.js';
+import Toolbar from './toolbar';
 
 /**
  * Core component of OLE.
@@ -12,7 +12,7 @@ class Editor {
    * @param {Boolean} [options.showToolbar] Whether to show the toolbar.
    *   Default is true.
    */
-  constructor(map, opt_options) {
+  constructor(map, opts) {
     /**
      * @private
      * @type {ol.Map}
@@ -35,7 +35,7 @@ class Editor {
      * @private
      * @type {Object}
      */
-    this.options = opt_options || {};
+    this.options = opts || {};
 
     /**
      * Feature that is currently edited.
@@ -68,13 +68,11 @@ class Editor {
    * @param {ol.Collection<ole.Control>} controls Collection of controls.
    */
   addControls(controls) {
-    controls =
-      controls instanceof ol.Collection
-        ? controls
-        : new ol.Collection(controls);
+    const ctrls = controls instanceof ol.Collection ? controls
+      : new ol.Collection(controls);
 
-    for (var i = 0; i < controls.getLength(); i++) {
-      this.addControl(controls.item(i));
+    for (let i = 0; i < ctrls.getLength(); i += 1) {
+      this.addControl(ctrls.item(i));
     }
   }
 
@@ -82,7 +80,7 @@ class Editor {
    * Removes the editor from the map.
    */
   remove() {
-    this.controls.forEach(c => {
+    this.controls.forEach((c) => {
       c.deactivate();
     });
 
@@ -124,20 +122,15 @@ class Editor {
   activeStateChange(ctrl) {
     // deactivate other controls that are not standalone
     if (ctrl.getActive() && ctrl.standalone) {
-      for (var i = 0; i < this.controls.getLength(); i++) {
-        if (
-          this.controls.item(i) !== ctrl &&
-          this.controls.item(i).standalone
-        ) {
+      for (let i = 0; i < this.controls.getLength(); i += 1) {
+        if ((this.controls.item(i) !== ctrl) &&
+          (this.controls.item(i).standalone)) {
           this.controls.item(i).deactivate();
         }
       }
     }
 
-    var ctrls = this.controls.getArray().filter(c => {
-      return c.getActive();
-    });
-
+    const ctrls = this.controls.getArray().filter(c => c.getActive());
     this.activeControls.clear();
     this.activeControls.extend(ctrls);
   }

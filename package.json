@@ -5,7 +5,6 @@
   "scripts": {
     "build": "webpack",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
-    "precommit": "lint-staged",
     "start": "webpack-dev-server --progress --watch"
   },
   "keywords": [
@@ -13,7 +12,7 @@
     "Editor"
   ],
   "license": "BSD-2-Clause",
-  "main" : "dist/ole.js",
+  "main": "dist/ole.js",
   "repository": "github:geops/ole2",
   "devDependencies": {
     "babel": "^6.23.0",
@@ -21,6 +20,10 @@
     "babel-loader": "^7.1.0",
     "babel-preset-es2015": "^6.24.1",
     "css-loader": "^0.28.7",
+    "eslint": "^4.19.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.9.0",
     "file-loader": "^1.1.5",
     "husky": "^0.14.3",
     "image-webpack-loader": "^4.0.0",
@@ -31,20 +34,11 @@
     "optipng-bin": "^4.0.0",
     "pngquant": "^1.3.0",
     "pngquant-bin": "^3.1.1",
-    "prettier": "^1.8.2",
     "style-loader": "^0.20.0",
     "uglifyjs-webpack-plugin": "^1.0.1",
     "url-loader": "^1.0.0",
     "webpack": "~3.11.0",
     "webpack-dev-server": "^2.4.2"
   },
-  "dependencies": {
-    "mustache": "^2.3.0"
-  },
-  "lint-staged": {
-    "src/**/*.js": [
-      "prettier --single-quote --write",
-      "git add"
-    ]
-  }
+  "dependencies": {}
 }
