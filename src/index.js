@@ -7,7 +7,7 @@ import MoveControl from './control/move';
 import ModifyControl from './control/modify';
 import DeleteControl from './control/delete';
 
-const ole = {
+export {
   Editor,
   Control,
   CadControl,
@@ -17,5 +17,3 @@ const ole = {
   ModifyControl,
   DeleteControl,
 };
-
-module.exports = ole;

@@ -1,5 +1,5 @@
 import Control from './control';
-import image from '../../img/move.png';
+import image from '../../img/move.svg';
 
 /**
  * Control for moving geometries.

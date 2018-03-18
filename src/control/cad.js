@@ -1,5 +1,5 @@
 import Control from './control';
-import cadPng from '../../img/cad.png';
+import cadPng from '../../img/cad.svg';
 
 /**
  * Control with snapping functionality for geometry alignment.

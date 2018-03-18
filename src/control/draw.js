@@ -1,7 +1,7 @@
 import Control from './control';
-import drawPointPng from '../../img/draw_point.png';
-import drawPolygonPng from '../../img/draw_polygon.png';
-import drawLinePng from '../../img/draw_line.png';
+import drawPointPng from '../../img/draw_point.svg';
+import drawPolygonPng from '../../img/draw_polygon.svg';
+import drawLinePng from '../../img/draw_line.svg';
 
 /**
  * Control for drawing features.

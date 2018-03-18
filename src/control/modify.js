@@ -1,5 +1,5 @@
 import Control from './control';
-import image from '../../img/modify_geometry.png';
+import image from '../../img/modify_geometry.svg';
 
 /**
  * Control for modifying geometries.

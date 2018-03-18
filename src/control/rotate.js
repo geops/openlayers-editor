@@ -1,6 +1,6 @@
 import Control from './control';
-import rotatePng from '../../img/rotate.png';
-import rotateMapPng from '../../img/rotate_map.png';
+import rotatePng from '../../img/rotate.svg';
+import rotateMapPng from '../../img/rotate_map.svg';
 
 /**
  * Tool with for rotating geometries.

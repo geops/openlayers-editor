@@ -1,5 +1,5 @@
 import Control from './control';
-import delPng from '../../img/delete.png';
+import delPng from '../../img/delete.svg';
 
 /**
  * Control for deleting geometries.
