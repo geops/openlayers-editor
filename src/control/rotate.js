@@ -1,4 +1,4 @@
-import Control from './control.js';
+import Control from './control';
 import rotatePng from '../../img/rotate.png';
 import rotateMapPng from '../../img/rotate_map.png';
 
@@ -13,16 +13,11 @@ class RotateControl extends Control {
    *   that is used for storing the rotation in rad.
    */
   constructor(options) {
-    super(
-      Object.assign(
-        {
-          title: 'Rotate',
-          className: 'icon-rotate',
-          image: rotatePng
-        },
-        options
-      )
-    );
+    super(Object.assign({
+      title: 'Rotate',
+      className: 'icon-rotate',
+      image: rotatePng,
+    }, options));
 
     /**
      * @type {ol.interaction.Pointer}
@@ -31,7 +26,7 @@ class RotateControl extends Control {
     this.pointerInteraction = new ol.interaction.Pointer({
       handleDownEvent: this.onDown.bind(this),
       handleDragEvent: this.onDrag.bind(this),
-      handleUpEvent: this.onUp.bind(this)
+      handleUpEvent: this.onUp.bind(this),
     });
 
     /**
@@ -47,18 +42,18 @@ class RotateControl extends Control {
      */
     this.rotateLayer = new ol.layer.Vector({
       source: new ol.source.Vector(),
-      style: f => {
-        var rotation = f.get(this.rotateAttribute);
+      style: (f) => {
+        const rotation = f.get(this.rotateAttribute);
         return [
           new ol.style.Style({
             geometry: new ol.geom.Point(this.center),
             image: new ol.style.Icon({
-              rotation: rotation,
-              src: rotateMapPng
-            })
-          })
+              rotation,
+              src: rotateMapPng,
+            }),
+          }),
         ];
-      }
+      },
     });
   }
 
@@ -69,23 +64,25 @@ class RotateControl extends Control {
    */
   onDown(evt) {
     this.dragging = false;
-    this.feature = this.map.forEachFeatureAtPixel(evt.pixel, f => {
+    this.feature = this.map.forEachFeatureAtPixel(evt.pixel, (f) => {
       if (this.source.getFeatures().indexOf(f) > -1) {
         return f;
       }
+
+      return null;
     });
 
     if (this.center && this.feature) {
       this.feature.set(
         this.rotateAttribute,
-        this.feature.get(this.rotateAttribute) || 0
+        this.feature.get(this.rotateAttribute) || 0,
       );
 
       // rotation between clicked coordinate and feature center
       this.initialRotation =
         Math.atan2(
           evt.coordinate[1] - this.center[1],
-          evt.coordinate[0] - this.center[0]
+          evt.coordinate[0] - this.center[0],
         ) + this.feature.get(this.rotateAttribute);
     }
 
@@ -105,13 +102,13 @@ class RotateControl extends Control {
     this.dragging = true;
 
     if (this.feature && this.center) {
-      var rotation = Math.atan2(
+      const rotation = Math.atan2(
         evt.coordinate[1] - this.center[1],
-        evt.coordinate[0] - this.center[0]
+        evt.coordinate[0] - this.center[0],
       );
 
-      var rotationDiff = this.initialRotation - rotation;
-      var geomRotation = rotationDiff - this.feature.get(this.rotateAttribute);
+      const rotationDiff = this.initialRotation - rotation;
+      const geomRotation = rotationDiff - this.feature.get(this.rotateAttribute);
 
       this.feature.getGeometry().rotate(-geomRotation, this.center);
       this.rotateFeature.getGeometry().rotate(-geomRotation, this.center);

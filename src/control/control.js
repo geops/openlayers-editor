@@ -18,11 +18,11 @@ class Control extends ol.control.Control {
    *   can be  activated together with other controls, like ole.Draw.
    */
   constructor(options) {
-    var button = document.createElement('button');
-    button.className = 'ole-control ' + options.className;
+    const button = document.createElement('button');
+    button.className = `ole-control ${options.className}`;
 
     super({
-      element: button
+      element: button,
     });
 
     /**
@@ -39,7 +39,7 @@ class Control extends ol.control.Control {
      */
     this.title = options.title;
 
-    var img = document.createElement('img');
+    const img = document.createElement('img');
     img.src = options.image;
 
     button.appendChild(img);
@@ -53,7 +53,7 @@ class Control extends ol.control.Control {
     this.source =
       options.source ||
       new ol.source.Vector({
-        features: options.features
+        features: options.features,
       });
 
     /**

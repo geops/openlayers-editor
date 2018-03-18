@@ -13,11 +13,11 @@ class Toolbar extends ol.control.Control {
    *   to display in the toolbar.
    */
   constructor(map, controls) {
-    var element = document.createElement('div');
+    const element = document.createElement('div');
     element.setAttribute('id', 'ole-toolbar');
 
     super({
-      element: element
+      element,
     });
 
     /**
@@ -42,8 +42,8 @@ class Toolbar extends ol.control.Control {
    * @private
    */
   load() {
-    for (var i = 0; i < this.controls.getLength(); i++) {
-      var btn = this.controls.item(i).getElement();
+    for (let i = 0; i < this.controls.getLength(); i += 1) {
+      const btn = this.controls.item(i).getElement();
       this.element.appendChild(btn);
     }
   }
@@ -53,8 +53,8 @@ class Toolbar extends ol.control.Control {
    * @private
    */
   destroy() {
-    for (var i = 0; i < this.controls.getLength(); i++) {
-      var btn = this.controls.item(i).getElement();
+    for (let i = 0; i < this.controls.getLength(); i += 1) {
+      const btn = this.controls.item(i).getElement();
       this.element.removeChild(btn);
     }
   }

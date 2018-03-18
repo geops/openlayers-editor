@@ -1,4 +1,4 @@
-import Control from './control.js';
+import Control from './control';
 import image from '../../img/modify_geometry.png';
 
 /**
@@ -16,16 +16,11 @@ class ModifyControl extends Control {
    * @param {ol.source.Vector} [source] Destination for drawing.
    */
   constructor(options) {
-    super(
-      Object.assign(
-        {
-          title: 'Modify geometry',
-          className: 'ole-control-modify',
-          image: image
-        },
-        options
-      )
-    );
+    super(Object.assign({
+      title: 'Modify geometry',
+      className: 'ole-control-modify',
+      image,
+    }, options));
 
     /**
      * @type {ol.interaction.Select}
@@ -33,7 +28,7 @@ class ModifyControl extends Control {
      */
     this.selectInteraction = new ol.interaction.Select({
       source: this.source,
-      features: this.features
+      features: this.features,
     });
 
     /**
@@ -41,7 +36,7 @@ class ModifyControl extends Control {
      * @private
      */
     this.modifyInteraction = new ol.interaction.Modify({
-      features: this.selectInteraction.getFeatures()
+      features: this.selectInteraction.getFeatures(),
     });
   }
 
