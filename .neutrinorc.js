@@ -4,20 +4,19 @@ module.exports = {
       '@neutrinojs/airbnb-base',
       {
         eslint: {
-          globals: ['ol'],
-        },
-      },
+          globals: ['ol']
+        }
+      }
     ],
     [
       '@neutrinojs/library',
       {
-        name: 'ole',
-      },
+        name: 'ole'
+      }
     ],
-    '@neutrinojs/image-minify',
+    ,
     '@neutrinojs/image-loader',
-    ['@neutrinojs/style-loader', {extract: false} ],
-    '@neutrinojs/jest',
-    '@neutrinojs/dev-server'
-  ],
-};
+    ['@neutrinojs/style-loader', { extract: false }],
+    '@neutrinojs/jest'
+  ]
+}
