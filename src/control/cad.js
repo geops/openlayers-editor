@@ -1,5 +1,5 @@
 import Control from './control';
-import cadPng from '../../img/cad.svg';
+import cadSVG from '../../img/cad.svg';
 
 /**
  * Control with snapping functionality for geometry alignment.
@@ -24,7 +24,7 @@ class CadControl extends Control {
     super(Object.assign({
       title: 'CAD control',
       className: 'ole-control-cad',
-      image: cadPng,
+      image: cadSVG,
     }, options));
 
     /**

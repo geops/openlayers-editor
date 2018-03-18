@@ -1,5 +1,5 @@
 import Control from './control';
-import delPng from '../../img/delete.svg';
+import delSVG from '../../img/delete.svg';
 
 /**
  * Control for deleting geometries.
@@ -18,7 +18,7 @@ class DeleteControl extends Control {
     super(Object.assign({
       title: 'Delete geometry',
       className: 'ole-control-delete',
-      image: delPng,
+      image: delSVG,
     }, options));
 
     /**

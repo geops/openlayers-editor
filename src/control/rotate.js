@@ -1,6 +1,6 @@
 import Control from './control';
-import rotatePng from '../../img/rotate.svg';
-import rotateMapPng from '../../img/rotate_map.svg';
+import rotateSVG from '../../img/rotate.svg';
+import rotateMapSVG from '../../img/rotate_map.svg';
 
 /**
  * Tool with for rotating geometries.
@@ -16,7 +16,7 @@ class RotateControl extends Control {
     super(Object.assign({
       title: 'Rotate',
       className: 'icon-rotate',
-      image: rotatePng,
+      image: rotateSVG,
     }, options));
 
     /**
@@ -49,7 +49,7 @@ class RotateControl extends Control {
             geometry: new ol.geom.Point(this.center),
             image: new ol.style.Icon({
               rotation,
-              src: rotateMapPng,
+              src: rotateMapSVG,
             }),
           }),
         ];
