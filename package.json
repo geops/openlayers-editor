@@ -7,7 +7,7 @@
     "lint": "neutrino lint",
     "test": "neutrino test",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
-    "start": "webpack-dev-server --progress --watch"
+    "start": "neutrino start"
   },
   "keywords": [
     "OpenLayers",
@@ -18,6 +18,7 @@
   "repository": "github:geops/ole2",
   "devDependencies": {
     "@neutrinojs/airbnb-base": "^8.1.2",
+    "@neutrinojs/dev-server": "^8.1.2",
     "@neutrinojs/image-loader": "^8.1.2",
     "@neutrinojs/image-minify": "^8.1.2",
     "@neutrinojs/jest": "^8.1.2",

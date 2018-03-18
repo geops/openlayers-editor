@@ -18,5 +18,6 @@ module.exports = {
     '@neutrinojs/image-loader',
     ['@neutrinojs/style-loader', {extract: false} ],
     '@neutrinojs/jest',
+    '@neutrinojs/dev-server'
   ],
 };
