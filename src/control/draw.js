@@ -15,10 +15,11 @@ class DrawControl extends Control {
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
    */
-  constructor(options) {
+  constructor(options = {}) {
     let image = null;
+    const type = options.type || 'Point';
 
-    switch (options.type) {
+    switch (type) {
       case 'Polygon':
         image = drawPolygonSVG;
         break;
@@ -30,7 +31,7 @@ class DrawControl extends Control {
     }
 
     super(Object.assign({
-      title: `Draw ${(options.type || 'Point')}`,
+      title: `Draw ${type}`,
       className: 'ole-control-draw',
       image,
     }, options));
@@ -40,7 +41,7 @@ class DrawControl extends Control {
      * @private
      */
     this.drawInteraction = new ol.interaction.Draw({
-      type: options.type || 'Point',
+      type,
       features: options.features,
       source: options.source,
     });
