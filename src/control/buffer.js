@@ -1,7 +1,7 @@
 import OL3Parser from '../../node_modules/jsts/org/locationtech/jts/io/OL3Parser';
 import { BufferOp } from '../../node_modules/jsts/org/locationtech/jts/operation/buffer';
 import Control from './control';
-import delSVG from '../../img/delete.svg';
+import delSVG from '../../img/buffer.svg';
 
 /**
  * Control for deleting geometries.
