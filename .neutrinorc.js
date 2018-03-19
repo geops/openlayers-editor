@@ -20,4 +20,4 @@ module.exports = {
     '@neutrinojs/jest',
     '@neutrinojs/dev-server'
   ]
-}
+};
