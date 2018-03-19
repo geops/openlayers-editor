@@ -27,7 +27,9 @@
     "jsdoc-export-default-interop": "^0.3.1",
     "neutrino": "^8.1.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "jsts": "^1.6.0"
+  },
   "peerDependencies": {
     "ol": "^4.6.4"
   }

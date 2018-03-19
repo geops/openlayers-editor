@@ -88,8 +88,12 @@
         source: editLayer.getSource()
       });
 
+      var buffer = new ole.control.Buffer({
+        source: editLayer.getSource()
+      });
+
       editor.addControls([cad, draw, drawLine, drawPoly, modify, move,
-        rotate, deleteC]);
+        rotate, deleteC, buffer]);
 
     </script>
   </body>
