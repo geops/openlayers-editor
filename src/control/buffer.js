@@ -12,7 +12,9 @@ class BufferControl extends Control {
   /**
    * @inheritdoc
    * @param {Object} [options] Control options.
-   * @param {boolean} [multi] Allow selection of multiple geometries
+   * @param {number} [options.hitTolerance] Select tolerance in pixels
+   *   (default is 10)
+   * @param {boolean} [options.multi] Allow selection of multiple geometries
    *   (default is false).
    */
   constructor(options) {
@@ -28,6 +30,7 @@ class BufferControl extends Control {
      */
     this.selectInteraction = new ol.interaction.Select({
       source: this.source,
+      hitTolerance: options.hitTolerance || 10,
       multi: typeof (options.multi) === 'undefined' ? true : options.multi,
     });
 
