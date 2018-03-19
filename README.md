@@ -29,17 +29,17 @@ For a demo, visit [http://ole.geops.de](http://ole.geops.de).
 - Clone this repository
 - Install: `npm install`
 - Run: `npm start`
-- Open your browser and visit [http://localhost:8080](http://localhost:8080)
+- Open your browser and visit [http://localhost:5000](http://localhost:5000)
 
 ## Usage
 ```js
 var editor = new ole.Editor(map);
 
-var cad = new ole.CadControl({
+var cad = new ole.control.CAD({
   source: editLayer.getSource()
 });
 
-var draw = new ole.DrawControl({
+var draw = new ole.control.Draw({
   source: editLayer.getSource()
 });
 
