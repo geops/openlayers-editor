@@ -3,7 +3,7 @@ import Editor from '../../src/editor';
 
 describe('ole.control.Draw', () => {
   beforeEach(() => {
-    const map = new ol.Map({
+    const map = new ol.CanvasMap({
       target: document.createElement('div'),
     });
 
