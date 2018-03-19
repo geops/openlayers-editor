@@ -54,38 +54,38 @@
 
       var editor = new ole.Editor(map);
 
-      var cad = new ole.CadControl({
+      var cad = new ole.control.CAD({
         source: editLayer.getSource()
       });
 
-      var draw = new ole.DrawControl({
+      var draw = new ole.control.Draw({
         source: editLayer.getSource()
       });
 
-      var drawLine = new ole.DrawControl({
+      var drawLine = new ole.control.Draw({
           type: 'LineString',
         source: editLayer.getSource()
       });
 
-      var rotate = new ole.RotateControl({
+      var rotate = new ole.control.Rotate({
         source: editLayer.getSource()
       });
 
-      var drawPoly = new ole.DrawControl({
+      var drawPoly = new ole.control.Draw({
         type: 'Polygon',
         source: editLayer.getSource()
       });
 
-      var move = new ole.MoveControl({
+      var move = new ole.control.Move({
         type: 'Polygon',
         source: editLayer.getSource()
       });
 
-      var modify = new ole.ModifyControl({
+      var modify = new ole.control.Modify({
         source: editLayer.getSource()
       });
 
-      var deleteC = new ole.DeleteControl({
+      var deleteC = new ole.control.Delete({
         source: editLayer.getSource()
       });
 
