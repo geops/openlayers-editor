@@ -17,7 +17,11 @@ module.exports = {
     ,
     '@neutrinojs/image-loader',
     ['@neutrinojs/style-loader', { extract: false }],
-    '@neutrinojs/jest',
+    ['@neutrinojs/jest', {
+      setupFiles: [
+        './test/setup.js'
+      ],
+    }],
     '@neutrinojs/dev-server'
   ]
 };

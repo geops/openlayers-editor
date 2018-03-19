@@ -6,7 +6,10 @@ node_js:
 
 install: npm install
 
-script: npm run build
+script: npm run test && npm run build
+
+before_install:
+  sudo apt-get install libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
 
 after_success:
   - npm run doc

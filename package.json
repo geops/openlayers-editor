@@ -25,9 +25,13 @@
     "@neutrinojs/style-loader": "^8.1.2",
     "jsdoc": "^3.4.3",
     "jsdoc-export-default-interop": "^0.3.1",
-    "neutrino": "^8.1.2"
+    "neutrino": "^8.1.2",
+    "openlayers": "^4.6.5"
   },
-  "dependencies": {},
+  "dependencies": {
+    "canvas-prebuilt": "^1.6.5-prerelease.1",
+    "canvas": "^2.0.0-alpha.11"
+  },
   "peerDependencies": {
     "ol": "^4.6.4"
   }
