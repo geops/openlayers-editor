@@ -6,6 +6,7 @@ import Move from './move';
 import Modify from './modify';
 import Delete from './delete';
 import Buffer from './buffer';
+import Topology from './topology';
 
 export {
   Control,
@@ -16,4 +17,5 @@ export {
   Modify,
   Delete,
   Buffer,
+  Topology,
 };

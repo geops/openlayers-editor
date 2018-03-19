@@ -92,8 +92,13 @@
         source: editLayer.getSource()
       });
 
+      var topology = new ole.control.Topology({
+        source: editLayer.getSource()
+      });
+
       editor.addControls([cad, draw, drawLine, drawPoly, modify, move,
-        rotate, deleteC, buffer]);
+        rotate, deleteC, buffer, topology
+      ]);
 
     </script>
   </body>
