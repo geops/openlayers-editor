@@ -1,10 +1,10 @@
 import OL3Parser from '../../node_modules/jsts/org/locationtech/jts/io/OL3Parser';
 import { BufferOp } from '../../node_modules/jsts/org/locationtech/jts/operation/buffer';
 import Control from './control';
-import delSVG from '../../img/buffer.svg';
+import bufferSVG from '../../img/buffer.svg';
 
 /**
- * Control for deleting geometries.
+ * Control for creating buffers.
  * @extends {ole.Control}
  * @alias ole.BufferControl
  */
@@ -12,15 +12,14 @@ class BufferControl extends Control {
   /**
    * @inheritdoc
    * @param {Object} [options] Control options.
-   * @param {ol.source.Vector} [source] vector to delete.
-   * @param {boolean} [multi] select multiple if set to true
+   * @param {boolean} [multi] Allow selection of multiple geometries
    *   (default is false).
    */
   constructor(options) {
     super(Object.assign({
       title: 'Buffer geometry',
       className: 'ole-control-buffer',
-      image: delSVG,
+      image: bufferSVG,
     }, options));
 
     /**
