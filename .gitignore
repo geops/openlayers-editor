@@ -4,4 +4,5 @@ build
 doc
 package-lock.json
 yarn.lock
+yarn-error.log
 cypress/videos

@@ -134,6 +134,33 @@ class CadControl extends Control {
       this.showSnapLines = true;
     }
 
+    /**
+     * Template for dialog.
+     * @type {string}
+     */
+    const distLabel = this.useMapUnits ? 'map units' : 'px';
+    this.dialogTemplate = `
+      <div>
+        <input
+          id="aux-cb"
+          type="radio"
+          name="radioBtn"
+          ${this.showSnapLines ? 'checked' : ''}
+        >
+        <label>Show snap lines</label>
+      </div>
+      <div>
+        <input
+          id="dist-cb"
+          type="radio"
+          name="radioBtn"
+          ${this.showSnapPoints ? 'checked' : ''}
+        >
+        <label>Show snap points. Distance (${distLabel}):</label>
+        <input type="text" id="width-input" value="${this.snapPointDist}">
+      </div>
+    `;
+
     this.standalone = false;
   }
 
@@ -352,39 +379,12 @@ class CadControl extends Control {
   }
 
   /**
-   * Open the control's dialog.
-   * @private
+   * @inheritdoc
    */
-  openDialog() {
-    const distLabel = this.useMapUnits ? 'map units' : 'px';
-
-    const tpl = `
-      <div class="ole-dialog" id="${this.className}-dialog">
-        <div>
-          <input
-            id="aux-cb"
-            type="radio"
-            name="radioBtn"
-            ${this.showSnapLines ? 'checked' : ''}
-          >
-          <label>Show snap lines</label>
-        </div>
-        <div>
-          <input
-            id="dist-cb"
-            type="radio"
-            name="radioBtn"
-            ${this.showSnapPoints ? 'checked' : ''}
-          >
-          <label>Show snap points. Distance (${distLabel}):</label>
-          <input type="text" id="width-input" value="${this.snapPointDist}">
-        </div>
-      </div>
-    `;
-
-    const div = document.createElement('div');
-    div.innerHTML = tpl;
-    this.map.getTargetElement().appendChild(div);
+  activate() {
+    super.activate();
+    this.map.addInteraction(this.pointerInteraction);
+    this.map.addInteraction(this.snapInteraction);
 
     document.getElementById('aux-cb').addEventListener('change', (evt) => {
       this.showSnapLines = evt.target.checked;
@@ -404,34 +404,12 @@ class CadControl extends Control {
   }
 
   /**
-   * Closes the control dialog.
-   * @private
-   */
-  closeDialog() {
-    const div = document.getElementById(`${this.className}-dialog`);
-    if (div) {
-      this.map.getTargetElement().removeChild(div);
-    }
-  }
-
-  /**
-   * @inheritdoc
-   */
-  activate() {
-    super.activate();
-    this.map.addInteraction(this.pointerInteraction);
-    this.map.addInteraction(this.snapInteraction);
-    this.openDialog();
-  }
-
-  /**
    * @inheritdoc
    */
   deactivate() {
     super.deactivate();
     this.map.removeInteraction(this.pointerInteraction);
     this.map.removeInteraction(this.snapInteraction);
-    this.closeDialog();
   }
 }
 

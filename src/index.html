@@ -88,8 +88,25 @@
         source: editLayer.getSource()
       });
 
+      var buffer = new ole.control.Buffer({
+        source: editLayer.getSource()
+      });
+
+      var union = new ole.control.Union({
+        source: editLayer.getSource()
+      });
+
+      var intersection = new ole.control.Intersection({
+        source: editLayer.getSource()
+      });
+
+      var difference = new ole.control.Difference({
+        source: editLayer.getSource()
+      });
+
       editor.addControls([cad, draw, drawLine, drawPoly, modify, move,
-        rotate, deleteC]);
+        rotate, deleteC, buffer, union, intersection, difference
+      ]);
 
     </script>
   </body>

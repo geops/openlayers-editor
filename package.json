@@ -31,7 +31,9 @@
     "neutrino": "^8.1.2",
     "openlayers": "^4.6.5"
   },
-  "dependencies": {},
+  "dependencies": {
+    "jsts": "^1.6.0"
+  },
   "peerDependencies": {
     "ol": "^4.6.4"
   }

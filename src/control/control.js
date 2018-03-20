@@ -118,6 +118,7 @@ class Control extends ol.control.Control {
     this.active = true;
     this.element.className += ' active';
     this.editor.activeStateChange(this);
+    this.openDialog();
   }
 
   /**
@@ -127,6 +128,7 @@ class Control extends ol.control.Control {
     this.active = false;
     this.element.classList.remove('active');
     this.editor.activeStateChange(this);
+    this.closeDialog();
   }
 
   /**
@@ -135,6 +137,31 @@ class Control extends ol.control.Control {
    */
   getActive() {
     return this.active;
+  }
+
+  openDialog() {
+    if (this.dialogTemplate) {
+      this.dialogDiv = document.createElement('div');
+
+      this.dialogDiv.innerHTML = `
+        <div class="ole-dialog">
+          ${this.dialogTemplate}
+        </div>
+      `;
+
+      this.map.getTargetElement().appendChild(this.dialogDiv);
+    }
+  }
+
+
+  /**
+   * Closes the control dialog.
+   * @private
+   */
+  closeDialog() {
+    if (this.dialogDiv) {
+      this.map.getTargetElement().removeChild(this.dialogDiv);
+    }
   }
 }
 
