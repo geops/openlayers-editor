@@ -28,6 +28,8 @@ class Difference extends TopologyControl {
    * @param {Array.<ol.Feature>} features Features.
    */
   applyTopologyOperation(features) {
+    super.applyTopologyOperation(features);
+
     if (features.length < 2) {
       return;
     }

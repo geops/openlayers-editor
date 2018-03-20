@@ -28,6 +28,8 @@ class Intersection extends TopologyControl {
    * @param {Array.<ol.Feature>} features Features to inersect.
    */
   applyTopologyOperation(features) {
+    super.applyTopologyOperation(features);
+
     if (features.length < 2) {
       return;
     }

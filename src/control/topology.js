@@ -48,8 +48,8 @@ class TopologyControl extends Control {
    * Apply a topology operation for given features.
    * @param {Array.<ol.Feature>} features Features.
    */
-  applyTopologyOperation() {
-    // to be implemented by inherited controls.
+  applyTopologyOperation(features) {
+    this.topologyFeatures = features;
   }
 
   /**

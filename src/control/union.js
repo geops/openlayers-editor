@@ -28,10 +28,7 @@ class Union extends TopologyControl {
    * @param {Array.<ol.Feature>} features Features to union.
    */
   applyTopologyOperation(features) {
-    if (features.length < 2) {
-      return;
-    }
-
+    super.applyTopologyOperation(features);
     const parser = new OL3Parser();
 
     for (let i = 1; i < features.length; i += 1) {
