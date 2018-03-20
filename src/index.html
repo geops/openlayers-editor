@@ -92,12 +92,20 @@
         source: editLayer.getSource()
       });
 
-      var topology = new ole.control.Topology({
+      var union = new ole.control.Union({
+        source: editLayer.getSource()
+      });
+
+      var intersection = new ole.control.Intersection({
+        source: editLayer.getSource()
+      });
+
+      var difference = new ole.control.Difference({
         source: editLayer.getSource()
       });
 
       editor.addControls([cad, draw, drawLine, drawPoly, modify, move,
-        rotate, deleteC, buffer, topology
+        rotate, deleteC, buffer, union, intersection, difference
       ]);
 
     </script>

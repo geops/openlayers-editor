@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="118.86314mm"
+   height="118.86654mm"
+   viewBox="0 0 421.16862 421.18068"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="intersection.svg"
+   inkscape:export-filename="/home/mario/repositories/ole4/img/rotate.png"
+   inkscape:export-xdpi="16.818872"
+   inkscape:export-ydpi="16.818872">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="198.45126"
+     inkscape:cy="251.9852"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     showguides="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1865"
+     inkscape:window-height="1056"
+     inkscape:window-x="55"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:snap-center="true"
+     inkscape:snap-grids="false"
+     inkscape:snap-object-midpoints="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3340"
+       originx="-175.20205"
+       originy="-274.63956" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-175.20204,-356.54201)">
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#8a8a8a;stroke-width:20.00000191;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4137-6"
+       cx="308.94574"
+       cy="490.28571"
+       r="123.7437" />
+    <circle
+       style="fill:none;fill-opacity:1;stroke:#8a8a8a;stroke-width:22.34140015;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4137-3-7"
+       cx="446.96957"
+       cy="628.32159"
+       r="138.23038" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:25.00000191;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 433.42092,488.78115 a 138.23035,138.23035 0 0 0 -126.96289,126.99609 123.74368,123.74368 0 0 0 3.33984,0.16602 123.74368,123.74368 0 0 0 123.74414,-123.74415 123.74368,123.74368 0 0 0 -0.12109,-3.41796 z"
+       id="path4137"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

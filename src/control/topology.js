@@ -1,6 +1,5 @@
-import OL3Parser from '../../node_modules/jsts/org/locationtech/jts/io/OL3Parser';
-import UnionOp from '../../node_modules/jsts/org/locationtech/jts/operation/union/UnionOp';
 import Control from './control';
+import Util from '../helper/util';
 import delSVG from '../../img/buffer.svg';
 
 /**
@@ -17,8 +16,8 @@ class TopologyControl extends Control {
    */
   constructor(options) {
     super(Object.assign({
-      title: 'Union',
-      className: 'ole-control-union',
+      title: 'TopoloyOp',
+      className: 'ole-control-topology',
       image: delSVG,
     }, options));
 
@@ -27,54 +26,30 @@ class TopologyControl extends Control {
      * @private
      */
     this.selectInteraction = new ol.interaction.Select({
-      condition: () => !this.getActiveDrawInteractions().length,
+      toggleCondition: () => true,
       hitTolerance: options.hitTolerance || 10,
       source: this.source,
       multi: true,
     });
 
     this.selectInteraction.on('select', () => {
-      this.union(this.selectInteraction.getFeatures().getArray());
-    });
-    this.standalone = false;
-  }
+      const feats = this.selectInteraction.getFeatures();
 
-  /**
-   * Return a list of active draw interactions.
-   * @returns {Array.<ol.interaction.Draw}
-   */
-  getActiveDrawInteractions() {
-    const activeDrawinteractions = [];
-    this.map.getInteractions().forEach((i) => {
-      if (i instanceof ol.interaction.Draw && i.getActive()) {
-        activeDrawinteractions.push(i);
+      try {
+        this.applyTopologyOperation(feats.getArray());
+      } catch (ex) {
+        Util.logError('Unable to process features.');
+        feats.clear();
       }
     });
-
-    return activeDrawinteractions;
   }
 
   /**
-   * Apply a union for given features.
-   * @param {Array.<ol.Feature>} features Features to union.
+   * Apply a topology operation for given features.
+   * @param {Array.<ol.Feature>} features Features.
    */
-  union(features) {
-    this.foo = 'bar';
-
-    if (features.length < 2) {
-      return;
-    }
-
-    const parser = new OL3Parser();
-
-    for (let i = 1; i < features.length; i += 1) {
-      const geom = parser.read(features[0].getGeometry());
-      const otherGeom = parser.read(features[i].getGeometry());
-      const unionGeom = UnionOp.union(geom, otherGeom);
-
-      features[0].setGeometry(parser.write(unionGeom));
-      features[i].setGeometry(null);
-    }
+  applyTopologyOperation() {
+    // to be implemented by inherited controls.
   }
 
   /**
@@ -83,14 +58,6 @@ class TopologyControl extends Control {
   activate() {
     this.map.addInteraction(this.selectInteraction);
     this.addedFeatures = [];
-    this.addfeatureKey = this.source.on('addfeature', (e) => {
-      this.addedFeatures.push(e.feature);
-      this.addedFeatures = this.addedFeatures.filter(f => f.getGeometry());
-
-      if (this.addedFeatures.length > 1) {
-        this.union(this.addedFeatures);
-      }
-    });
     super.activate();
   }
 
@@ -99,7 +66,6 @@ class TopologyControl extends Control {
    */
   deactivate() {
     this.addedFeatures = [];
-    this.source.unset(this.addfeatureKey);
     this.map.removeInteraction(this.selectInteraction);
     super.deactivate();
   }

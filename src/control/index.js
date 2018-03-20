@@ -6,7 +6,9 @@ import Move from './move';
 import Modify from './modify';
 import Delete from './delete';
 import Buffer from './buffer';
-import Topology from './topology';
+import Union from './union';
+import Intersection from './intersection';
+import Difference from './difference';
 
 export {
   Control,
@@ -17,5 +19,7 @@ export {
   Modify,
   Delete,
   Buffer,
-  Topology,
+  Union,
+  Intersection,
+  Difference,
 };
