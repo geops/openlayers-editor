@@ -17,7 +17,7 @@ Translations would be nice, too.
 - Moving and rotating geometries
 - Modifying geometries
 - Deleting geometries
-- Topology operations using [https://github.com/bjornharrtell/jsts](jsts): buffer, union, intersection, difference
+- Topology operations using [https://github.com/bjornharrtell/jsts](https://github.com/bjornharrtell/jsts): buffer, union, intersection, difference
 - Toolbar for activating and deactivating controls
 
 ## Demo
