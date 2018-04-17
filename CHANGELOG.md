@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 0.0.2 - 2018-04-17
+### Added
+- Support for Internet Explorer >= 10 has been added.
+
+### Changed
+- Moved JSTS to peer depency to fix broken builds and reduce build size.
+
 ## 0.0.1 - 2018-03-20
 ### Added
 - Using [JSTS](https://github.com/bjornharrtell/jsts) for topology operations.
