@@ -1,5 +1,5 @@
-import OL3Parser from '../../node_modules/jsts/org/locationtech/jts/io/OL3Parser';
-import UnionOp from '../../node_modules/jsts/org/locationtech/jts/operation/union/UnionOp';
+// import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
+// import UnionOp from 'jsts/org/locationtech/jts/operation/union/UnionOp';
 import TopologyControl from './topology';
 import unionSVG from '../../img/union.svg';
 
@@ -29,12 +29,12 @@ class Union extends TopologyControl {
    */
   applyTopologyOperation(features) {
     super.applyTopologyOperation(features);
-    const parser = new OL3Parser();
+    const parser = new jsts.io.OL3Parser();
 
     for (let i = 1; i < features.length; i += 1) {
       const geom = parser.read(features[0].getGeometry());
       const otherGeom = parser.read(features[i].getGeometry());
-      const unionGeom = UnionOp.union(geom, otherGeom);
+      const unionGeom = jsts.operation.overlay.OverlayOp.union(geom, otherGeom);
       features[0].setGeometry(parser.write(unionGeom));
       features[i].setGeometry(null);
     }

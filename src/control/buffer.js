@@ -1,5 +1,5 @@
-import OL3Parser from '../../node_modules/jsts/org/locationtech/jts/io/OL3Parser';
-import { BufferOp } from '../../node_modules/jsts/org/locationtech/jts/operation/buffer';
+// import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
+// import { BufferOp } from 'jsts/org/locationtech/jts/operation/buffer';
 import Control from './control';
 import bufferSVG from '../../img/buffer.svg';
 
@@ -45,11 +45,11 @@ class BufferControl extends Control {
    * @param {Number} width Buffer width in map units.
    */
   buffer(width) {
-    const parser = new OL3Parser();
+    const parser = new jsts.io.OL3Parser();
     const features = this.selectInteraction.getFeatures().getArray();
     for (let i = 0; i < features.length; i += 1) {
       const jstsGeom = parser.read(features[i].getGeometry());
-      const bo = new BufferOp(jstsGeom);
+      const bo = new jsts.operation.buffer.BufferOp(jstsGeom);
       const buffered = bo.getResultGeometry(width);
       features[i].setGeometry(parser.write(buffered));
     }
