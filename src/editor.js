@@ -141,7 +141,7 @@ class Editor {
    * Adds a service.
    * @param {ole.service} service The service.
    */
-   addService(service) {
+  addService(service) {
     this.services.push(service);
   }
 }
