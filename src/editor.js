@@ -51,6 +51,8 @@ class Editor {
     if (this.options.showToolbar) {
       this.toolbar = new Toolbar(this.map, this.controls);
     }
+
+    this.services = [];
   }
 
   /**
@@ -133,6 +135,14 @@ class Editor {
     const ctrls = this.controls.getArray().filter(c => c.getActive());
     this.activeControls.clear();
     this.activeControls.extend(ctrls);
+  }
+
+  /**
+   * Adds a service.
+   * @param {ole.service} service The service.
+   */
+   addService(service) {
+    this.services.push(service);
   }
 }
 
