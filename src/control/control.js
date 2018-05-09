@@ -146,17 +146,17 @@ class Control extends ol.control.Control {
   }
 
   openDialog() {
-   if (this.dialogTemplate) {
-    this.dialogDiv = document.createElement('div');
+    if (this.dialogTemplate) {
+      this.dialogDiv = document.createElement('div');
 
-    this.dialogDiv.innerHTML = `
-      <div class="ole-dialog">
-        ${this.getDialogTemplate()}
-      </div>
-    `;
+      this.dialogDiv.innerHTML = `
+        <div class="ole-dialog">
+          ${this.getDialogTemplate()}
+        </div>
+      `;
 
-    this.map.getTargetElement().appendChild(this.dialogDiv);
-  }
+      this.map.getTargetElement().appendChild(this.dialogDiv);
+    }
   }
 
   /**
