@@ -63,6 +63,12 @@ class Control extends ol.control.Control {
      */
     this.editor = null;
 
+    /**
+     * Control properties.
+     * @type {Object}
+     */
+    this.properties = {};
+
     button.addEventListener('click', this.onClick.bind(this));
 
     /**
@@ -140,19 +146,18 @@ class Control extends ol.control.Control {
   }
 
   openDialog() {
-    if (this.dialogTemplate) {
-      this.dialogDiv = document.createElement('div');
+   if (this.dialogTemplate) {
+    this.dialogDiv = document.createElement('div');
 
-      this.dialogDiv.innerHTML = `
-        <div class="ole-dialog">
-          ${this.dialogTemplate}
-        </div>
-      `;
+    this.dialogDiv.innerHTML = `
+      <div class="ole-dialog">
+        ${this.getDialogTemplate()}
+      </div>
+    `;
 
-      this.map.getTargetElement().appendChild(this.dialogDiv);
-    }
+    this.map.getTargetElement().appendChild(this.dialogDiv);
   }
-
+  }
 
   /**
    * Closes the control dialog.
@@ -162,6 +167,30 @@ class Control extends ol.control.Control {
     if (this.dialogDiv) {
       this.map.getTargetElement().removeChild(this.dialogDiv);
     }
+  }
+
+  /**
+   * Set properties in LocalStorage service.
+   */
+  setProperties(newProperties) {
+    this.editor.services.LocalStorage.properties = { ...newProperties };
+  }
+
+  /**
+   * Returns properties from LocalStorage service.
+   * if not present, then returns default properties
+   */
+  getProperties(requestedProperties) {
+    let properties = {}
+    for (const key in requestedProperties) {
+      if (typeof(this.editor.services.LocalStorage.properties[key])
+       !== 'undefined') {
+        properties[key] = this.editor.services.LocalStorage.properties[key];
+      } else {
+        properties[key] = requestedProperties[key];
+      }
+    }
+    return properties;
   }
 }
 
