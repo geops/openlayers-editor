@@ -4,10 +4,13 @@
  */
 class LocalStorage {
   /*
-   *
+   * Stores cached variables
    */
   constructor() {
-    this.controls = [];
+    /**
+     * Stores cached properties for controls
+     */
+    this.properties = {}
   }
 }
 
