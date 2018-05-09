@@ -51,6 +51,13 @@ class Editor {
     if (this.options.showToolbar) {
       this.toolbar = new Toolbar(this.map, this.controls);
     }
+
+    /**
+     * Services that are used by Editor
+     * @private
+     * @type {Object}
+     */
+    this.services = {};
   }
 
   /**
@@ -133,6 +140,16 @@ class Editor {
     const ctrls = this.controls.getArray().filter(c => c.getActive());
     this.activeControls.clear();
     this.activeControls.extend(ctrls);
+  }
+
+  /**
+   * Adds a service.
+   * @param {ole.service} service The service.
+   */
+  addService(service) {
+    this.services = {
+      ...{ [service.constructor.name]: service },
+    };
   }
 }
 

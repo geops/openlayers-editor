@@ -63,6 +63,12 @@ class Control extends ol.control.Control {
      */
     this.editor = null;
 
+    /**
+     * Control properties.
+     * @type {Object}
+     */
+    this.properties = {};
+
     button.addEventListener('click', this.onClick.bind(this));
 
     /**
@@ -145,14 +151,13 @@ class Control extends ol.control.Control {
 
       this.dialogDiv.innerHTML = `
         <div class="ole-dialog">
-          ${this.dialogTemplate}
+          ${this.getDialogTemplate()}
         </div>
       `;
 
       this.map.getTargetElement().appendChild(this.dialogDiv);
     }
   }
-
 
   /**
    * Closes the control dialog.
@@ -162,6 +167,30 @@ class Control extends ol.control.Control {
     if (this.dialogDiv) {
       this.map.getTargetElement().removeChild(this.dialogDiv);
     }
+  }
+
+  /**
+   * Set properties in LocalStorage service.
+   */
+  setProperties(newProperties) {
+    this.editor.services.LocalStorage.properties = { ...newProperties };
+  }
+
+  /**
+   * Returns properties from LocalStorage service.
+   * if not present, then returns default properties
+   */
+  getProperties(requestedProperties) {
+    const properties = {};
+    Object.keys(requestedProperties).forEach((key) => {
+      if (typeof (this.editor.services.LocalStorage.properties[key])
+       !== 'undefined') {
+        properties[key] = this.editor.services.LocalStorage.properties[key];
+      } else {
+        properties[key] = requestedProperties[key];
+      }
+    });
+    return properties;
   }
 }
 

@@ -28,6 +28,25 @@ class CadControl extends Control {
     }, options));
 
     /**
+     * Default properties of CAD control.
+     * @type {Object}
+     * @property {Boolean} showSnapPoints Whether to show the snap points.
+     * @property {Boolean} showSnapLines Whether to show snap lines.
+     * @property {Number} snapPointDist Initial distance of snap points.
+     */
+    this.defaultProperties = {
+      showSnapPoints: options.showSnapPoints || false,
+      showSnapLines: options.showSnapLines || true,
+      snapPointDist: options.snapPointDist || 30,
+    };
+
+    /**
+     * CAD properties.
+     * @type {Object}
+     */
+    this.properties = {};
+
+    /**
      * If true, map units are used for point snapping.
      * The default measurement are pixels.
      */
@@ -110,57 +129,15 @@ class CadControl extends Control {
     });
 
     /**
-     * Whether to show the snap points.
+     * If presence of a template for dialog.
+     * @type {Boolean}
+     */
+    this.dialogTemplate = true;
+
+    /**
      * @type {Boolean}
      * @private
      */
-    this.showSnapPoints = options.showSnapPoints;
-
-    /**
-     * Initial distance of snap points.
-     * @type {Number}
-     * @private
-     */
-    this.snapPointDist = options.snapPointDist || 30;
-
-    /**
-     * Whether to show snap lines.
-     * @type {Boolean}
-     * @private
-     */
-    this.showSnapLines = options.showSnapLines;
-
-    if (this.showSnapLines === 'undefined') {
-      this.showSnapLines = true;
-    }
-
-    /**
-     * Template for dialog.
-     * @type {string}
-     */
-    const distLabel = this.useMapUnits ? 'map units' : 'px';
-    this.dialogTemplate = `
-      <div>
-        <input
-          id="aux-cb"
-          type="radio"
-          name="radioBtn"
-          ${this.showSnapLines ? 'checked' : ''}
-        >
-        <label>Show snap lines</label>
-      </div>
-      <div>
-        <input
-          id="dist-cb"
-          type="radio"
-          name="radioBtn"
-          ${this.showSnapPoints ? 'checked' : ''}
-        >
-        <label>Show snap points. Distance (${distLabel}):</label>
-        <input type="text" id="width-input" value="${this.snapPointDist}">
-      </div>
-    `;
-
     this.standalone = false;
   }
 
@@ -201,11 +178,11 @@ class CadControl extends Control {
     this.linesLayer.getSource().clear();
     this.snapLayer.getSource().clear();
 
-    if (this.showSnapLines) {
+    if (this.properties.showSnapLines) {
       this.drawSnapLines(features, evt.coordinate);
     }
 
-    if (this.showSnapPoints && features.length) {
+    if (this.properties.showSnapPoints && features.length) {
       this.drawSnapPoints(evt.coordinate, features[0]);
     }
   }
@@ -356,17 +333,17 @@ class CadControl extends Control {
 
     if (this.useMapUnits) {
       snapCoords = [
-        [featCoord[0] - this.snapPointDist, featCoord[1]],
-        [featCoord[0] + this.snapPointDist, featCoord[1]],
-        [featCoord[0], featCoord[1] - this.snapPointDist],
-        [featCoord[0], featCoord[1] + this.snapPointDist],
+        [featCoord[0] - this.properties.snapPointDist, featCoord[1]],
+        [featCoord[0] + this.properties.snapPointDist, featCoord[1]],
+        [featCoord[0], featCoord[1] - this.properties.snapPointDist],
+        [featCoord[0], featCoord[1] + this.properties.snapPointDist],
       ];
     } else {
       const snapPx = [
-        [px[0] - this.snapPointDist, px[1]],
-        [px[0] + this.snapPointDist, px[1]],
-        [px[0], px[1] - this.snapPointDist],
-        [px[0], px[1] + this.snapPointDist],
+        [px[0] - this.properties.snapPointDist, px[1]],
+        [px[0] + this.properties.snapPointDist, px[1]],
+        [px[0], px[1] - this.properties.snapPointDist],
+        [px[0], px[1] + this.properties.snapPointDist],
       ];
 
       for (let j = 0; j < snapPx.length; j += 1) {
@@ -382,24 +359,32 @@ class CadControl extends Control {
    * @inheritdoc
    */
   activate() {
+    // Checks if locally stored properties, else use default properties
+    const storedProperties = this.getProperties(this.defaultProperties);
+    this.properties = { ...storedProperties };
+    this.setProperties(this.properties);
+
     super.activate();
     this.map.addInteraction(this.pointerInteraction);
     this.map.addInteraction(this.snapInteraction);
 
     document.getElementById('aux-cb').addEventListener('change', (evt) => {
-      this.showSnapLines = evt.target.checked;
-      this.showSnapPoints = !this.showSnapLines;
+      this.properties.showSnapLines = evt.target.checked;
+      this.properties.showSnapPoints = !this.properties.showSnapLines;
+      this.setProperties(this.properties);
     });
 
     document.getElementById('dist-cb').addEventListener('change', (evt) => {
-      this.showSnapPoints = evt.target.checked;
-      this.showSnapLines = !this.showSnapPoints;
+      this.properties.showSnapPoints = evt.target.checked;
+      this.properties.showSnapLines = !this.properties.showSnapPoints;
+      this.setProperties(this.properties);
     });
 
     document.getElementById('width-input').addEventListener('keyup', (evt) => {
       if (parseFloat(evt.target.value)) {
-        this.snapPointDist = parseFloat(evt.target.value);
+        this.properties.snapPointDist = parseFloat(evt.target.value);
       }
+      this.setProperties(this.properties);
     });
   }
 
@@ -410,6 +395,36 @@ class CadControl extends Control {
     super.deactivate();
     this.map.removeInteraction(this.pointerInteraction);
     this.map.removeInteraction(this.snapInteraction);
+  }
+
+  /**
+   * Render the template for dialog.
+   * @inheritdoc
+   */
+  getDialogTemplate() {
+    const distLabel = this.useMapUnits ? 'map units' : 'px';
+    return `
+      <div>
+        <input
+          id="aux-cb"
+          type="radio"
+          name="radioBtn"
+          ${this.properties.showSnapLines ? 'checked' : ''}
+        >
+        <label>Show snap lines</label>
+      </div>
+      <div>
+        <input
+          id="dist-cb"
+          type="radio"
+          name="radioBtn"
+          ${this.properties.showSnapPoints ? 'checked' : ''}
+        >
+        <label>Show snap points. Distance (${distLabel}):</label>
+        <input type="text" id="width-input"
+          value="${this.properties.snapPointDist}">
+      </div>
+    `;
   }
 }
 
