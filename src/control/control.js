@@ -181,15 +181,15 @@ class Control extends ol.control.Control {
    * if not present, then returns default properties
    */
   getProperties(requestedProperties) {
-    let properties = {}
-    for (const key in requestedProperties) {
-      if (typeof(this.editor.services.LocalStorage.properties[key])
+    const properties = {};
+    Object.keys(requestedProperties).forEach((key) => {
+      if (typeof (this.editor.services.LocalStorage.properties[key])
        !== 'undefined') {
         properties[key] = this.editor.services.LocalStorage.properties[key];
       } else {
         properties[key] = requestedProperties[key];
       }
-    }
+    });
     return properties;
   }
 }

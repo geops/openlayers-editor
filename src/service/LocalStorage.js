@@ -10,7 +10,7 @@ class LocalStorage {
     /**
      * Stores cached properties for controls
      */
-    this.properties = {}
+    this.properties = {};
   }
 }
 
