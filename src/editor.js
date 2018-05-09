@@ -52,7 +52,12 @@ class Editor {
       this.toolbar = new Toolbar(this.map, this.controls);
     }
 
-    this.services = [];
+    /**
+     * Services that are used by Editor
+     * @private
+     * @type {Object}
+     */
+    this.services = {};
   }
 
   /**
@@ -142,7 +147,9 @@ class Editor {
    * @param {ole.service} service The service.
    */
   addService(service) {
-    this.services.push(service);
+    this.services = {
+      ...{ [service.constructor.name]: service }
+    };
   }
 }
 
