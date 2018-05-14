@@ -1,7 +1,3 @@
-/* eslint-disable */
-import LocalStorage from './LocalStorage';
+import LocalStorage from './localStorage';
 
-export {
-  LocalStorage
-};
-/* eslint-enable */
+export { LocalStorage as default };

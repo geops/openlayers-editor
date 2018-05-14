@@ -148,7 +148,7 @@ class Editor {
    */
   addService(service) {
     this.services = {
-      ...{ [service.constructor.name]: service }
+      ...{ [service.constructor.name]: service },
     };
   }
 }
