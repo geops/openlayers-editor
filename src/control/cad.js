@@ -125,41 +125,27 @@ class CadControl extends Control {
     });
 
     /**
-     * Whether to show the snap points.
-     * @type {Boolean}
-     * @private
-     */
-    this.showSnapPoints = options.showSnapPoints;
-
-    /**
-     * Initial distance of snap points.
-     * @type {Number}
-     * @private
-     */
-    this.snapPointDist = options.snapPointDist || 30;
-
-    /**
-     * Whether to show snap lines.
-     * @type {Boolean}
-     * @private
-     */
-    this.showSnapLines = options.showSnapLines;
+    * If presence of a template for dialog.
+    * @type {Boolean}
+    */
+    this.dialogTemplate = true;
 
     this.standalone = false;
   }
 
-    /**
-     * Template for dialog.
-     * @type {string}
-     */
+  /**
+   * Return the dialog template
+   */
+  getDialogTemplate() {
     const distLabel = this.useMapUnits ? 'map units' : 'px';
-    this.dialogTemplate = `
+
+    return `
       <div>
         <input
           id="aux-cb"
           type="radio"
           name="radioBtn"
-          ${this.showSnapLines ? 'checked' : ''}
+          ${(this.properties.showSnapLines === true) ? 'checked' : ''}
         >
         <label>Show snap lines</label>
       </div>
@@ -168,14 +154,13 @@ class CadControl extends Control {
           id="dist-cb"
           type="radio"
           name="radioBtn"
-          ${this.showSnapPoints ? 'checked' : ''}
+          ${(this.properties.showSnapPoints === true) ? 'checked' : ''}
         >
         <label>Show snap points. Distance (${distLabel}):</label>
-        <input type="text" id="width-input" value="${this.snapPointDist}">
+        <input type="text" id="width-input"
+          value="${this.properties.snapPointDist}">
       </div>
     `;
-
-    this.standalone = false;
   }
 
   /**

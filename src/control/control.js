@@ -184,7 +184,7 @@ class Control extends ol.control.Control {
 
       this.dialogDiv.innerHTML = `
         <div class="ole-dialog">
-          ${this.dialogTemplate}
+          ${this.getDialogTemplate()}
         </div>
       `;
 
