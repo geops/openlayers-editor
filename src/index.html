@@ -55,7 +55,12 @@
       var editor = new ole.Editor(map);
 
       var cad = new ole.control.CAD({
-        source: editLayer.getSource()
+        source: editLayer.getSource(),
+        default: {
+          showSnapPoints: false,
+          showSnapLines: true,
+          snapPointDist: 30,
+        }
       });
 
       var draw = new ole.control.Draw({
