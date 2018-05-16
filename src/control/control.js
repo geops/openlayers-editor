@@ -26,14 +26,14 @@ class Control extends ol.control.Control {
     });
 
     /**
-     * Control properties
+     * Control properties.
      * @type {object}
      * @private
      */
     this.properties = { ...options };
 
     /**
-     * Html class name of the control button
+     * Html class name of the control button.
      * @type {string}
      * @private
      */
@@ -77,21 +77,6 @@ class Control extends ol.control.Control {
     this.standalone = true;
 
     button.addEventListener('click', this.onClick.bind(this));
-  }
-
-  /**
-   * Returns localStorage properties with correct data type
-   * localStorage only returns strings
-   * @param {String} type
-   * @param {String} property
-   */
-  static getLocalStorage(type, property) {
-    if (type === 'boolean') {
-      return (window.localStorage.getItem(property) === 'true') || false;
-    } else if (type === 'number') {
-      return parseInt(window.localStorage.getItem(property), 10);
-    }
-    return window.localStorage.getItem(property);
   }
 
   /**

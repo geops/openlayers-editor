@@ -17,7 +17,7 @@ class CadControl extends Control {
    *  snap points around the closest feature.
    * @param {Number} [options.snapPointDist] Distance of the
    *   snap points (default is 30).
-   * @param {Boolean} [properties.useMapUnits] Whether to use map units
+   * @param {Boolean} [options.useMapUnits] Whether to use map units
    *   as measurement for point snapping. Default is false (pixel are used).
    */
   constructor(options) {
@@ -121,7 +121,7 @@ class CadControl extends Control {
           id="aux-cb"
           type="radio"
           name="radioBtn"
-          ${(this.properties.showSnapLines === true) ? 'checked' : ''}
+          ${this.properties.showSnapLines ? 'checked' : ''}
         >
         <label>Show snap lines</label>
       </div>
@@ -130,7 +130,7 @@ class CadControl extends Control {
           id="dist-cb"
           type="radio"
           name="radioBtn"
-          ${(this.properties.showSnapPoints === true) ? 'checked' : ''}
+          ${this.properties.showSnapPoints ? 'checked' : ''}
         >
         <label>Show snap points. Distance (${distLabel}):</label>
         <input type="text" id="width-input"

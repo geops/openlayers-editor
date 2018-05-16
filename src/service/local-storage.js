@@ -7,7 +7,7 @@ import Storage from './storage';
  */
 export default class LocalStorage extends Storage {
   /**
-   * @inherticdoc
+   * @inheritdoc
    */
   storeProperties(controlName, properties) {
     const props = super.storeProperties(controlName, properties);
@@ -15,7 +15,7 @@ export default class LocalStorage extends Storage {
   }
 
   /**
-   * @inherticdoc
+   * @inheritdoc
    */
   restoreProperties() {
     for (let i = 0; i < this.controls.length; i += 1) {
@@ -29,7 +29,7 @@ export default class LocalStorage extends Storage {
   }
 
   /**
-   * @inherticdoc
+   * @inheritdoc
    */
   storeActiveControls() {
     const activeControlNames = super.storeActiveControls();
@@ -37,7 +37,7 @@ export default class LocalStorage extends Storage {
   }
 
   /**
-   * @inherticdoc
+   * @inheritdoc
    */
   restoreActiveControls() {
     let activeControlNames = window.localStorage.getItem('active');
