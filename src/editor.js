@@ -66,6 +66,11 @@ class Editor {
   addControl(control) {
     control.setMap(this.map);
     control.setEditor(this);
+
+    control.addEventListener('change:active', (e) => {
+      this.activeStateChange(e.detail.control);
+    });
+
     this.controls.push(control);
   }
 

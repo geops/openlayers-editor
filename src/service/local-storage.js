@@ -27,4 +27,36 @@ export default class LocalStorage extends Storage {
       }
     }
   }
+
+  /**
+   * @inherticdoc
+   */
+  storeActiveControls() {
+    const activeControlNames = super.storeActiveControls();
+    window.localStorage.setItem('active', JSON.stringify(activeControlNames));
+  }
+
+  /**
+   * @inherticdoc
+   */
+  restoreActiveControls() {
+    let activeControlNames = window.localStorage.getItem('active');
+    activeControlNames = activeControlNames
+      ? JSON.parse(activeControlNames)
+      : [];
+
+    if (!activeControlNames.length) {
+      return;
+    }
+
+    for (let i = 0; i < this.controls.length; i += 1) {
+      const controlName = this.controls[i].constructor.name;
+
+      if (activeControlNames.indexOf(controlName) > -1) {
+        this.controls[i].activate();
+      } else {
+        this.controls[i].deactivate();
+      }
+    }
+  }
 }

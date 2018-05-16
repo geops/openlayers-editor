@@ -38,6 +38,7 @@ export default class Storage extends Service {
     super.activate();
     this.controls = this.controls || this.editor.getControls().getArray();
     this.restoreProperties();
+    this.restoreActiveControls();
 
     this.controls.forEach((control) => {
       control.addEventListener('propertychange', (evt) => {
@@ -45,6 +46,10 @@ export default class Storage extends Service {
           evt.detail.control.constructor.name,
           evt.detail.properties,
         );
+      });
+
+      control.addEventListener('change:active', () => {
+        this.storeActiveControls();
       });
     });
   }
@@ -66,7 +71,6 @@ export default class Storage extends Service {
    * @param {object} properties Control properties.
    */
   storeProperties(controlName, properties) {
-    // filter only non-object properties.
     const storageProps = {};
     const propKeys = Object.keys(properties);
 
@@ -85,6 +89,21 @@ export default class Storage extends Service {
    * Restore the control properties.
    */
   restoreProperties() {
+    // to be implemented by child class
+  }
+
+  /**
+   * Store the active state of controls.
+   */
+  storeActiveControls() {
+    const activeControls = this.editor.getActiveControls();
+    return activeControls.getArray().map(c => c.constructor.name);
+  }
+
+  /**
+   * Restore the active state of the controls.
+   */
+  restoreActiveControls() {
     // to be implemented by child class
   }
 }

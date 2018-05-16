@@ -139,7 +139,9 @@ class Control extends ol.control.Control {
   activate() {
     this.active = true;
     this.element.className += ' active';
-    this.editor.activeStateChange(this);
+    this.dispatchEvent(new CustomEvent('change:active', {
+      detail: { control: this },
+    }));
     this.openDialog();
   }
 
@@ -149,7 +151,11 @@ class Control extends ol.control.Control {
   deactivate() {
     this.active = false;
     this.element.classList.remove('active');
-    this.editor.activeStateChange(this);
+
+    this.dispatchEvent(new CustomEvent('change:active', {
+      detail: { control: this },
+    }));
+
     this.closeDialog();
   }
 
@@ -185,6 +191,7 @@ class Control extends ol.control.Control {
   closeDialog() {
     if (this.dialogDiv) {
       this.map.getTargetElement().removeChild(this.dialogDiv);
+      this.dialogDiv = null;
     }
   }
 
