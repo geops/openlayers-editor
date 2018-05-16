@@ -102,7 +102,7 @@ class Editor {
    */
   remove() {
     this.controls.forEach((c) => {
-      c.deactivate();
+      c.deactivate(true);
     });
 
     this.toolbar.destroy();

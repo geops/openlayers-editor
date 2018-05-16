@@ -132,14 +132,17 @@ class Control extends ol.control.Control {
 
   /**
    * Dectivate the control
+   * @param {boolean} [silent] Do not trigger an event.
    */
-  deactivate() {
+  deactivate(silent) {
     this.active = false;
     this.element.classList.remove('active');
 
-    this.dispatchEvent(new CustomEvent('change:active', {
-      detail: { control: this },
-    }));
+    if (!silent) {
+      this.dispatchEvent(new CustomEvent('change:active', {
+        detail: { control: this },
+      }));
+    }
 
     this.closeDialog();
   }
