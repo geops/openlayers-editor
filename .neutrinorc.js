@@ -17,6 +17,10 @@ module.exports = neutrino => {
             browsers: ["last 2 versions", "ie >= 10"]
           }
         }]
+      ],
+      plugins: [
+        'transform-es2015-destructuring',
+        'transform-object-rest-spread',
       ]
     }
   });

@@ -34,10 +34,23 @@ class BufferControl extends Control {
       multi: typeof (options.multi) === 'undefined' ? true : options.multi,
     });
 
+    /**
+    * If presence of a template for dialog.
+    * @type {Boolean}
+    */
+    this.isDialogTemplate = true;
+
     this.dialogTemplate = `
       <label>Buffer width: &nbsp;<input type="text" id="buffer-width"/></label>
       <input type="button" value="OK" id="buffer-btn" />
     `;
+  }
+
+  /**
+   * Return the dialog template
+   */
+  getDialogTemplate() {
+    return this.dialogTemplate;
   }
 
   /**
