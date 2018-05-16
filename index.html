@@ -124,13 +124,13 @@
         source: editLayer.getSource()
       });
 
-      var service = new ol.control.Storage({
-        controls: [cad, buffer, ],
-      });
-
       editor.addControls([cad, draw, drawLine, drawPoly, modify, move,
         rotate, deleteC, buffer, union, intersection, difference
       ]);
+
+      var ls = new ole.service.LocalStorage();
+
+      editor.addService(ls);
 
     </script>
   </body>
