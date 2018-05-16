@@ -17,7 +17,7 @@ class CadControl extends Control {
    *  snap points around the closest feature.
    * @param {Number} [options.snapPointDist] Distance of the
    *   snap points (default is 30).
-   * @param {Boolean} [options.useMapUnits] Whether to use map units
+   * @param {Boolean} [properties.useMapUnits] Whether to use map units
    *   as measurement for point snapping. Default is false (pixel are used).
    */
   constructor(options) {
@@ -113,7 +113,7 @@ class CadControl extends Control {
    * @inheritdoc
    */
   getDialogTemplate() {
-    const distLabel = this.options.useMapUnits ? 'map units' : 'px';
+    const distLabel = this.properties.useMapUnits ? 'map units' : 'px';
 
     return `
       <div>
@@ -329,7 +329,7 @@ class CadControl extends Control {
     const px = this.map.getPixelFromCoordinate(featCoord);
     let snapCoords = [];
 
-    if (this.options.useMapUnits) {
+    if (this.properties.useMapUnits) {
       snapCoords = [
         [featCoord[0] - this.properties.snapPointDist, featCoord[1]],
         [featCoord[0] + this.properties.snapPointDist, featCoord[1]],

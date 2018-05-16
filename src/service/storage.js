@@ -22,7 +22,23 @@ export default class Storage extends Service {
      */
     this.controls = options.controls;
 
-    options.controls.forEach((control) => {
+    /**
+     * List of properties keys to ignore.
+     * @type {array.<string>}
+     */
+    this.ignoreKeys = ['title', 'image', 'className'];
+
+    this.activate();
+  }
+
+  /**
+   * @inheritdoc
+   */
+  activate() {
+    super.activate();
+    this.restoreProperties();
+
+    this.controls.forEach((control) => {
       control.addEventListener('propertychange', (evt) => {
         this.storeProperties(
           evt.detail.control.constructor.name,
@@ -37,8 +53,20 @@ export default class Storage extends Service {
    * @param {string} controlName Name of the control.
    * @param {object} properties Control properties.
    */
-  storeProperties() {
-    // to be implemented by child class
+  storeProperties(controlName, properties) {
+    // filter only non-object properties.
+    const storageProps = {};
+    const propKeys = Object.keys(properties);
+
+    for (let i = 0; i < propKeys.length; i += 1) {
+      const key = propKeys[i];
+      if (this.ignoreKeys.indexOf(key) === -1 &&
+          !(properties[key] instanceof Object)) {
+        storageProps[key] = properties[key];
+      }
+    }
+
+    return storageProps;
   }
 
   /**

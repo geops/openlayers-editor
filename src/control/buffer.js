@@ -22,6 +22,7 @@ class BufferControl extends Control {
       title: 'Buffer geometry',
       className: 'ole-control-buffer',
       image: bufferSVG,
+      buffer: 50,
     }, options));
 
     /**
@@ -41,7 +42,9 @@ class BufferControl extends Control {
   getDialogTemplate() {
     return `
       <label>Buffer width: &nbsp;
-        <input type="text" id="buffer-width" value=${this.properties.buffer}/>
+        <input type="text" id="buffer-width"
+          value="${this.properties.buffer}"
+        />
       </label>
       <input type="button" value="OK" id="buffer-btn" />
     `;
@@ -68,6 +71,10 @@ class BufferControl extends Control {
   activate() {
     this.map.addInteraction(this.selectInteraction);
     super.activate();
+
+    document.getElementById('buffer-width').addEventListener('change', (e) => {
+      this.setProperties({ buffer: e.target.value });
+    });
 
     document.getElementById('buffer-btn').addEventListener('click', () => {
       const input = document.getElementById('buffer-width');

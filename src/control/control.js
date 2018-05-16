@@ -194,11 +194,11 @@ class Control extends ol.control.Control {
    * @param {boolean} [silent] If true, no propertychange event is triggered.
    */
   setProperties(properties, silent) {
-    this.properties = { ...properties };
+    this.properties = { ...this.properties, ...properties };
 
     if (!silent) {
       this.dispatchEvent(new CustomEvent('propertychange', {
-        detail: { properties: this.properties },
+        detail: { properties: this.properties, control: this },
       }));
     }
   }

@@ -1,35 +1,30 @@
+import Storage from './storage';
+
 /**
- * OLE service.
+ * OLE LocalStorage.
+ * Saves control properties to the browser's localStorage.
  * @alias ole.service.LocalStorage
  */
-export default class LocalStorage {
+export default class LocalStorage extends Storage {
   /**
-   * Saves control properties in the LocalStorage and restores them.
-   * @param {object} Service options
-   * @param {array.<ol.control.Control>} controls List of controls.
+   * @inherticdoc
    */
-  constructor(options) {
-    /**
-     * List of service controls
-     * @type {array.<ol.control.Control>}
-     * @private
-     */
-    this.controls = options.controls;
-
-    options.controls.forEach((control) => {
-      control.addEventListener('propertychange', (evt) => {
-        this.updateLocalStorage(evt.detail);
-      });
-    });
+  storeProperties(controlName, properties) {
+    const props = super.storeProperties(controlName, properties);
+    window.localStorage.setItem(controlName, JSON.stringify(props));
   }
 
   /**
-   * Store control properties in localStorage with setItem() method
-   * @param {Object} properties
+   * @inherticdoc
    */
-  updateLocalStorage(properties) {
-    Object.keys(properties).forEach((key) => {
-      this.storage.setItem(key, properties[key]);
-    });
+  restoreProperties() {
+    for (let i = 0; i < this.controls.length; i += 1) {
+      const controlName = this.controls[i].constructor.name;
+      const props = window.localStorage.getItem(controlName);
+
+      if (props) {
+        this.controls[i].setProperties(JSON.parse(props), true);
+      }
+    }
   }
 }
