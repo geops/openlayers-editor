@@ -4,7 +4,7 @@ import Service from './service';
  * OLE storage service.
  * Base class for storage services,
  * such as LocalStorage, PermalinkStorage, CookieStorage.
- * @alias ole.serviceStorage.
+ * @alias ole.service.Storage
  */
 export default class Storage extends Service {
   /**
