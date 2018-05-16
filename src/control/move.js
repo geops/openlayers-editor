@@ -136,9 +136,9 @@ class MoveControl extends Control {
   /**
    * @inheritdoc
    */
-  deactivate() {
+  deactivate(silent) {
     this.map.removeInteraction(this.pointerInteraction);
-    super.deactivate();
+    super.deactivate(silent);
   }
 }
 

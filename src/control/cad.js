@@ -25,13 +25,10 @@ class CadControl extends Control {
       title: 'CAD control',
       className: 'ole-control-cad',
       image: cadSVG,
+      showSnapPoints: true,
+      showSnapLines: false,
+      snapPointDist: 10,
     }, options));
-
-    /**
-     * If true, map units are used for point snapping.
-     * The default measurement are pixels.
-     */
-    this.useMapUnits = options.useMapUnits;
 
     /**
      * Interaction for handling move events.
@@ -109,43 +106,22 @@ class CadControl extends Control {
       source: this.snapLayer.getSource(),
     });
 
-    /**
-     * Whether to show the snap points.
-     * @type {Boolean}
-     * @private
-     */
-    this.showSnapPoints = options.showSnapPoints;
+    this.standalone = false;
+  }
 
-    /**
-     * Initial distance of snap points.
-     * @type {Number}
-     * @private
-     */
-    this.snapPointDist = options.snapPointDist || 30;
+  /**
+   * @inheritdoc
+   */
+  getDialogTemplate() {
+    const distLabel = this.properties.useMapUnits ? 'map units' : 'px';
 
-    /**
-     * Whether to show snap lines.
-     * @type {Boolean}
-     * @private
-     */
-    this.showSnapLines = options.showSnapLines;
-
-    if (this.showSnapLines === 'undefined') {
-      this.showSnapLines = true;
-    }
-
-    /**
-     * Template for dialog.
-     * @type {string}
-     */
-    const distLabel = this.useMapUnits ? 'map units' : 'px';
-    this.dialogTemplate = `
+    return `
       <div>
         <input
           id="aux-cb"
           type="radio"
           name="radioBtn"
-          ${this.showSnapLines ? 'checked' : ''}
+          ${this.properties.showSnapLines ? 'checked' : ''}
         >
         <label>Show snap lines</label>
       </div>
@@ -154,14 +130,13 @@ class CadControl extends Control {
           id="dist-cb"
           type="radio"
           name="radioBtn"
-          ${this.showSnapPoints ? 'checked' : ''}
+          ${this.properties.showSnapPoints ? 'checked' : ''}
         >
         <label>Show snap points. Distance (${distLabel}):</label>
-        <input type="text" id="width-input" value="${this.snapPointDist}">
+        <input type="text" id="width-input"
+          value="${this.properties.snapPointDist}">
       </div>
     `;
-
-    this.standalone = false;
   }
 
   /**
@@ -201,11 +176,11 @@ class CadControl extends Control {
     this.linesLayer.getSource().clear();
     this.snapLayer.getSource().clear();
 
-    if (this.showSnapLines) {
+    if (this.properties.showSnapLines) {
       this.drawSnapLines(features, evt.coordinate);
     }
 
-    if (this.showSnapPoints && features.length) {
+    if (this.properties.showSnapPoints && features.length) {
       this.drawSnapPoints(evt.coordinate, features[0]);
     }
   }
@@ -354,19 +329,19 @@ class CadControl extends Control {
     const px = this.map.getPixelFromCoordinate(featCoord);
     let snapCoords = [];
 
-    if (this.useMapUnits) {
+    if (this.properties.useMapUnits) {
       snapCoords = [
-        [featCoord[0] - this.snapPointDist, featCoord[1]],
-        [featCoord[0] + this.snapPointDist, featCoord[1]],
-        [featCoord[0], featCoord[1] - this.snapPointDist],
-        [featCoord[0], featCoord[1] + this.snapPointDist],
+        [featCoord[0] - this.properties.snapPointDist, featCoord[1]],
+        [featCoord[0] + this.properties.snapPointDist, featCoord[1]],
+        [featCoord[0], featCoord[1] - this.properties.snapPointDist],
+        [featCoord[0], featCoord[1] + this.properties.snapPointDist],
       ];
     } else {
       const snapPx = [
-        [px[0] - this.snapPointDist, px[1]],
-        [px[0] + this.snapPointDist, px[1]],
-        [px[0], px[1] - this.snapPointDist],
-        [px[0], px[1] + this.snapPointDist],
+        [px[0] - this.properties.snapPointDist, px[1]],
+        [px[0] + this.properties.snapPointDist, px[1]],
+        [px[0], px[1] - this.properties.snapPointDist],
+        [px[0], px[1] + this.properties.snapPointDist],
       ];
 
       for (let j = 0; j < snapPx.length; j += 1) {
@@ -387,18 +362,23 @@ class CadControl extends Control {
     this.map.addInteraction(this.snapInteraction);
 
     document.getElementById('aux-cb').addEventListener('change', (evt) => {
-      this.showSnapLines = evt.target.checked;
-      this.showSnapPoints = !this.showSnapLines;
+      this.setProperties({
+        showSnapLines: evt.target.checked,
+        showSnapPoints: !evt.target.checked,
+      });
     });
 
     document.getElementById('dist-cb').addEventListener('change', (evt) => {
-      this.showSnapPoints = evt.target.checked;
-      this.showSnapLines = !this.showSnapPoints;
+      this.setProperties({
+        showSnapPoints: evt.target.checked,
+        showSnapLines: !evt.target.checked,
+      });
     });
 
     document.getElementById('width-input').addEventListener('keyup', (evt) => {
-      if (parseFloat(evt.target.value)) {
-        this.snapPointDist = parseFloat(evt.target.value);
+      const snapPointDist = parseFloat(evt.target.value);
+      if (snapPointDist) {
+        this.setProperties({ snapPointDist });
       }
     });
   }
@@ -406,8 +386,8 @@ class CadControl extends Control {
   /**
    * @inheritdoc
    */
-  deactivate() {
-    super.deactivate();
+  deactivate(silent) {
+    super.deactivate(silent);
     this.map.removeInteraction(this.pointerInteraction);
     this.map.removeInteraction(this.snapInteraction);
   }

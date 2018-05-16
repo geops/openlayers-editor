@@ -7,7 +7,12 @@ const styleLoader = require('@neutrinojs/style-loader');
 const devServer = require('@neutrinojs/dev-server');
 
 module.exports = neutrino => {
-  neutrino.use(airbnb, { eslint: { globals: ['jsts', 'ol'] } });
+  neutrino.use(airbnb, { eslint: {
+    globals: ['jsts', 'ol'],
+    rules: {
+      'class-methods-use-this': 'off'
+    }
+  } });
   neutrino.use(library, {
     name: 'ole',
     babel: {
@@ -17,6 +22,10 @@ module.exports = neutrino => {
             browsers: ["last 2 versions", "ie >= 10"]
           }
         }]
+      ],
+      plugins: [
+        'transform-es2015-destructuring',
+        'transform-object-rest-spread',
       ]
     }
   });

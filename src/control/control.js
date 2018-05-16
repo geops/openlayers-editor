@@ -26,7 +26,14 @@ class Control extends ol.control.Control {
     });
 
     /**
-     * Html class name of the control button
+     * Control properties.
+     * @type {object}
+     * @private
+     */
+    this.properties = { ...options };
+
+    /**
+     * Html class name of the control button.
      * @type {string}
      * @private
      */
@@ -63,13 +70,13 @@ class Control extends ol.control.Control {
      */
     this.editor = null;
 
-    button.addEventListener('click', this.onClick.bind(this));
-
     /**
      * @type {Boolean}
      * @private
      */
     this.standalone = true;
+
+    button.addEventListener('click', this.onClick.bind(this));
   }
 
   /**
@@ -117,17 +124,26 @@ class Control extends ol.control.Control {
   activate() {
     this.active = true;
     this.element.className += ' active';
-    this.editor.activeStateChange(this);
+    this.dispatchEvent(new CustomEvent('change:active', {
+      detail: { control: this },
+    }));
     this.openDialog();
   }
 
   /**
    * Dectivate the control
+   * @param {boolean} [silent] Do not trigger an event.
    */
-  deactivate() {
+  deactivate(silent) {
     this.active = false;
     this.element.classList.remove('active');
-    this.editor.activeStateChange(this);
+
+    if (!silent) {
+      this.dispatchEvent(new CustomEvent('change:active', {
+        detail: { control: this },
+      }));
+    }
+
     this.closeDialog();
   }
 
@@ -139,20 +155,22 @@ class Control extends ol.control.Control {
     return this.active;
   }
 
+  /**
+   * Open the control's dialog (if defined).
+   */
   openDialog() {
-    if (this.dialogTemplate) {
+    if (this.getDialogTemplate) {
       this.dialogDiv = document.createElement('div');
 
       this.dialogDiv.innerHTML = `
         <div class="ole-dialog">
-          ${this.dialogTemplate}
+          ${this.getDialogTemplate()}
         </div>
       `;
 
       this.map.getTargetElement().appendChild(this.dialogDiv);
     }
   }
-
 
   /**
    * Closes the control dialog.
@@ -161,7 +179,31 @@ class Control extends ol.control.Control {
   closeDialog() {
     if (this.dialogDiv) {
       this.map.getTargetElement().removeChild(this.dialogDiv);
+      this.dialogDiv = null;
     }
+  }
+
+  /**
+   * Set properties.
+   * @param {object} properties New control properties.
+   * @param {boolean} [silent] If true, no propertychange event is triggered.
+   */
+  setProperties(properties, silent) {
+    this.properties = { ...this.properties, ...properties };
+
+    if (!silent) {
+      this.dispatchEvent(new CustomEvent('propertychange', {
+        detail: { properties: this.properties, control: this },
+      }));
+    }
+  }
+
+  /**
+   * Return properties.
+   * @returns {object} Copy of control properties.
+   */
+  getProperties() {
+    return { ...this.properties };
   }
 }
 

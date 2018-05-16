@@ -33,6 +33,12 @@ class Editor {
 
     /**
      * @private
+     * @type {ol.Collection<ole.Service>}
+     */
+    this.services = new ol.Collection();
+
+    /**
+     * @private
      * @type {Object}
      */
     this.options = opts || {};
@@ -60,7 +66,22 @@ class Editor {
   addControl(control) {
     control.setMap(this.map);
     control.setEditor(this);
+
+    control.addEventListener('change:active', (e) => {
+      this.activeStateChange(e.detail.control);
+    });
+
     this.controls.push(control);
+  }
+
+  /**
+   * Adds a service to the editor.
+   */
+  addService(service) {
+    service.setMap(this.map);
+    service.setEditor(this);
+    service.activate();
+    this.services.push(service);
   }
 
   /**
@@ -81,10 +102,18 @@ class Editor {
    */
   remove() {
     this.controls.forEach((c) => {
-      c.deactivate();
+      c.deactivate(true);
     });
 
     this.toolbar.destroy();
+  }
+
+  /**
+   * Returns a list of ctive controls.
+   * @returns {ol.Collection.<ole.Control>} Active controls.
+   */
+  getControls() {
+    return this.controls;
   }
 
   /**
