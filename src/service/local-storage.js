@@ -19,7 +19,7 @@ export default class LocalStorage extends Storage {
    */
   restoreProperties() {
     for (let i = 0; i < this.controls.length; i += 1) {
-      const controlName = this.controls[i].constructor.name;
+      const controlName = this.controls[i].getProperties().title;
       const props = window.localStorage.getItem(controlName);
 
       if (props) {
@@ -50,7 +50,7 @@ export default class LocalStorage extends Storage {
     }
 
     for (let i = 0; i < this.controls.length; i += 1) {
-      const controlName = this.controls[i].constructor.name;
+      const controlName = this.controls[i].getProperties().title;
 
       if (activeControlNames.indexOf(controlName) > -1) {
         this.controls[i].activate();

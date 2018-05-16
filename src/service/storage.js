@@ -43,7 +43,7 @@ export default class Storage extends Service {
     this.controls.forEach((control) => {
       control.addEventListener('propertychange', (evt) => {
         this.storeProperties(
-          evt.detail.control.constructor.name,
+          evt.detail.control.getProperties().title,
           evt.detail.properties,
         );
       });
@@ -97,7 +97,7 @@ export default class Storage extends Service {
    */
   storeActiveControls() {
     const activeControls = this.editor.getActiveControls();
-    return activeControls.getArray().map(c => c.constructor.name);
+    return activeControls.getArray().map(c => c.getProperties().title);
   }
 
   /**
