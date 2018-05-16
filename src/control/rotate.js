@@ -148,11 +148,11 @@ class RotateControl extends Control {
   /**
    * @inheritdoc
    */
-  deactivate() {
+  deactivate(silent) {
     this.rotateLayer.getSource().clear();
     this.map.removeLayer(this.rotateLayer);
     this.map.removeInteraction(this.pointerInteraction);
-    super.deactivate();
+    super.deactivate(silent);
   }
 }
 

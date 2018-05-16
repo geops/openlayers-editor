@@ -386,8 +386,8 @@ class CadControl extends Control {
   /**
    * @inheritdoc
    */
-  deactivate() {
-    super.deactivate();
+  deactivate(silent) {
+    super.deactivate(silent);
     this.map.removeInteraction(this.pointerInteraction);
     this.map.removeInteraction(this.snapInteraction);
   }

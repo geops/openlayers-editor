@@ -64,10 +64,10 @@ class TopologyControl extends Control {
   /**
    * @inheritdoc
    */
-  deactivate() {
+  deactivate(silent) {
     this.addedFeatures = [];
     this.map.removeInteraction(this.selectInteraction);
-    super.deactivate();
+    super.deactivate(silent);
   }
 }
 

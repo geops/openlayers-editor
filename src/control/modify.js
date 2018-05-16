@@ -52,10 +52,10 @@ class ModifyControl extends Control {
   /**
    * @inheritdoc
    */
-  deactivate() {
+  deactivate(silent) {
     this.map.removeInteraction(this.selectInteraction);
     this.map.removeInteraction(this.modifyInteraction);
-    super.deactivate();
+    super.deactivate(silent);
   }
 }
 

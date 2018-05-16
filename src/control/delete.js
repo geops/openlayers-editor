@@ -53,9 +53,9 @@ class DeleteControl extends Control {
   /**
    * @inheritdoc
    */
-  deactivate() {
+  deactivate(silent) {
     this.map.removeInteraction(this.selectInteraction);
-    super.deactivate();
+    super.deactivate(silent);
   }
 }
 
