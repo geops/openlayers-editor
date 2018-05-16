@@ -33,6 +33,12 @@ class Editor {
 
     /**
      * @private
+     * @type {ol.Collection<ole.Service>}
+     */
+    this.services = new ol.Collection();
+
+    /**
+     * @private
      * @type {Object}
      */
     this.options = opts || {};
@@ -51,13 +57,6 @@ class Editor {
     if (this.options.showToolbar) {
       this.toolbar = new Toolbar(this.map, this.controls);
     }
-
-    /**
-     * Services that are used by Editor
-     * @private
-     * @type {Object}
-     */
-    this.services = {};
   }
 
   /**
@@ -68,6 +67,16 @@ class Editor {
     control.setMap(this.map);
     control.setEditor(this);
     this.controls.push(control);
+  }
+
+  /**
+   * Adds a service to the editor.
+   */
+  addService(service) {
+    service.setMap(this.map);
+    service.setEditor(this);
+    service.activate();
+    this.services.push(service);
   }
 
   /**
@@ -92,6 +101,14 @@ class Editor {
     });
 
     this.toolbar.destroy();
+  }
+
+  /**
+   * Returns a list of ctive controls.
+   * @returns {ol.Collection.<ole.Control>} Active controls.
+   */
+  getControls() {
+    return this.controls;
   }
 
   /**
@@ -140,16 +157,6 @@ class Editor {
     const ctrls = this.controls.getArray().filter(c => c.getActive());
     this.activeControls.clear();
     this.activeControls.extend(ctrls);
-  }
-
-  /**
-   * Adds a service.
-   * @param {ole.service} service The service.
-   */
-  addService(service) {
-    this.services = {
-      ...{ [service.constructor.name]: service },
-    };
   }
 }
 

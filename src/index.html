@@ -114,13 +114,9 @@
         rotate, deleteC, buffer, union, intersection, difference
       ]);
 
-      var localStorage = new ole.service.LocalStorage({
-        controls: [
-          cad,
-        ],
-      });
+      var ls = new ole.service.LocalStorage();
 
-      editor.addService(localStorage);
+      editor.addService(ls);
 
     </script>
   </body>

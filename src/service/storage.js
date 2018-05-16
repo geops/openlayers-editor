@@ -9,10 +9,12 @@ import Service from './service';
 export default class Storage extends Service {
   /**
    * Saves control properties.
-   * @param {object} Service options
-   * @param {array.<ol.control.Control>} controls List of controls.
+   * @param {object} [options] Service options
+   * @param {array.<ol.control.Control>} [controls] List of controls.
+   *  If undefined, all controls of the editor are used.
    */
-  constructor(options) {
+  constructor(optOptions) {
+    const options = optOptions || {};
     super(options);
 
     /**
@@ -27,8 +29,6 @@ export default class Storage extends Service {
      * @type {array.<string>}
      */
     this.ignoreKeys = ['title', 'image', 'className'];
-
-    this.activate();
   }
 
   /**
@@ -36,6 +36,7 @@ export default class Storage extends Service {
    */
   activate() {
     super.activate();
+    this.controls = this.controls || this.editor.getControls().getArray();
     this.restoreProperties();
 
     this.controls.forEach((control) => {
@@ -45,6 +46,17 @@ export default class Storage extends Service {
           evt.detail.properties,
         );
       });
+    });
+  }
+
+  /**
+   * @inheritdoc
+   */
+  deactivate() {
+    super.deactivate();
+
+    this.controls.forEach((control) => {
+      control.removeEventListener('propertychange');
     });
   }
 
