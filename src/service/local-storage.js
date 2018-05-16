@@ -2,20 +2,19 @@
  * OLE service.
  * @alias ole.service.LocalStorage
  */
-class LocalStorage {
+export default class LocalStorage {
   /**
-   * Stores cached variables
-   * @param {Object} options
+   * Saves control properties in the LocalStorage and restores them.
+   * @param {object} Service options
+   * @param {array.<ol.control.Control>} controls List of controls.
    */
   constructor(options) {
     /**
-     * @type {Array} Array of controls, for which properties must be watched
+     * List of service controls
+     * @type {array.<ol.control.Control>}
+     * @private
      */
     this.controls = options.controls;
-    /**
-     * @type {localStorage} store data across browser sessions.
-     */
-    this.storage = localStorage;
 
     options.controls.forEach((control) => {
       control.addEventListener('propertychange', (evt) => {
@@ -34,5 +33,3 @@ class LocalStorage {
     });
   }
 }
-
-export default LocalStorage;

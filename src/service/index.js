@@ -1,3 +1,3 @@
-import LocalStorage from './localStorage';
+import LocalStorage from './local-storage';
 
 export { LocalStorage as default };

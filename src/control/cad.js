@@ -25,28 +25,10 @@ class CadControl extends Control {
       title: 'CAD control',
       className: 'ole-control-cad',
       image: cadSVG,
+      showSnapPoints: true,
+      showSnapLines: false,
+      snapPointDist: 10,
     }, options));
-
-    /**
-     * Default properties of CAD control.
-     * @type {Object}
-     * @property {Boolean} showSnapPoints Whether to show the snap points.
-     * @property {Boolean} showSnapLines Whether to show snap lines.
-     * @property {Number} snapPointDist Initial distance of snap points.
-     */
-    this.defaultProperties = Control.getDefaultProperties(options.default);
-
-    /**
-     * CAD properties.
-     * @type {Object}
-     */
-    this.properties = { ...this.defaultProperties };
-
-    /**
-     * If true, map units are used for point snapping.
-     * The default measurement are pixels.
-     */
-    this.useMapUnits = options.useMapUnits;
 
     /**
      * Interaction for handling move events.
@@ -124,20 +106,14 @@ class CadControl extends Control {
       source: this.snapLayer.getSource(),
     });
 
-    /**
-    * If presence of a template for dialog.
-    * @type {Boolean}
-    */
-    this.dialogTemplate = true;
-
     this.standalone = false;
   }
 
   /**
-   * Return the dialog template
+   * @inheritdoc
    */
   getDialogTemplate() {
-    const distLabel = this.useMapUnits ? 'map units' : 'px';
+    const distLabel = this.options.useMapUnits ? 'map units' : 'px';
 
     return `
       <div>
@@ -353,7 +329,7 @@ class CadControl extends Control {
     const px = this.map.getPixelFromCoordinate(featCoord);
     let snapCoords = [];
 
-    if (this.useMapUnits) {
+    if (this.options.useMapUnits) {
       snapCoords = [
         [featCoord[0] - this.properties.snapPointDist, featCoord[1]],
         [featCoord[0] + this.properties.snapPointDist, featCoord[1]],
@@ -384,26 +360,26 @@ class CadControl extends Control {
     super.activate();
     this.map.addInteraction(this.pointerInteraction);
     this.map.addInteraction(this.snapInteraction);
+
     document.getElementById('aux-cb').addEventListener('change', (evt) => {
-      const newProperties = { ...this.properties };
-      newProperties.showSnapLines = evt.target.checked;
-      newProperties.showSnapPoints = !newProperties.showSnapLines;
-      this.setProperties(newProperties);
+      this.setProperties({
+        showSnapLines: evt.target.checked,
+        showSnapPoints: !evt.target.checked,
+      });
     });
 
     document.getElementById('dist-cb').addEventListener('change', (evt) => {
-      const newProperties = { ...this.properties };
-      newProperties.showSnapPoints = evt.target.checked;
-      newProperties.showSnapLines = !newProperties.showSnapPoints;
-      this.setProperties(newProperties);
+      this.setProperties({
+        showSnapPoints: evt.target.checked,
+        showSnapLines: !evt.target.checked,
+      });
     });
 
     document.getElementById('width-input').addEventListener('keyup', (evt) => {
-      const newProperties = { ...this.properties };
-      if (parseFloat(evt.target.value)) {
-        newProperties.snapPointDist = parseFloat(evt.target.value);
+      const snapPointDist = parseFloat(evt.target.value);
+      if (snapPointDist) {
+        this.setProperties({ snapPointDist });
       }
-      this.setProperties(newProperties);
     });
   }
 

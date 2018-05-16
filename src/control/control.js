@@ -26,6 +26,13 @@ class Control extends ol.control.Control {
     });
 
     /**
+     * Control properties
+     * @type {object}
+     * @private
+     */
+    this.properties = { ...options };
+
+    /**
      * Html class name of the control button
      * @type {string}
      * @private
@@ -64,18 +71,12 @@ class Control extends ol.control.Control {
     this.editor = null;
 
     /**
-     * Control properties.
-     * @type {Object}
-     */
-    this.properties = {};
-
-    button.addEventListener('click', this.onClick.bind(this));
-
-    /**
      * @type {Boolean}
      * @private
      */
     this.standalone = true;
+
+    button.addEventListener('click', this.onClick.bind(this));
   }
 
   /**
@@ -91,24 +92,6 @@ class Control extends ol.control.Control {
       return parseInt(window.localStorage.getItem(property), 10);
     }
     return window.localStorage.getItem(property);
-  }
-
-  /**
-   * Returns either properties stored in LocalStorage
-   * or default properties
-   * @param {Object} defaultProperties
-   */
-  static getDefaultProperties(defaultProperties) {
-    const newProperties = {};
-    Object.keys(defaultProperties).forEach((key) => {
-      const type = typeof defaultProperties[key];
-      if (window.localStorage.getItem(key)) {
-        newProperties[key] = Control.getLocalStorage(type, key);
-      } else {
-        newProperties[key] = defaultProperties[key];
-      }
-    });
-    return newProperties;
   }
 
   /**
@@ -178,8 +161,11 @@ class Control extends ol.control.Control {
     return this.active;
   }
 
+  /**
+   * Open the control's dialog (if defined).
+   */
   openDialog() {
-    if (this.dialogTemplate) {
+    if (this.getDialogTemplate) {
       this.dialogDiv = document.createElement('div');
 
       this.dialogDiv.innerHTML = `
@@ -204,20 +190,25 @@ class Control extends ol.control.Control {
 
   /**
    * Set properties.
+   * @param {object} properties New control properties.
+   * @param {boolean} [silent] If true, no propertychange event is triggered.
    */
-  setProperties(newProperties) {
-    this.properties = { ...newProperties };
-    const propertyEvent = new CustomEvent('propertychange', {
-      detail: this.properties,
-    });
-    this.dispatchEvent(propertyEvent);
+  setProperties(properties, silent) {
+    this.properties = { ...properties };
+
+    if (!silent) {
+      this.dispatchEvent(new CustomEvent('propertychange', {
+        detail: { properties: this.properties },
+      }));
+    }
   }
 
   /**
-   * Returns properties.
+   * Return properties.
+   * @returns {object} Copy of control properties.
    */
   getProperties() {
-    return this.properties;
+    return { ...this.properties };
   }
 }
 
