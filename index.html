@@ -32,8 +32,7 @@
         source: new ol.source.Vector()
       });
 
-      const PROJECTION = ol.proj.get('EPSG:3857');
-      const PROJECTION_EXTENT = PROJECTION.getExtent();
+      var projection = ol.proj.get('EPSG:3857');
 
       var map = new ol.Map({
         layers: [
@@ -46,9 +45,9 @@
               crossOrigin: 'anonymous',
               layer: '0',
               format: 'image/png',
-              PROJECTION,
+              projection: projection,
               tileGrid: new ol.tilegrid.WMTS({
-                origin: ol.extent.getTopLeft(PROJECTION_EXTENT),
+                origin: ol.extent.getTopLeft(projection.getExtent()),
                 resolutions: [156543.03392811998, 78271.51696419998,
                   39135.758481959994, 19567.879241008, 9783.939620504,
                   4891.969810252, 2445.984905126, 1222.9924525644,
