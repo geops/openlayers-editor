@@ -25,6 +25,7 @@ module.exports = neutrino => {
       ],
       plugins: [
         'transform-es2015-destructuring',
+        'transform-object-assign',
         'transform-object-rest-spread',
       ]
     }
