@@ -19,7 +19,7 @@
   "main": "dist/ole.js",
   "repository": "github:geops/ole2",
   "devDependencies": {
-    "@cypress/webpack-preprocessor": "^2.0.0",
+    "@cypress/webpack-preprocessor": "^3.0.0",
     "@neutrinojs/airbnb-base": "^8.1.2",
     "@neutrinojs/dev-server": "^8.1.2",
     "@neutrinojs/image-loader": "^8.1.2",
