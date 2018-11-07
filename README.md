@@ -4,7 +4,7 @@
 [![Travis badge](https://api.travis-ci.org/geops/ole2.svg?branch=master)](https://travis-ci.org/geops/ole2)
 
 OpenLayers Editor (OLE) provides a set of controls for extended editing of spatial data.
-This is the new version of OLE which is based on OpenLayers 4.
+This is the new version of OLE which is based on OpenLayers 5.
 The old version using OpenLayers 2 can be found [here](https://github.com/geops/ole).
 
 Contributions are welcome! Feel free to add more controls and to extend the current functionality.
