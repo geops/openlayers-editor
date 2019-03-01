@@ -14,6 +14,7 @@ class ModifyControl extends Control {
    *   Default is 'Point'.
    * @param {ol.Collection<ol.Feature>} [features] Destination for drawing.
    * @param {ol.source.Vector} [source] Destination for drawing.
+   * @param {ol.style.Style.StyleLike} [style] Style used when a feature is selected.
    */
   constructor(options) {
     super(Object.assign({
@@ -29,6 +30,7 @@ class ModifyControl extends Control {
     this.selectInteraction = new ol.interaction.Select({
       source: this.source,
       features: this.features,
+      style: options.style,
     });
 
     /**
