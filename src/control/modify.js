@@ -1,3 +1,5 @@
+import Select from 'ol/interaction/Select';
+import Modify from 'ol/interaction/Modify';
 import Control from './control';
 import image from '../../img/modify_geometry.svg';
 
@@ -26,7 +28,7 @@ class ModifyControl extends Control {
      * @type {ol.interaction.Select}
      * @private
      */
-    this.selectInteraction = new ol.interaction.Select({
+    this.selectInteraction = new Select({
       source: this.source,
       features: this.features,
     });
@@ -35,7 +37,7 @@ class ModifyControl extends Control {
      * @type {ol.interaction.Modify}
      * @private
      */
-    this.modifyInteraction = new ol.interaction.Modify({
+    this.modifyInteraction = new Modify({
       features: this.selectInteraction.getFeatures(),
     });
   }

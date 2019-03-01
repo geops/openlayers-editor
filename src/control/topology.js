@@ -1,3 +1,4 @@
+import Select from 'ol/interaction/Select';
 import Control from './control';
 import Util from '../helper/util';
 import delSVG from '../../img/buffer.svg';
@@ -25,7 +26,7 @@ class TopologyControl extends Control {
      * @type {ol.interaction.Select}
      * @private
      */
-    this.selectInteraction = new ol.interaction.Select({
+    this.selectInteraction = new Select({
       toggleCondition: () => true,
       hitTolerance: options.hitTolerance || 10,
       source: this.source,

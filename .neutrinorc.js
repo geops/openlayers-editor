@@ -8,7 +8,6 @@ const devServer = require('@neutrinojs/dev-server');
 
 module.exports = neutrino => {
   neutrino.use(airbnb, { eslint: {
-    globals: ['jsts', 'ol'],
     rules: {
       'class-methods-use-this': 'off'
     }

@@ -1,5 +1,19 @@
+import Pointer from 'ol/interaction/Pointer';
+import Snap from 'ol/interaction/Snap';
+import Vector from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Style from 'ol/style/Style';
+import RegularShape from 'ol/style/RegularShape';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import Point from 'ol/geom/Point';
+import MultiPoint from 'ol/geom/MultiPoint';
+import LineString from 'ol/geom/LineString';
+import Polygon from 'ol/geom/Polygon';
+import { Feature } from 'ol';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
+
 
 /**
  * Control with snapping functionality for geometry alignment.
@@ -35,7 +49,7 @@ class CadControl extends Control {
      * @type {ol.interactionPointer}
      * @private
      */
-    this.pointerInteraction = new ol.interaction.Pointer({
+    this.pointerInteraction = new Pointer({
       handleMoveEvent: this.onMove.bind(this),
     });
 
@@ -44,15 +58,15 @@ class CadControl extends Control {
      * @type {ol.layer.Vector}
      * @private
      */
-    this.snapLayer = new ol.layer.Vector({
-      source: new ol.source.Vector(),
+    this.snapLayer = new Vector({
+      source: new VectorSource(),
       style: [
-        new ol.style.Style({
-          image: new ol.style.RegularShape({
-            fill: new ol.style.Fill({
+        new Style({
+          image: new RegularShape({
+            fill: new Fill({
               color: '#E8841F',
             }),
-            stroke: new ol.style.Stroke({
+            stroke: new Stroke({
               width: 1,
               color: '#618496',
             }),
@@ -61,7 +75,7 @@ class CadControl extends Control {
             radius2: 0,
             angle: Math.PI / 4,
           }),
-          stroke: new ol.style.Stroke({
+          stroke: new Stroke({
             width: 1,
             lineDash: [5, 10],
             color: '#618496',
@@ -76,11 +90,11 @@ class CadControl extends Control {
      * @type {ol.layer.Vector}
      * @private
      */
-    this.linesLayer = new ol.layer.Vector({
-      source: new ol.source.Vector(),
+    this.linesLayer = new Vector({
+      source: new VectorSource(),
       style: [
-        new ol.style.Style({
-          stroke: new ol.style.Stroke({
+        new Style({
+          stroke: new Stroke({
             width: 1,
             lineDash: [5, 10],
             color: '#FF530D',
@@ -101,7 +115,7 @@ class CadControl extends Control {
      * @type {ol.interaction.Snap}
      * @private
      */
-    this.snapInteraction = new ol.interaction.Snap({
+    this.snapInteraction = new Snap({
       pixelTolerance: this.snapTolerance,
       source: this.snapLayer.getSource(),
     });
@@ -233,22 +247,22 @@ class CadControl extends Control {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
 
-      if (geom instanceof ol.geom.Point) {
+      if (geom instanceof Point) {
         auxCoords.push(featureCoord);
       } else {
         // filling snapLayer with features vertex
-        if (geom instanceof ol.geom.LineString) {
+        if (geom instanceof LineString) {
           for (let j = 0; j < featureCoord.length; j += 1) {
             auxCoords.push(featureCoord[j]);
           }
-        } else if (geom instanceof ol.geom.Polygon) {
+        } else if (geom instanceof Polygon) {
           for (let j = 0; j < featureCoord[0].length; j += 1) {
             auxCoords.push(featureCoord[0][j]);
           }
         }
 
         // filling auxCoords
-        const coords = ol.geom.Polygon.fromExtent(geom.getExtent())
+        const coords = Polygon.fromExtent(geom.getExtent())
           .getCoordinates()[0];
         auxCoords = auxCoords.concat(coords);
       }
@@ -278,8 +292,8 @@ class CadControl extends Control {
       }
 
       if (lineCoords) {
-        const g = new ol.geom.LineString(lineCoords);
-        this.snapLayer.getSource().addFeature(new ol.Feature(g));
+        const g = new LineString(lineCoords);
+        this.snapLayer.getSource().addFeature(new Feature(g));
       }
     }
 
@@ -311,8 +325,8 @@ class CadControl extends Control {
         this.linesLayer.getSource().addFeatures(snapFeatures);
 
         this.snapLayer.getSource().clear();
-        const snapGeom = new ol.geom.Point(snapPt);
-        this.snapLayer.getSource().addFeature(new ol.Feature(snapGeom));
+        const snapGeom = new Point(snapPt);
+        this.snapLayer.getSource().addFeature(new Feature(snapGeom));
       }
     }
   }
@@ -349,8 +363,8 @@ class CadControl extends Control {
       }
     }
 
-    const snapGeom = new ol.geom.MultiPoint(snapCoords);
-    this.snapLayer.getSource().addFeature(new ol.Feature(snapGeom));
+    const snapGeom = new MultiPoint(snapCoords);
+    this.snapLayer.getSource().addFeature(new Feature(snapGeom));
   }
 
   /**

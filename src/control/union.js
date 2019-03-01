@@ -1,5 +1,7 @@
-// import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
-// import UnionOp from 'jsts/org/locationtech/jts/operation/union/UnionOp';
+import { OL3Parser } from 'jsts/org/locationtech/jts/io';
+import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
+import LinearRing from 'ol/geom/LinearRing';
+import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon } from 'ol/geom';
 import TopologyControl from './topology';
 import unionSVG from '../../img/union.svg';
 
@@ -29,12 +31,16 @@ class Union extends TopologyControl {
    */
   applyTopologyOperation(features) {
     super.applyTopologyOperation(features);
-    const parser = new jsts.io.OL3Parser();
+    const parser = new OL3Parser();
+    parser.inject(
+      Point, LineString, LinearRing, Polygon,
+      MultiPoint, MultiLineString, MultiPolygon,
+    );
 
     for (let i = 1; i < features.length; i += 1) {
       const geom = parser.read(features[0].getGeometry());
       const otherGeom = parser.read(features[i].getGeometry());
-      const unionGeom = jsts.operation.overlay.OverlayOp.union(geom, otherGeom);
+      const unionGeom = OverlayOp.union(geom, otherGeom);
       features[0].setGeometry(parser.write(unionGeom));
       features[i].setGeometry(null);
     }

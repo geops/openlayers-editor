@@ -1,3 +1,4 @@
+import Select from 'ol/interaction/Select';
 import Control from './control';
 import delSVG from '../../img/delete.svg';
 
@@ -25,7 +26,7 @@ class DeleteControl extends Control {
      * @type {ol.interaction.Select}
      * @private
      */
-    this.selectInteraction = new ol.interaction.Select({
+    this.selectInteraction = new Select({
       source: this.source,
       multi: options.multi || false,
     });

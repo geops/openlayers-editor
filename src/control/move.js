@@ -1,3 +1,6 @@
+import Pointer from 'ol/interaction/Pointer';
+import Point from 'ol/geom/Point';
+import { getCenter } from 'ol/extent';
 import Control from './control';
 import image from '../../img/move.svg';
 
@@ -41,7 +44,7 @@ class MoveControl extends Control {
      * @type {ol.interaction.Pointer}
      * @private
      */
-    this.pointerInteraction = new ol.interaction.Pointer({
+    this.pointerInteraction = new Pointer({
       handleDownEvent: this.handleDownEvent.bind(this),
       handleDragEvent: this.handleDragEvent.bind(this),
       handleMoveEvent: this.handleMoveEvent.bind(this),
@@ -63,8 +66,8 @@ class MoveControl extends Control {
     });
 
     if (feature) {
-      if (feature.getGeometry() instanceof ol.geom.Point) {
-        this.coordinate = ol.extent.getCenter(feature
+      if (feature.getGeometry() instanceof Point) {
+        this.coordinate = getCenter(feature
           .getGeometry().getExtent());
       } else {
         this.coordinate = evt.coordinate;
