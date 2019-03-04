@@ -9,7 +9,7 @@ import Stroke from 'ol/style/Stroke';
 import Point from 'ol/geom/Point';
 import MultiPoint from 'ol/geom/MultiPoint';
 import LineString from 'ol/geom/LineString';
-import Polygon from 'ol/geom/Polygon';
+import Polygon, { fromExtent } from 'ol/geom/Polygon';
 import { Feature } from 'ol';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
@@ -158,8 +158,8 @@ class CadControl extends Control {
    */
   setMap(map) {
     super.setMap(map);
-    this.map.addLayer(this.snapLayer);
-    this.map.addLayer(this.linesLayer);
+    // this.map.addLayer(this.snapLayer);
+    // this.map.addLayer(this.linesLayer);
 
     // Ensure that the snap interaction is at the last position
     // as it must be the first to handle the  pointermove event.
@@ -262,7 +262,7 @@ class CadControl extends Control {
         }
 
         // filling auxCoords
-        const coords = Polygon.fromExtent(geom.getExtent())
+        const coords = fromExtent(geom.getExtent())
           .getCoordinates()[0];
         auxCoords = auxCoords.concat(coords);
       }

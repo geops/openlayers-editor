@@ -65,7 +65,8 @@ class Editor {
    * @param {ole.Control} control The control.
    */
   addControl(control) {
-    control.setMap(this.map);
+    this.map.addControl(control);
+    // control.setMap(this.map);
     control.setEditor(this);
 
     control.addEventListener('change:active', (e) => {

@@ -14,6 +14,9 @@ module.exports = neutrino => {
   } });
   neutrino.use(library, {
     name: 'ole',
+    externals: {
+      whitelist: ['ol', 'jsts']
+    },
     babel: {
       presets: [
         ['babel-preset-env', {

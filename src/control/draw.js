@@ -29,21 +29,22 @@ class DrawControl extends Control {
       default:
         image = drawPointSVG;
     }
-
-    super(Object.assign({
+    const opt = Object.assign({
       title: `Draw ${(options.type || 'Point')}`,
       className: 'ole-control-draw',
       image,
-    }, options));
+    }, options);
+
+    super(opt);
 
     /**
      * @type {ol.interaction.Draw}
      * @private
      */
     this.drawInteraction = new Draw({
-      type: options.type || 'Point',
-      features: options.features,
-      source: options.source,
+      type: opt.type || 'Point',
+      features: opt.features,
+      source: opt.source,
     });
   }
 
