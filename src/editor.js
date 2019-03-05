@@ -1,3 +1,4 @@
+import { Collection } from 'ol';
 import Toolbar from './toolbar';
 
 /**
@@ -23,19 +24,19 @@ class Editor {
      * @private
      * @type {ol.Collection<ole.Control>}
      */
-    this.controls = new ol.Collection();
+    this.controls = new Collection();
 
     /**
      * @private
      * @type {ol.Collection<ole.Control>}
      */
-    this.activeControls = new ol.Collection();
+    this.activeControls = new Collection();
 
     /**
      * @private
      * @type {ol.Collection<ole.Service>}
      */
-    this.services = new ol.Collection();
+    this.services = new Collection();
 
     /**
      * @private
@@ -64,7 +65,8 @@ class Editor {
    * @param {ole.Control} control The control.
    */
   addControl(control) {
-    control.setMap(this.map);
+    this.map.addControl(control);
+    // control.setMap(this.map);
     control.setEditor(this);
 
     control.addEventListener('change:active', (e) => {
@@ -89,8 +91,8 @@ class Editor {
    * @param {ol.Collection<ole.Control>} controls Collection of controls.
    */
   addControls(controls) {
-    const ctrls = controls instanceof ol.Collection ? controls
-      : new ol.Collection(controls);
+    const ctrls = controls instanceof Collection ? controls
+      : new Collection(controls);
 
     for (let i = 0; i < ctrls.getLength(); i += 1) {
       this.addControl(ctrls.item(i));

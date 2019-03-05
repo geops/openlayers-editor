@@ -1,3 +1,4 @@
+import Draw from 'ol/interaction/Draw';
 import Control from './control';
 import drawPointSVG from '../../img/draw_point.svg';
 import drawPolygonSVG from '../../img/draw_polygon.svg';
@@ -28,21 +29,22 @@ class DrawControl extends Control {
       default:
         image = drawPointSVG;
     }
-
-    super(Object.assign({
+    const opt = Object.assign({
       title: `Draw ${(options.type || 'Point')}`,
       className: 'ole-control-draw',
       image,
-    }, options));
+    }, options);
+
+    super(opt);
 
     /**
      * @type {ol.interaction.Draw}
      * @private
      */
-    this.drawInteraction = new ol.interaction.Draw({
-      type: options.type || 'Point',
-      features: options.features,
-      source: options.source,
+    this.drawInteraction = new Draw({
+      type: opt.type || 'Point',
+      features: opt.features,
+      source: opt.source,
     });
   }
 
