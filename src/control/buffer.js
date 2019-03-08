@@ -16,6 +16,7 @@ class BufferControl extends Control {
    *   (default is 10)
    * @param {boolean} [options.multi] Allow selection of multiple geometries
    *   (default is false).
+   * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    */
   constructor(options) {
     super(Object.assign({
@@ -33,6 +34,7 @@ class BufferControl extends Control {
       source: this.source,
       hitTolerance: options.hitTolerance || 10,
       multi: typeof (options.multi) === 'undefined' ? true : options.multi,
+      style: options.style,
     });
   }
 

@@ -14,6 +14,7 @@ class DrawControl extends Control {
    * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
+   * @param {ol.style.Style.StyleLike} [options.style] Style used for the draw interaction.
    */
   constructor(options) {
     let image = null;
@@ -43,6 +44,7 @@ class DrawControl extends Control {
       type: options.type || 'Point',
       features: options.features,
       source: options.source,
+      style: options.style,
     });
   }
 

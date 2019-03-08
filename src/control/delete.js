@@ -13,6 +13,7 @@ class DeleteControl extends Control {
    * @param {ol.source.Vector} [source] vector to delete.
    * @param {boolean} [multi] select multiple if set to true
    *   (default is false).
+   * @param {ol.style.Style.StyleLike} [style] Style used when a feature is selected.
    */
   constructor(options) {
     super(Object.assign({
@@ -28,6 +29,7 @@ class DeleteControl extends Control {
     this.selectInteraction = new ol.interaction.Select({
       source: this.source,
       multi: options.multi || false,
+      style: options.style,
     });
 
     /**

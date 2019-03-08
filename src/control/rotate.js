@@ -11,6 +11,7 @@ class RotateControl extends Control {
   /**
    * @param {string} [options.rotateAttribute] Name of a feature attribute
    *   that is used for storing the rotation in rad.
+   * @param {ol.style.Style.StyleLike} [options.style] Style used for the rotation layer.
    */
   constructor(options) {
     super(Object.assign({
@@ -42,7 +43,7 @@ class RotateControl extends Control {
      */
     this.rotateLayer = new ol.layer.Vector({
       source: new ol.source.Vector(),
-      style: (f) => {
+      style: options.style || ((f) => {
         const rotation = f.get(this.rotateAttribute);
         return [
           new ol.style.Style({
@@ -53,7 +54,7 @@ class RotateControl extends Control {
             }),
           }),
         ];
-      },
+      }),
     });
   }
 
@@ -141,7 +142,7 @@ class RotateControl extends Control {
    */
   activate() {
     this.map.addInteraction(this.pointerInteraction);
-    this.map.addLayer(this.rotateLayer);
+    this.rotateLayer.setMap(this.map);
     super.activate();
   }
 
@@ -150,7 +151,7 @@ class RotateControl extends Control {
    */
   deactivate(silent) {
     this.rotateLayer.getSource().clear();
-    this.map.removeLayer(this.rotateLayer);
+    this.rotateLayer.setMap(null);
     this.map.removeInteraction(this.pointerInteraction);
     super.deactivate(silent);
   }

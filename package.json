@@ -1,6 +1,6 @@
 {
   "name": "ole",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "OpenLayers Editor",
   "scripts": {
     "build": "neutrino build",
@@ -16,10 +16,10 @@
     "Editor"
   ],
   "license": "BSD-2-Clause",
-  "main": "dist/ole.js",
+  "main": "build/index.js",
   "repository": "github:geops/ole2",
   "devDependencies": {
-    "@cypress/webpack-preprocessor": "^3.0.0",
+    "@cypress/webpack-preprocessor": "^4.0.3",
     "@neutrinojs/airbnb-base": "^8.1.2",
     "@neutrinojs/dev-server": "^8.1.2",
     "@neutrinojs/image-loader": "^8.1.2",
@@ -28,14 +28,15 @@
     "babel-plugin-transform-es2015-destructuring": "^6.23.0",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "cypress": "^3.1.2",
+    "cypress": "3.1.4",
     "jsdoc": "^3.4.3",
     "jsdoc-export-default-interop": "^0.3.1",
     "neutrino": "^8.1.2",
-    "openlayers": "^4.6.5"
+    "openlayers": "^4.6.5",
+    "webpack": "^4.29.6"
   },
   "peerDependencies": {
-    "jsts": "^1.6.0",
-    "ol": "^4.6.4"
+    "jsts": "^2.0.3",
+    "ol": "^5.3.0"
   }
 }

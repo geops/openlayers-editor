@@ -19,6 +19,8 @@ class CadControl extends Control {
    *   snap points (default is 30).
    * @param {Boolean} [options.useMapUnits] Whether to use map units
    *   as measurement for point snapping. Default is false (pixel are used).
+   * @param {ol.style.Style.StyleLike} [options.snapStyle] Style used for the snap layer.
+   * @param {ol.style.Style.StyleLike} [options.linesStyle] Style used for the lines layer.
    */
   constructor(options) {
     super(Object.assign({
@@ -46,7 +48,7 @@ class CadControl extends Control {
      */
     this.snapLayer = new ol.layer.Vector({
       source: new ol.source.Vector(),
-      style: [
+      style: options.snapStyle || [
         new ol.style.Style({
           image: new ol.style.RegularShape({
             fill: new ol.style.Fill({
@@ -78,7 +80,7 @@ class CadControl extends Control {
      */
     this.linesLayer = new ol.layer.Vector({
       source: new ol.source.Vector(),
-      style: [
+      style: options.linesStyle || [
         new ol.style.Style({
           stroke: new ol.style.Stroke({
             width: 1,
@@ -144,19 +146,18 @@ class CadControl extends Control {
    */
   setMap(map) {
     super.setMap(map);
-    this.map.addLayer(this.snapLayer);
-    this.map.addLayer(this.linesLayer);
 
     // Ensure that the snap interaction is at the last position
     // as it must be the first to handle the  pointermove event.
-    this.map.getInteractions().on('change:length', (e) => {
+    this.map.getInteractions().on('change:length', ((e) => {
       const pos = e.target.getArray().indexOf(this.snapInteraction);
 
-      if (this.active && pos > -1 && pos !== e.target.getLength() - 1) {
+      if (this.snapInteraction.getActive() && pos > -1 && pos !== e.target.getLength() - 1) {
         this.deactivate();
         this.activate();
       }
-    });
+      // eslint-disable-next-line no-extra-bind
+    }).bind(this));
   }
 
   /**
@@ -358,6 +359,8 @@ class CadControl extends Control {
    */
   activate() {
     super.activate();
+    this.snapLayer.setMap(this.map);
+    this.linesLayer.setMap(this.map);
     this.map.addInteraction(this.pointerInteraction);
     this.map.addInteraction(this.snapInteraction);
 
@@ -388,6 +391,8 @@ class CadControl extends Control {
    */
   deactivate(silent) {
     super.deactivate(silent);
+    this.snapLayer.setMap(null);
+    this.linesLayer.setMap(null);
     this.map.removeInteraction(this.pointerInteraction);
     this.map.removeInteraction(this.snapInteraction);
   }

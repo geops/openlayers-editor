@@ -13,6 +13,7 @@ class TopologyControl extends Control {
    * @param {Object} [options] Control options.
    * @param {number} [options.hitTolerance] Select tolerance in pixels
    *   (default is 10)
+   * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    */
   constructor(options) {
     super(Object.assign({
@@ -30,6 +31,7 @@ class TopologyControl extends Control {
       hitTolerance: options.hitTolerance || 10,
       source: this.source,
       multi: true,
+      style: options.style,
     });
 
     this.selectInteraction.on('select', () => {
