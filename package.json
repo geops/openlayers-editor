@@ -1,6 +1,6 @@
 {
   "name": "ole",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "OpenLayers Editor",
   "scripts": {
     "build": "neutrino build",
@@ -9,7 +9,8 @@
     "lint": "neutrino lint",
     "test": "neutrino test",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
-    "start": "neutrino start"
+    "start": "neutrino start",
+    "prepack": "neutrino build"
   },
   "keywords": [
     "OpenLayers",
