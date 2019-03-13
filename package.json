@@ -17,7 +17,7 @@
   ],
   "license": "BSD-2-Clause",
   "main": "build/index.js",
-  "repository": "github:geops/ole2",
+  "repository": "github:geops/openlayers-editor",
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.0.3",
     "@neutrinojs/airbnb-base": "^8.1.2",
