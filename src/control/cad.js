@@ -8,7 +8,7 @@ import cadSVG from '../../img/cad.svg';
  */
 class CadControl extends Control {
   /**
-   * @param {Object} options Tool options.
+   * @param {Object} [options] Tool options.
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
    *   for snap lines. Default is 10.
    * @param {Boolean} [options.showSnapLines] Whether to show

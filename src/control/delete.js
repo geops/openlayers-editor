@@ -9,7 +9,7 @@ import delSVG from '../../img/delete.svg';
 class DeleteControl extends Control {
   /**
    * @inheritdoc
-   * @prram {Object} [options] Control options.
+   * @param {Object} [options] Control options.
    * @param {ol.source.Vector} [options.source] vector to delete.
    * @param {boolean} [options.multi] select multiple if set to true
    *   (default is false).

@@ -8,7 +8,7 @@ import image from '../../img/modify_geometry.svg';
  */
 class ModifyControl extends Control {
   /**
-   * @param {Object} options Tool options.
+   * @param {Object} [options] Tool options.
    * @param {string} [options.type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
