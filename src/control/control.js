@@ -14,8 +14,6 @@ class Control extends ol.control.Control {
    *   edit features. If undefined, options.features must be passed.
    * @param {ol.Collection<ol.Feature>} [options.features] Collection of
    *   edit features. If undefined, options.source must be set.
-   * @param {boolean} [standalone] Boolean indicating whether the Control
-   *   can be  activated together with other controls, like ole.Draw.
    */
   constructor(options) {
     const button = document.createElement('button');
@@ -163,7 +161,6 @@ class Control extends ol.control.Control {
    * Open the control's dialog (if defined).
    */
   openDialog() {
-    this.closeDialog();
     if (this.getDialogTemplate) {
       this.dialogDiv = document.createElement('div');
 

@@ -9,12 +9,12 @@ import image from '../../img/modify_geometry.svg';
 class ModifyControl extends Control {
   /**
    * @param {Object} options Tool options.
-   * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
+   * @param {string} [options.type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
-   * @param {ol.Collection<ol.Feature>} [features] Destination for drawing.
-   * @param {ol.source.Vector} [source] Destination for drawing.
-   * @param {ol.style.Style.StyleLike} [style] Style used when a feature is selected.
+   * @param {ol.Collection<ol.Feature>} [options.features] Destination for drawing.
+   * @param {ol.source.Vector} [options.source] Destination for drawing.
+   * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    */
   constructor(options) {
     super(Object.assign({

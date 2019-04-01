@@ -11,7 +11,7 @@ import drawLineSVG from '../../img/draw_line.svg';
 class DrawControl extends Control {
   /**
    * @param {Object} options Tool options.
-   * @param {string} [type] Geometry type ('Point', 'LineString', 'Polygon',
+   * @param {string} [options.type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
    * @param {ol.style.Style.StyleLike} [options.style] Style used for the draw interaction.

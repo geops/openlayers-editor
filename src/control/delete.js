@@ -10,10 +10,10 @@ class DeleteControl extends Control {
   /**
    * @inheritdoc
    * @prram {Object} [options] Control options.
-   * @param {ol.source.Vector} [source] vector to delete.
-   * @param {boolean} [multi] select multiple if set to true
+   * @param {ol.source.Vector} [options.source] vector to delete.
+   * @param {boolean} [options.multi] select multiple if set to true
    *   (default is false).
-   * @param {ol.style.Style.StyleLike} [style] Style used when a feature is selected.
+   * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    */
   constructor(options) {
     super(Object.assign({
