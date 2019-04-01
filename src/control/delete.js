@@ -27,7 +27,7 @@ class DeleteControl extends Control {
      * @private
      */
     this.selectInteraction = new ol.interaction.Select({
-      source: this.source,
+      layerFilter: this.layerFilter,
       multi: options.multi || false,
       style: options.style,
     });

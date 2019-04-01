@@ -31,7 +31,7 @@ class BufferControl extends Control {
      * @private
      */
     this.selectInteraction = new ol.interaction.Select({
-      source: this.source,
+      layers: this.layerFilter,
       hitTolerance: options.hitTolerance || 10,
       multi: typeof (options.multi) === 'undefined' ? true : options.multi,
       style: options.style,

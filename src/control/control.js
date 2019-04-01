@@ -62,6 +62,16 @@ class Control extends ol.control.Control {
       });
 
     /**
+     * Filter editable layer. Used by select interactions instead of
+     * the old source property.
+     * @type {function}
+     * @private
+     */
+    this.layerFilter =
+      options.layerFilter ||
+      (layer => layer.getSource() === this.source);
+
+    /**
      * ole.Editor instance.
      * @type {ole.Editor}
      * @private

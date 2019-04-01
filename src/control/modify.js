@@ -28,11 +28,10 @@ class ModifyControl extends Control {
      * @private
      */
     this.selectInteraction = new ol.interaction.Select({
-      source: this.source,
+      layers: this.layerFilter,
       features: this.features,
       style: options.style,
     });
-
     /**
      * @type {ol.interaction.Modify}
      * @private
