@@ -33,6 +33,7 @@ class ModifyControl extends Control {
    * @param {ol.Collection<ol.Feature>} [options.features] Destination for drawing.
    * @param {ol.source.Vector} [options.source] Destination for drawing.
    * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
+   * @param {ol.style.Style.StyleLike} [options.modifyStyle] Style used by the Modify interaction.
    */
   constructor(options) {
     super(Object.assign({
@@ -87,7 +88,7 @@ class ModifyControl extends Control {
      */
     this.modifyInteraction = new ol.interaction.Modify({
       features: this.selectInteraction.getFeatures(),
-      style: options.style,
+      style: options.modifyStyle,
     });
   }
 
