@@ -1,6 +1,24 @@
 import Control from './control';
 import image from '../../img/modify_geometry.svg';
 
+// Return an array of styles
+const getStyles = (style, feature) => {
+  if (!style) {
+    return [];
+  }
+  let styles = style;
+  if (typeof style === 'function') {
+    if (feature) {
+      // styleFunction
+      styles = style(feature);
+    } else {
+      // featureStyleFunction
+      styles = style();
+    }
+  }
+  return Array.isArray(styles) ? styles : [styles];
+};
+
 /**
  * Control for modifying geometries.
  * @extends {ole.Control}
@@ -32,12 +50,44 @@ class ModifyControl extends Control {
       features: this.features,
       style: options.style,
     });
+
+    if (options.style) {
+      // Apply the select style dynamically when the feature has its own style.
+      this.selectInteraction.getFeatures().on('add', (evt) => {
+        if (!evt.element.getStyleFunction()) {
+          return;
+        }
+
+        // Append the select style to the feature's style
+        const feature = evt.element;
+        const featureStyles = getStyles(feature.getStyleFunction());
+        const selectStyles = getStyles(options.style, feature);
+        const styles = featureStyles.concat(selectStyles);
+        evt.element.setStyle(styles);
+      });
+
+      // Remove the select style dynamically when the feature had its own style.
+      this.selectInteraction.getFeatures().on('remove', (evt) => {
+        if (!evt.element.getStyleFunction()) {
+          return;
+        }
+
+        // Remove the select styles
+        const feature = evt.element;
+        const styles = getStyles(feature.getStyleFunction(), null);
+        const selectStyles = getStyles(options.style, feature);
+        const featureStyles = styles.slice(0, styles.indexOf(selectStyles[0]));
+        evt.element.setStyle(featureStyles);
+      });
+    }
+
     /**
      * @type {ol.interaction.Modify}
      * @private
      */
     this.modifyInteraction = new ol.interaction.Modify({
       features: this.selectInteraction.getFeatures(),
+      style: options.style,
     });
   }
 
@@ -54,9 +104,9 @@ class ModifyControl extends Control {
    * @inheritdoc
    */
   deactivate(silent) {
+    super.deactivate(silent);
     this.map.removeInteraction(this.selectInteraction);
     this.map.removeInteraction(this.modifyInteraction);
-    super.deactivate(silent);
   }
 }
 
