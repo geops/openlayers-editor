@@ -171,6 +171,7 @@ class Control extends ol.control.Control {
    * Open the control's dialog (if defined).
    */
   openDialog() {
+    this.closeDialog();
     if (this.getDialogTemplate) {
       this.dialogDiv = document.createElement('div');
 
