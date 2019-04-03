@@ -14,6 +14,8 @@ class Control extends ol.control.Control {
    *   edit features. If undefined, options.features must be passed.
    * @param {ol.Collection<ol.Feature>} [options.features] Collection of
    *   edit features. If undefined, options.source must be set.
+   * @param {function} [options.layerFilter] Filter editable layer. Used by select interactions instead of
+   * the old source property.
    */
   constructor(options) {
     const button = document.createElement('button');
