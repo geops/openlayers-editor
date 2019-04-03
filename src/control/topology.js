@@ -31,7 +31,6 @@ class TopologyControl extends Control {
       hitTolerance: options.hitTolerance || 10,
       multi: true,
       style: options.style,
-      toggleCondition: () => true,
     });
 
     this.selectInteraction.on('select', () => {
