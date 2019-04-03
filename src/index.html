@@ -9,22 +9,8 @@
     <script src="index.js"></script>
     <div id="map"></div>
     <script type="text/javascript">
-      const feat = new ol.Feature(new ol.geom.Point([0, 0]));
-      feat.setStyle(
-        new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 10,
-            fill: new ol.style.Fill({
-              color: "#ff0000"
-            })
-          })
-        })
-      );
-
       var editLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-          features: [feat]
-        })
+        source: new ol.source.Vector()
       });
       const PROJECTION = ol.proj.get("EPSG:3857");
       const PROJECTION_EXTENT = PROJECTION.getExtent();
@@ -96,7 +82,7 @@
         target: "map",
         view: new ol.View({
           center: [873708.375917, 6105425.847789],
-          zoom: 1
+          zoom: 15
         })
       });
 
