@@ -31,7 +31,6 @@ class Toolbar extends ol.control.Control {
      * @type {ol.Map}
      */
     this.map = map;
-
     this.map.getTargetElement().appendChild(this.element);
     this.load();
     this.controls.on('change:length', this.load.bind(this));

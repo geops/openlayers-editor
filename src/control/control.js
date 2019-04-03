@@ -14,8 +14,7 @@ class Control extends ol.control.Control {
    *   edit features. If undefined, options.features must be passed.
    * @param {ol.Collection<ol.Feature>} [options.features] Collection of
    *   edit features. If undefined, options.source must be set.
-   * @param {boolean} [standalone] Boolean indicating whether the Control
-   *   can be  activated together with other controls, like ole.Draw.
+   * @param {function} [options.layerFilter] Filter editable layer.
    */
   constructor(options) {
     const button = document.createElement('button');
@@ -62,6 +61,16 @@ class Control extends ol.control.Control {
       new ol.source.Vector({
         features: options.features,
       });
+
+    /**
+     * Filter editable layer. Used by select interactions instead of
+     * the old source property.
+     * @type {function}
+     * @private
+     */
+    this.layerFilter =
+      options.layerFilter ||
+      (layer => layer.getSource() === this.source);
 
     /**
      * ole.Editor instance.

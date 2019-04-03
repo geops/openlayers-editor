@@ -9,7 +9,7 @@ import image from '../../img/move.svg';
 class MoveControl extends Control {
   /**
    * Control for moving geometries,
-   * @param {Object} options Tool options.
+   * @param {Object} [options] Tool options.
    */
   constructor(options) {
     super(Object.assign({

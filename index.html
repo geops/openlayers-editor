@@ -1,8 +1,8 @@
 <html>
   <head>
     <title>OpenLayers Editor</title>
-    <link rel="stylesheet" type="text/css" href="style/style.css">
-    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style/style.css" />
+    <meta charset="utf-8" />
   </head>
   <body>
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
@@ -12,9 +12,11 @@
       <div id="header">
         <nav>
           <div id="brand">OpenLayers Editor</div>
-          <a href="#" class="active" >Demo</a>
-          <a href="api.html" >API</a>
-          <a target="_blank" href="https://github.com/geops/openlayers-editor">Code</a>
+          <a href="#" class="active">Demo</a>
+          <a href="api.html">API</a>
+          <a target="_blank" href="https://github.com/geops/openlayers-editor">
+            Code
+          </a>
         </nav>
       </div>
       <div id="map"></div>
@@ -32,38 +34,73 @@
         source: new ol.source.Vector()
       });
 
-      var projection = ol.proj.get('EPSG:3857');
+      var projection = ol.proj.get("EPSG:3857");
 
       var map = new ol.Map({
         layers: [
           new ol.layer.Tile({
             source: new ol.source.WMTS({
-              url: 'https://api.mapbox.com/v4/geops.db9390ee/' +
-              '{TileMatrix}/{TileCol}/{TileRow}.png?access_token=' +
-              'pk.eyJ1IjoiZ2VvcHMiLCJhIjoiVnlkeXdzayJ9.aGtp4w0C-0vZZae1HneLGg',
-              requestEncoding: 'REST',
-              crossOrigin: 'anonymous',
-              layer: '0',
-              format: 'image/png',
+              url:
+                "https://api.mapbox.com/v4/geops.db9390ee/" +
+                "{TileMatrix}/{TileCol}/{TileRow}.png?access_token=" +
+                "pk.eyJ1IjoiZ2VvcHMiLCJhIjoiVnlkeXdzayJ9.aGtp4w0C-0vZZae1HneLGg",
+              requestEncoding: "REST",
+              crossOrigin: "anonymous",
+              layer: "0",
+              format: "image/png",
               projection: projection,
               tileGrid: new ol.tilegrid.WMTS({
                 origin: ol.extent.getTopLeft(projection.getExtent()),
-                resolutions: [156543.03392811998, 78271.51696419998,
-                  39135.758481959994, 19567.879241008, 9783.939620504,
-                  4891.969810252, 2445.984905126, 1222.9924525644,
-                  611.4962262807999, 305.74811314039994, 152.87405657047998,
-                  76.43702828523999, 38.21851414248, 19.109257071295996,
-                  9.554628535647998, 4.777314267823999, 2.3886571339119995,
-                  1.1943285669559998, 0.5971642834779999, 0.29858214174039993
+                resolutions: [
+                  156543.03392811998,
+                  78271.51696419998,
+                  39135.758481959994,
+                  19567.879241008,
+                  9783.939620504,
+                  4891.969810252,
+                  2445.984905126,
+                  1222.9924525644,
+                  611.4962262807999,
+                  305.74811314039994,
+                  152.87405657047998,
+                  76.43702828523999,
+                  38.21851414248,
+                  19.109257071295996,
+                  9.554628535647998,
+                  4.777314267823999,
+                  2.3886571339119995,
+                  1.1943285669559998,
+                  0.5971642834779999,
+                  0.29858214174039993
                 ],
-                matrixIds: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                  '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
+                matrixIds: [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "7",
+                  "8",
+                  "9",
+                  "10",
+                  "11",
+                  "12",
+                  "13",
+                  "14",
+                  "15",
+                  "16",
+                  "17",
+                  "18",
+                  "19"
+                ]
               })
             })
           }),
           editLayer
         ],
-        target: 'map',
+        target: "map",
         view: new ol.View({
           center: [873708.375917, 6105425.847789],
           zoom: 15
@@ -81,7 +118,7 @@
       });
 
       var drawLine = new ole.control.Draw({
-          type: 'LineString',
+        type: "LineString",
         source: editLayer.getSource()
       });
 
@@ -90,12 +127,11 @@
       });
 
       var drawPoly = new ole.control.Draw({
-        type: 'Polygon',
+        type: "Polygon",
         source: editLayer.getSource()
       });
 
       var move = new ole.control.Move({
-        type: 'Polygon',
         source: editLayer.getSource()
       });
 
@@ -123,14 +159,24 @@
         source: editLayer.getSource()
       });
 
-      editor.addControls([cad, draw, drawLine, drawPoly, modify, move,
-        rotate, deleteC, buffer, union, intersection, difference
+      editor.addControls([
+        cad,
+        draw,
+        drawLine,
+        drawPoly,
+        modify,
+        move,
+        rotate,
+        deleteC,
+        buffer,
+        union,
+        intersection,
+        difference
       ]);
 
       var ls = new ole.service.LocalStorage();
 
       editor.addService(ls);
-
     </script>
   </body>
 </html>

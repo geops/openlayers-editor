@@ -9,6 +9,8 @@ import rotateMapSVG from '../../img/rotate_map.svg';
  */
 class RotateControl extends Control {
   /**
+   * @inheritdoc
+   * @param {Object} [options] Control options.
    * @param {string} [options.rotateAttribute] Name of a feature attribute
    *   that is used for storing the rotation in rad.
    * @param {ol.style.Style.StyleLike} [options.style] Style used for the rotation layer.
