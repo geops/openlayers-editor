@@ -30,22 +30,8 @@
       </div>
     </div>
     <script type="text/javascript">
-      const feat = new Feature(new Point([0, 0]));
-      feat.setStyle(
-        new Style({
-          image: new Circle({
-            radius: 10,
-            fill: new Fill({
-              color: "#ff0000"
-            })
-          })
-        })
-      );
-
       var editLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-          features: [feat]
-        })
+        source: new ol.source.Vector()
       });
 
       var projection = ol.proj.get("EPSG:3857");
@@ -116,8 +102,8 @@
         ],
         target: "map",
         view: new ol.View({
-          center: [0, 0],
-          zoom: 1
+          center: [873708.375917, 6105425.847789],
+          zoom: 15
         })
       });
 
@@ -156,19 +142,9 @@
         color: "#3399CC",
         width: 1.25
       });
-      var style = new Style({
-        image: new Circle({
-          fill: fill,
-          stroke: stroke,
-          radius: 5
-        }),
-        fill: fill,
-        stroke: stroke
-      });
 
       var modify = new ole.control.Modify({
-        source: editLayer.getSource(),
-        style: style
+        source: editLayer.getSource()
       });
 
       var deleteC = new ole.control.Delete({
