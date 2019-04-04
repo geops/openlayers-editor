@@ -10,7 +10,8 @@ class Editor {
    * @param {ol.Map} map The map object.
    * @param {Object} [options] Editor options.
    * @param {Boolean} [options.showToolbar] Whether to show the toolbar.
-   *   Default is true.
+   * @param {HTMLElement} [options.target] Specify a target if you want
+   *   the toolbar to be rendered outside of the map's viewport.
    */
   constructor(map, opts) {
     /**
@@ -55,7 +56,7 @@ class Editor {
     }
 
     if (this.options.showToolbar) {
-      this.toolbar = new Toolbar(this.map, this.controls);
+      this.toolbar = new Toolbar(this.map, this.controls, this.options.target);
     }
   }
 

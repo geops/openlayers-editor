@@ -10,6 +10,8 @@ class Control extends ol.control.Control {
    * @param {string} options.className Name of the control's HTML class.
    * @param {string} options.title Title of the control toolbar button.
    * @param {Image} options.image Control toolbar image.
+   * @param {HTMLElement} [options.dialogTarget] Specify a target if you want
+   *   the dialog div used by the control to be rendered outside of the map's viewport.
    * @param {ol.source.Vector} [options.source] Vector source holding
    *   edit features. If undefined, options.features must be passed.
    * @param {ol.Collection<ol.Feature>} [options.features] Collection of
@@ -24,6 +26,14 @@ class Control extends ol.control.Control {
     super({
       element: button,
     });
+
+    /**
+     * Specify a target if you want the dialog div used by the
+     * control to be rendered outside of the map's viewport.
+     * @type {HTMLElement}
+     * @private
+     */
+    this.dialogTarget = options.dialogTarget;
 
     /**
      * Control properties.
@@ -172,8 +182,7 @@ class Control extends ol.control.Control {
           ${this.getDialogTemplate()}
         </div>
       `;
-
-      this.map.getTargetElement().appendChild(this.dialogDiv);
+      (this.dialogTarget || this.map.getTargetElement()).appendChild(this.dialogDiv);
     }
   }
 
@@ -183,7 +192,7 @@ class Control extends ol.control.Control {
    */
   closeDialog() {
     if (this.dialogDiv) {
-      this.map.getTargetElement().removeChild(this.dialogDiv);
+      (this.dialogTarget || this.map.getTargetElement()).removeChild(this.dialogDiv);
       this.dialogDiv = null;
     }
   }
