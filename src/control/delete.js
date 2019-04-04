@@ -9,11 +9,11 @@ import delSVG from '../../img/delete.svg';
 class DeleteControl extends Control {
   /**
    * @inheritdoc
-   * @prram {Object} [options] Control options.
-   * @param {ol.source.Vector} [source] vector to delete.
-   * @param {boolean} [multi] select multiple if set to true
+   * @param {Object} [options] Control options.
+   * @param {ol.source.Vector} [options.source] vector to delete.
+   * @param {boolean} [options.multi] select multiple if set to true
    *   (default is false).
-   * @param {ol.style.Style.StyleLike} [style] Style used when a feature is selected.
+   * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    */
   constructor(options) {
     super(Object.assign({
@@ -27,7 +27,7 @@ class DeleteControl extends Control {
      * @private
      */
     this.selectInteraction = new ol.interaction.Select({
-      source: this.source,
+      layers: this.layerFilter,
       multi: options.multi || false,
       style: options.style,
     });

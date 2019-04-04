@@ -28,8 +28,8 @@ class TopologyControl extends Control {
      */
     this.selectInteraction = new ol.interaction.Select({
       toggleCondition: () => true,
+      layers: this.layerFilter,
       hitTolerance: options.hitTolerance || 10,
-      source: this.source,
       multi: true,
       style: options.style,
     });
