@@ -10,14 +10,15 @@ class Toolbar extends ol.control.Control {
    * Constructor.
    * @param {ol.Map} map The map object.
    * @param {ol.Collection.<ol.control.Control>} controls Controls
-   *   to display in the toolbar.
+   * @param {HTMLElement} [options.target] Specify a target if you want
+   *   the control to be rendered outside of the map's viewport.
    */
-  constructor(map, controls) {
+  constructor(map, controls, target) {
     const element = document.createElement('div');
     element.setAttribute('id', 'ole-toolbar');
 
     super({
-      element,
+      element: target || element,
     });
 
     /**
@@ -31,7 +32,11 @@ class Toolbar extends ol.control.Control {
      * @type {ol.Map}
      */
     this.map = map;
-    this.map.getTargetElement().appendChild(this.element);
+
+    if (!target) {
+      this.map.getTargetElement().appendChild(this.element);
+    }
+
     this.load();
     this.controls.on('change:length', this.load.bind(this));
   }
