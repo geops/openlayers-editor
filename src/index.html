@@ -110,10 +110,6 @@
         source: editLayer.getSource()
       });
 
-      var move = new ole.control.Move({
-        type: "Polygon",
-        source: editLayer.getSource()
-      });
       var fill = new ol.style.Fill({
         color: "rgba(255,255,255,0.4)"
       });
@@ -134,10 +130,6 @@
       var modify = new ole.control.Modify({
         source: editLayer.getSource(),
         style: style
-      });
-
-      var deleteC = new ole.control.Delete({
-        source: editLayer.getSource()
       });
 
       var buffer = new ole.control.Buffer({
@@ -162,9 +154,7 @@
         drawLine,
         drawPoly,
         modify,
-        move,
         rotate,
-        deleteC,
         buffer,
         union,
         intersection,
