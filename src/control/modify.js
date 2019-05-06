@@ -1,5 +1,5 @@
 import Control from './control';
-import image from '../../img/modify_geometry.svg';
+import image from '../../img/modify_geometry2.svg';
 
 // Return an array of styles
 const getStyles = (style, feature) => {
