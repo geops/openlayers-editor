@@ -110,26 +110,26 @@
         source: editLayer.getSource()
       });
 
-      var fill = new ol.style.Fill({
-        color: "rgba(255,255,255,0.4)"
-      });
-      var stroke = new ol.style.Stroke({
-        color: "#3399CC",
-        width: 1.25
-      });
-      var style = new ol.style.Style({
-        image: new ol.style.Circle({
-          fill: fill,
-          stroke: stroke,
-          radius: 5
-        }),
-        fill: fill,
-        stroke: stroke
-      });
+      // var fill = new ol.style.Fill({
+      //   color: "rgba(255,255,255,0.4)"
+      // });
+      // var stroke = new ol.style.Stroke({
+      //   color: "#3399CC",
+      //   width: 1.25
+      // });
+      // var style = new ol.style.Style({
+      //   image: new ol.style.Circle({
+      //     fill: fill,
+      //     stroke: stroke,
+      //     radius: 5
+      //   }),
+      //   fill: fill,
+      //   stroke: stroke
+      // });
 
       var modify = new ole.control.Modify({
         source: editLayer.getSource(),
-        style: style
+        // style: style
       });
 
       var buffer = new ole.control.Buffer({
