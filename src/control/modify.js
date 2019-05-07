@@ -46,6 +46,7 @@ class ModifyControl extends Control {
      * @type {ol.Coordinate}
      * @private
      */
+
     this.coordinate = null;
 
     /**
@@ -55,6 +56,87 @@ class ModifyControl extends Control {
     this.previousCursor = null;
 
     this.selectStyle = options.style;
+
+    //----------------------------------------------------------------------
+
+//     const selectStyle = new ol.style.Style({
+//         fill: new ol.style.Fill({
+//           color: [220,220,220,0.8]
+//         }),
+//         stroke: new ol.style.Stroke({
+//         color: '#3399CC',
+//         width: 4
+//       })
+//     });
+//
+//     this.selectInteraction = new ol.interaction.Select({
+//       condition: ol.events.condition.singleClick,
+//       toggleCondition: ol.events.condition.shiftKeyOnly,
+//       layers: this.layerFilter,
+//       features: this.features,
+//       style: options.style
+//     });
+//
+//     // const selected_features = this.selectInteraction.getFeatures();
+//
+//     if (options.style) {
+//         // Apply the select style dynamically when the feature has its own style.
+//         this.selectInteraction.getFeatures().on('add', (evt) => {
+//
+//           console.log(evt.element.getStyleFunction);
+//           if (!evt.element.getStyleFunction()) {
+//             console.log(evt.element);
+//             return;
+//           }
+//
+//           // Append the select style to the feature's style
+//           const feature = evt.element;
+//           const featureStyles = getStyles(feature.getStyleFunction());
+//           const selectStyles = getStyles(options.style, feature);
+//           const styles = featureStyles.concat(selectStyles);
+//           evt.element.setStyle(styles);
+//         });
+//
+//         // Remove the select style dynamically when the feature had its own style.
+//       this.selectInteraction.getFeatures().on('remove', (evt) => {
+//         if (!evt.element.getStyleFunction()) {
+//           console.log("removed");
+//           return;
+//         }
+//
+//         // Remove the select styles
+//         const feature = evt.element;
+//         const styles = getStyles(feature.getStyleFunction(), null);
+//         const selectStyles = getStyles(options.style, feature);
+//         const featureStyles = styles.slice(0, styles.indexOf(selectStyles[0]));
+//         evt.element.setStyle(featureStyles);
+//       });
+//     }
+//
+//     console.log(options);
+//
+//   }
+//
+//
+//     activate() {
+//       this.map.addInteraction(this.selectInteraction);
+//       super.activate();
+//     }
+//
+//     /**
+//      * @inheritdoc
+//      */
+//     deactivate(silent) {
+//       // this.selectInteraction.getFeatures().clear();
+//       this.map.removeInteraction(this.selectInteraction);
+//       super.deactivate(silent);
+//     }
+// }
+//
+//
+// export default ModifyControl;
+
+    //-----------------------------------------------------------------
 
     /**
      * @type {ol.interaction.Modify}
@@ -157,6 +239,12 @@ class ModifyControl extends Control {
       return null;
     });
 
+    // if (this.feature && this.feature.getStyleFunction()){
+    //   this.feature.on('click', function(){
+    //     console.log(this.feature);
+    //   })
+    // }
+
     // Apply the select style dynamically when the feature has its own style.
     if (this.feature && this.feature.getStyleFunction()) {
       const featureStyles = getStyles(this.feature.getStyleFunction());
@@ -214,5 +302,6 @@ class ModifyControl extends Control {
     super.deactivate(silent);
   }
 }
+
 
 export default ModifyControl;
