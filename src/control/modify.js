@@ -67,7 +67,7 @@ class ModifyControl extends Control {
       toggleCondition: ol.events.condition.shiftKeyOnly,
       layers: this.layerFilter,
       features: this.features,
-      style: this.selectStyle
+      style: this.selectStyle,
     });
 
     if (options.style) {
@@ -100,15 +100,15 @@ class ModifyControl extends Control {
       });
     }
 
-    this.selectInteraction.getFeatures().on('add', (evt) => {
+    this.selectInteraction.getFeatures().on('add', () => {
       document.addEventListener('keydown', this.deleteFeature.bind(this));
       this.map.addInteraction(this.modifyInteraction);
-    })
+    });
 
-    this.selectInteraction.getFeatures().on('remove', (evt) => {
+    this.selectInteraction.getFeatures().on('remove', () => {
       document.removeEventListener('keydown', this.deleteFeature.bind(this));
       this.map.removeInteraction(this.modifyInteraction);
-    })
+    });
 
     /**
      * @type {ol.interaction.Modify}
@@ -140,7 +140,7 @@ class ModifyControl extends Control {
     // Delete only selected features using delete key
     if (evt.key === 'Delete' && this.selectInteraction.getFeatures()) {
       // Loop delete through selected features array
-      for (var i = 0; i < this.selectInteraction.getFeatures().getArray().length; i++){
+      for (let i = 0; i < this.selectInteraction.getFeatures().getArray().length; i += 1) {
         this.source.removeFeature(this.selectInteraction.getFeatures().getArray()[i]);
       }
       this.selectInteraction.getFeatures().clear();
@@ -153,7 +153,8 @@ class ModifyControl extends Control {
    * @private
    */
   startMoveFeature(evt) {
-    if (this.feature && this.modifyActive === false && this.selectInteraction.getFeatures().getArray().indexOf(this.feature) === -1) {
+    if (this.feature && this.modifyActive === false
+      && this.selectInteraction.getFeatures().getArray().indexOf(this.feature) === -1) {
       if (this.feature.getGeometry() instanceof ol.geom.Point) {
         const extent = this.feature.getGeometry().getExtent();
         this.coordinate = ol.extent.getCenter(extent);
@@ -228,7 +229,8 @@ class ModifyControl extends Control {
 
     if (this.modifyActive) {
       this.changeCursor('grab');
-    } else if (this.feature && this.selectInteraction.getFeatures().getArray().indexOf(this.feature) === -1)  {
+    } else if (this.feature
+      && this.selectInteraction.getFeatures().getArray().indexOf(this.feature) === -1) {
       this.changeCursor('move');
     } else if (this.previousCursor !== null) {
       this.changeCursor(this.previousCursor);
