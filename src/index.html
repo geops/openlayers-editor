@@ -110,26 +110,58 @@
         source: editLayer.getSource()
       });
 
-      var fill = new ol.style.Fill({
-        color: "rgba(255,255,255,0.4)"
-      });
-      var stroke = new ol.style.Stroke({
-        color: "#00aaff",
-        width: 3
-      });
-      var style = new ol.style.Style({
-        image: new ol.style.Circle({
-          fill: fill,
-          stroke: stroke,
-          radius: 5
-        }),
-        fill: fill,
-        stroke: stroke
-      });
+      var styleFunction = function() {
+        return [
+          new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 5,
+              fill: new ol.style.Fill({
+                color: '#00aaff'
+              }),
+              stroke: new ol.style.Stroke({color: '#00aaff', width: 2})
+            }),
+            geometry: function(feature) {
+              var coordinates = feature.getGeometry().getCoordinates()[0];
+              console.log(coordinates);
+              if (coordinates.length==1){
+                return new ol.geom.Point(coordinates)
+              } else {
+              return new ol.geom.MultiPoint(coordinates);
+              }
+            }
+          }),
+          new ol.style.Style({
+            stroke: new ol.style.Stroke({
+              color: "#00aaff",
+              width: 3
+            }),
+            fill: new ol.style.Fill({
+              color: "rgba(255,255,255,0.4)"
+            })
+          })
+        ]
+      }
+
+      // var fill = new ol.style.Fill({
+      //   color: "rgba(255,255,255,0.4)"
+      // });
+      // var stroke = new ol.style.Stroke({
+      //   color: "#00aaff",
+      //   width: 3
+      // });
+      // var style = new ol.style.Style({
+      //   image: new ol.style.Circle({
+      //     fill: fill,
+      //     stroke: stroke,
+      //     radius: 5
+      //   }),
+      //   fill: fill,
+      //   stroke: stroke
+      // });
 
       var modify = new ole.control.Modify({
         source: editLayer.getSource(),
-        style: style
+        style: styleFunction
       });
 
       var buffer = new ole.control.Buffer({
