@@ -213,12 +213,11 @@ class ModifyControl extends Control {
       }
     }
 
-    this.feature = evt.map.forEachFeatureAtPixel(evt.pixel, (f) => {
-      if (this.source.getFeatures().indexOf(f) > -1) {
-        return f;
-      }
-      return null;
-    });
+    this.feature = evt.map.forEachFeatureAtPixel(
+      evt.pixel,
+      f => f,
+      { layerfilter: this.layerFilter },
+    );
 
     // Apply the select style dynamically when the feature has its own style.
     if (this.feature && this.feature.getStyleFunction()) {
