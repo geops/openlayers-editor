@@ -57,12 +57,10 @@ class ModifyControl extends Control {
 
     this.selectStyle = options.style;
 
-    // Select condition function to accommodate single and double click (alternative: ol.condition.click)
-    this.selectCondition = (mapEvt) => {
-      return ol.events.condition.singleClick(mapEvt) ||
-          ol.events.condition.doubleClick(mapEvt);
-    }
-
+    // Select condition function to accommodate single and double click
+    // Alternatively: ol.condition.click
+    this.selectCondition = mapEvt => ol.events.condition.singleClick(mapEvt) ||
+        ol.events.condition.doubleClick(mapEvt);
 
     /**
      * @type {ol.interaction.Select}
