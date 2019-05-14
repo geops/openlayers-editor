@@ -57,26 +57,23 @@ class ModifyControl extends Control {
 
     this.selectStyle = options.style;
 
-    // Select condition function to accommodate single and double click
-    // Alternatively: ol.condition.click
-    this.selectCondition = mapEvt => ol.events.condition.singleClick(mapEvt) ||
-        ol.events.condition.doubleClick(mapEvt);
-
     /**
+     * Select interaction to move features
      * @type {ol.interaction.Select}
      * @private
      */
-    this.selectInteraction = new ol.interaction.Select({
-      condition: this.selectCondition,
+    this.selectMove = new ol.interaction.Select({
+      condition: ol.events.condition.singleClick,
       toggleCondition: ol.events.condition.shiftKeyOnly,
       layers: this.layerFilter,
-      features: this.features,
+      features: this.featuresToMove,
       style: this.selectStyle,
     });
 
     if (options.style) {
+
       // Apply the select style dynamically when the feature has its own style.
-      this.selectInteraction.getFeatures().on('add', (evt) => {
+      this.selectMove.getFeatures().on('add', (evt) => {
         if (!evt.element.getStyleFunction()) {
           return;
         }
@@ -90,7 +87,7 @@ class ModifyControl extends Control {
       });
 
       // Remove the select style dynamically when the feature had its own style.
-      this.selectInteraction.getFeatures().on('remove', (evt) => {
+      this.selectMove.getFeatures().on('remove', (evt) => {
         if (!evt.element.getStyleFunction()) {
           return;
         }
@@ -104,12 +101,71 @@ class ModifyControl extends Control {
       });
     }
 
-    this.selectInteraction.getFeatures().on('add', () => {
+    this.selectMove.getFeatures().on('add', () => {
+      this.selectModify.getFeatures().clear();
+      document.addEventListener('keydown', this.deleteFeature.bind(this));
+      this.map.addInteraction(this.moveInteraction);
+    });
+
+    this.selectMove.getFeatures().on('remove', () => {
+      document.removeEventListener('keydown', this.deleteFeature.bind(this));
+      this.map.removeInteraction(this.moveInteraction);
+    });
+
+
+    /**
+     * Select interaction to modify features
+     * @type {ol.interaction.Select}
+     * @private
+     */
+
+    this.selectModify = new ol.interaction.Select({
+      condition: ol.events.condition.doubleClick,
+      toggleCondition: ol.events.condition.shiftKeyOnly,
+      layers: this.layerFilter,
+      features: this.featuresToModify,
+      style: this.selectStyle,
+    });
+
+    if (options.style) {
+      // Apply the select style dynamically when the feature has its own style.
+      this.selectModify.getFeatures().on('add', (evt) => {
+        if (!evt.element.getStyleFunction()) {
+          return;
+        }
+
+        // Append the select style to the feature's style
+        const feature = evt.element;
+        const featureStyles = getStyles(feature.getStyleFunction());
+        const selectStyles = getStyles(options.style, feature);
+        const styles = featureStyles.concat(selectStyles);
+        evt.element.setStyle(styles);
+      });
+
+      // Remove the select style dynamically when the feature had its own style.
+      this.selectModify.getFeatures().on('remove', (evt) => {
+        if (!evt.element.getStyleFunction()) {
+          return;
+        }
+
+        // Remove the select styles
+        const feature = evt.element;
+        const styles = getStyles(feature.getStyleFunction(), null);
+        const selectStyles = getStyles(options.style, feature);
+        const featureStyles = styles.slice(0, styles.indexOf(selectStyles[0]));
+        evt.element.setStyle(featureStyles);
+      });
+    }
+
+    this.selectModify.getFeatures().on('add', () => {
+      this.changeCursor('grab')
+      this.selectMove.getFeatures().clear();
       document.addEventListener('keydown', this.deleteFeature.bind(this));
       this.map.addInteraction(this.modifyInteraction);
     });
 
-    this.selectInteraction.getFeatures().on('remove', () => {
+    this.selectModify.getFeatures().on('remove', () => {
+      this.changeCursor(null)
       document.removeEventListener('keydown', this.deleteFeature.bind(this));
       this.map.removeInteraction(this.modifyInteraction);
     });
@@ -119,7 +175,7 @@ class ModifyControl extends Control {
      * @private
      */
     this.modifyInteraction = new ol.interaction.Modify({
-      features: this.selectInteraction.getFeatures(),
+      features: this.selectModify.getFeatures(),
       style: options.modifyStyle,
     });
 
@@ -133,6 +189,9 @@ class ModifyControl extends Control {
       handleUpEvent: this.stopMoveFeature.bind(this),
       handleMoveEvent: this.selectFeature.bind(this),
     });
+
+    // this.modifyInteraction.modifyCursor.bind(this);
+
   }
 
   /**
@@ -141,13 +200,28 @@ class ModifyControl extends Control {
    * @private
    */
   deleteFeature(evt) {
+
+    console.log("mod" + this.selectModify.getFeatures())
+    console.log("move" + this.selectMove.getFeatures());
+
+    let features = null
+
+    if (this.selectMove.getFeatures().getArray()) {
+      features = this.selectMove.getFeatures();
+      console.log(features);
+    } else if (this.selectModify.getFeatures()){
+      console.log(features);
+      features = this.selectModify.getFeatures();
+    }
+
+
     // Delete only selected features using delete key
-    if (evt.key === 'Delete' && this.selectInteraction.getFeatures()) {
+    if (evt.key === 'Delete' && features) {
       // Loop delete through selected features array
-      for (let i = 0; i < this.selectInteraction.getFeatures().getArray().length; i += 1) {
-        this.source.removeFeature(this.selectInteraction.getFeatures().getArray()[i]);
+      for (let i = 0; i < features.getArray().length; i += 1) {
+        this.source.removeFeature(features.getArray()[i]);
       }
-      this.selectInteraction.getFeatures().clear();
+      features.clear();
     }
   }
 
@@ -157,8 +231,7 @@ class ModifyControl extends Control {
    * @private
    */
   startMoveFeature(evt) {
-    if (this.feature && this.modifyActive === false
-      && this.selectInteraction.getFeatures().getArray().indexOf(this.feature) === -1) {
+    if (this.feature) {
       if (this.feature.getGeometry() instanceof ol.geom.Point) {
         const extent = this.feature.getGeometry().getExtent();
         this.coordinate = ol.extent.getCenter(extent);
@@ -177,13 +250,11 @@ class ModifyControl extends Control {
    * @private
    */
   moveFeature(evt) {
-    if (this.modifyActive === false) {
       const deltaX = evt.coordinate[0] - this.coordinate[0];
       const deltaY = evt.coordinate[1] - this.coordinate[1];
 
       this.feature.getGeometry().translate(deltaX, deltaY);
       this.coordinate = evt.coordinate;
-    }
   }
 
   /**
@@ -227,19 +298,22 @@ class ModifyControl extends Control {
     }
 
     this.editor.setEditFeature(this.feature);
-    this.modifyActive = this.modifyInteraction.getOverlay()
-      .getSource().getFeatures().length > 0;
 
-    if (this.modifyActive) {
-      this.changeCursor('grab');
-    } else if (this.feature
-      && this.selectInteraction.getFeatures().getArray().indexOf(this.feature) === -1) {
+    if (this.feature) {
       this.changeCursor('move');
     } else if (this.previousCursor !== null) {
       this.changeCursor(this.previousCursor);
       this.previousCursor = null;
     }
   }
+
+  // this.modifyActive = this.modifyInteraction.getOverlay()
+  //   .getSource().getFeatures().length > 0;
+
+  // if (this.modifyActive) {
+  //   this.changeCursor('grab');
+  // }
+
 
   /**
    * Change cursor style.
@@ -260,8 +334,8 @@ class ModifyControl extends Control {
    * @inheritdoc
    */
   activate() {
-    this.map.addInteraction(this.selectInteraction);
-    this.map.addInteraction(this.moveInteraction);
+    this.map.addInteraction(this.selectMove);
+    this.map.addInteraction(this.selectModify);
     super.activate();
   }
 
@@ -269,9 +343,10 @@ class ModifyControl extends Control {
    * @inheritdoc
    */
   deactivate(silent) {
-    this.selectInteraction.getFeatures().clear();
-    this.map.removeInteraction(this.selectInteraction);
-    this.map.removeInteraction(this.moveInteraction);
+    this.selectMove.getFeatures().clear();
+    this.selectModify.getFeatures().clear();
+    this.map.removeInteraction(this.selectMove);
+    this.map.removeInteraction(this.selectModify);
     super.deactivate(silent);
   }
 }
