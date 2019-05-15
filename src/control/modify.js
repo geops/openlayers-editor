@@ -201,22 +201,16 @@ class ModifyControl extends Control {
    */
   deleteFeature(evt) {
 
-    console.log("mod" + this.selectModify.getFeatures())
-    console.log("move" + this.selectMove.getFeatures());
+    let features
 
-    let features = null
-
-    if (this.selectMove.getFeatures().getArray()) {
+    if (this.selectMove.getFeatures().getArray().length > 0) {
       features = this.selectMove.getFeatures();
-      console.log(features);
-    } else if (this.selectModify.getFeatures()){
-      console.log(features);
+    } else if (this.selectModify.getFeatures().getArray().length > 0) {
       features = this.selectModify.getFeatures();
     }
 
-
     // Delete only selected features using delete key
-    if (evt.key === 'Delete' && features) {
+    if (evt.key === 'Delete' && features != null) {
       // Loop delete through selected features array
       for (let i = 0; i < features.getArray().length; i += 1) {
         this.source.removeFeature(features.getArray()[i]);
