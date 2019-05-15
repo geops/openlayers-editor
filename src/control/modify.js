@@ -302,6 +302,11 @@ class ModifyControl extends Control {
     }
   }
 
+  /**
+   * Handle the cursor behavior when editing geometries.
+   * @param {ol.MapBrowserEvent} evt Event.
+   * @private
+   */
   modifyCursorHandler(evt) {
     this.modifyActive = this.selectModify.getFeatures().getArray().length > 0;
 
@@ -321,12 +326,16 @@ class ModifyControl extends Control {
     }
   }
 
+  /**
+   * Deselect features when editing geometries on a single click on map.
+   * @param {ol.MapBrowserEvent} evt Event.
+   * @private
+   */
   modifyUnselect(evt) {
     if (!this.map.hasFeatureAtPixel(evt.pixel)) {
       this.selectModify.getFeatures().clear();
     }
   }
-
 
   /**
    * Change cursor style.
