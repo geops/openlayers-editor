@@ -67,11 +67,9 @@ class ModifyControl extends Control {
       toggleCondition: ol.events.condition.shiftKeyOnly,
       layers: this.layerFilter,
       features: this.featuresToMove,
-      style: this.selectStyle,
     });
 
     if (options.style) {
-
       // Apply the select style dynamically when the feature has its own style.
       this.selectMove.getFeatures().on('add', (evt) => {
         if (!evt.element.getStyleFunction()) {
@@ -103,11 +101,13 @@ class ModifyControl extends Control {
 
     this.selectMove.getFeatures().on('add', () => {
       this.selectModify.getFeatures().clear();
+      this.changeCursor('move');
       document.addEventListener('keydown', this.deleteFeature.bind(this));
       this.map.addInteraction(this.moveInteraction);
     });
 
     this.selectMove.getFeatures().on('remove', () => {
+      this.changeCursor(null);
       document.removeEventListener('keydown', this.deleteFeature.bind(this));
       this.map.removeInteraction(this.moveInteraction);
     });
@@ -158,16 +158,18 @@ class ModifyControl extends Control {
     }
 
     this.selectModify.getFeatures().on('add', () => {
-      this.changeCursor('grab')
       this.selectMove.getFeatures().clear();
+      this.changeCursor('grab');
       document.addEventListener('keydown', this.deleteFeature.bind(this));
       this.map.addInteraction(this.modifyInteraction);
+      this.map.addEventListener('pointermove', this.modifyCursorHandler.bind(this));
     });
 
     this.selectModify.getFeatures().on('remove', () => {
-      this.changeCursor(null)
+      this.changeCursor(null);
       document.removeEventListener('keydown', this.deleteFeature.bind(this));
       this.map.removeInteraction(this.modifyInteraction);
+      this.map.removeEventListener('pointermove', this.modifyCursorHandler.bind(this));
     });
 
     /**
@@ -189,9 +191,6 @@ class ModifyControl extends Control {
       handleUpEvent: this.stopMoveFeature.bind(this),
       handleMoveEvent: this.selectFeature.bind(this),
     });
-
-    // this.modifyInteraction.modifyCursor.bind(this);
-
   }
 
   /**
@@ -200,21 +199,22 @@ class ModifyControl extends Control {
    * @private
    */
   deleteFeature(evt) {
+    let features;
 
-    let features
-
+    // Choose feature collection to delete
     if (this.selectMove.getFeatures().getArray().length > 0) {
       features = this.selectMove.getFeatures();
     } else if (this.selectModify.getFeatures().getArray().length > 0) {
       features = this.selectModify.getFeatures();
     }
 
-    // Delete only selected features using delete key
-    if (evt.key === 'Delete' && features != null) {
+    // Delete selected features using delete key
+    if (evt.key === 'Delete' && features) {
       // Loop delete through selected features array
-      for (let i = 0; i < features.getArray().length; i += 1) {
+      features.getArray().forEach((feature, i) => {
         this.source.removeFeature(features.getArray()[i]);
-      }
+      });
+      this.changeCursor(null);
       features.clear();
     }
   }
@@ -225,7 +225,7 @@ class ModifyControl extends Control {
    * @private
    */
   startMoveFeature(evt) {
-    if (this.feature) {
+    if (this.feature && this.selectMove.getFeatures().getArray().indexOf(this.feature) !== -1) {
       if (this.feature.getGeometry() instanceof ol.geom.Point) {
         const extent = this.feature.getGeometry().getExtent();
         this.coordinate = ol.extent.getCenter(extent);
@@ -244,11 +244,11 @@ class ModifyControl extends Control {
    * @private
    */
   moveFeature(evt) {
-      const deltaX = evt.coordinate[0] - this.coordinate[0];
-      const deltaY = evt.coordinate[1] - this.coordinate[1];
+    const deltaX = evt.coordinate[0] - this.coordinate[0];
+    const deltaY = evt.coordinate[1] - this.coordinate[1];
 
-      this.feature.getGeometry().translate(deltaX, deltaY);
-      this.coordinate = evt.coordinate;
+    this.feature.getGeometry().translate(deltaX, deltaY);
+    this.coordinate = evt.coordinate;
   }
 
   /**
@@ -293,7 +293,7 @@ class ModifyControl extends Control {
 
     this.editor.setEditFeature(this.feature);
 
-    if (this.feature) {
+    if (this.feature && this.selectMove.getFeatures().getArray().indexOf(this.feature) !== -1) {
       this.changeCursor('move');
     } else if (this.previousCursor !== null) {
       this.changeCursor(this.previousCursor);
@@ -301,12 +301,24 @@ class ModifyControl extends Control {
     }
   }
 
-  // this.modifyActive = this.modifyInteraction.getOverlay()
-  //   .getSource().getFeatures().length > 0;
+  modifyCursorHandler(evt) {
+    this.modifyActive = this.selectModify.getFeatures().getArray().length > 0;
 
-  // if (this.modifyActive) {
-  //   this.changeCursor('grab');
-  // }
+    if (this.modifyActive) {
+      this.feature = this.map.forEachFeatureAtPixel(
+        evt.pixel,
+        f => f,
+        { layerFilter: this.layerFilter },
+      );
+
+      if (this.feature && this.selectModify.getFeatures().getArray().indexOf(this.feature) !== -1) {
+        this.changeCursor('grab');
+      } else if (this.previousCursor !== null) {
+        this.changeCursor(this.previousCursor);
+        this.previousCursor = null;
+      }
+    }
+  }
 
 
   /**
