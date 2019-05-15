@@ -163,6 +163,7 @@ class ModifyControl extends Control {
       document.addEventListener('keydown', this.deleteFeature.bind(this));
       this.map.addInteraction(this.modifyInteraction);
       this.map.addEventListener('pointermove', this.modifyCursorHandler.bind(this));
+      this.map.addEventListener('click', this.modifyUnselect.bind(this));
     });
 
     this.selectModify.getFeatures().on('remove', () => {
@@ -317,6 +318,12 @@ class ModifyControl extends Control {
         this.changeCursor(this.previousCursor);
         this.previousCursor = null;
       }
+    }
+  }
+
+  modifyUnselect(evt) {
+    if (!this.map.hasFeatureAtPixel(evt.pixel)) {
+      this.selectModify.getFeatures().clear();
     }
   }
 
