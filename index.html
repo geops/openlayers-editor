@@ -131,16 +131,41 @@
         source: editLayer.getSource()
       });
 
-      var move = new ole.control.Move({
-        source: editLayer.getSource()
-      });
-
       var modify = new ole.control.Modify({
-        source: editLayer.getSource()
-      });
-
-      var deleteC = new ole.control.Delete({
-        source: editLayer.getSource()
+        source: editLayer.getSource(),
+        style: function(feature) {
+          return [
+            new ol.style.Style({
+              image: new ol.style.Circle({
+                radius: 5,
+                fill: new ol.style.Fill({
+                  color: " #cd2906 "
+                }),
+                stroke: new ol.style.Stroke({ color: " #cd2906 ", width: 2 })
+              }),
+              geometry: function(feature) {
+                var coordinates;
+                if (feature.getGeometry().getType() == "Polygon") {
+                  coordinates = feature.getGeometry().getCoordinates()[0];
+                } else if (feature.getGeometry().getType() == "LineString") {
+                  coordinates = feature.getGeometry().getCoordinates();
+                } else {
+                  coordinates = [feature.getGeometry().getCoordinates()];
+                }
+                return new ol.geom.MultiPoint(coordinates);
+              }
+            }),
+            new ol.style.Style({
+              stroke: new ol.style.Stroke({
+                color: " #cd2906 ",
+                width: 3
+              }),
+              fill: new ol.style.Fill({
+                color: "rgba(255,255,255,0.4)"
+              })
+            })
+          ];
+        }
       });
 
       var buffer = new ole.control.Buffer({
@@ -165,9 +190,7 @@
         drawLine,
         drawPoly,
         modify,
-        move,
         rotate,
-        deleteC,
         buffer,
         union,
         intersection,
