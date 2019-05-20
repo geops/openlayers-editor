@@ -6,15 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
+- Move and Delete control implemented within the Modify tool.
 - Fix bug duplicate creation of dialog.
 
-## 0.0.4 - 2019-05-20
-### Changed
-- Move and Delete control implemented within the Modify tool.
-- Move, Modify, Delete combined to a single tool.
-
 ### Removed
-- Move and Delete tools removed from control bar.
+- ol.control.Move and ol.control.Delete tools have been removed.
 
 ## 0.0.3 - 2019-03-11
 ### Added
