@@ -34,7 +34,7 @@
     "jsdoc-export-default-interop": "^0.3.1",
     "neutrino": "^8.1.2",
     "openlayers": "^4.6.5",
-    "webpack": "^4.29.6"
+    "webpack": "^4.32.0"
   },
   "peerDependencies": {
     "jsts": "^2.0.3",
