@@ -15,7 +15,7 @@ export default class Storage extends Service {
    */
   constructor(optOptions) {
     const options = optOptions || {};
-    super(options);
+    super();
 
     /**
      * List of service controls
