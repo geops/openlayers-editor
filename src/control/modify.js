@@ -19,7 +19,7 @@ const getStyles = (style, feature) => {
   return Array.isArray(styles) ? styles : [styles];
 };
 
-// Define default style on modifying geometries
+// Default style on modifying geometries
 const modifyStyleFunction = () => {
   const style = [
     new ol.style.Style({
