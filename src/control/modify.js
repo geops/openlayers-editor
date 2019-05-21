@@ -56,6 +56,17 @@ class ModifyControl extends Control {
     this.previousCursor = null;
 
     this.selectStyle = options.style;
+    this.modifyStyle = options.modifyStyle;
+
+    this.renderSelectedStyle = (feat) => {
+      const featStyles = getStyles(feat.getStyleFunction());
+      if (featStyles[0] !== feat.get('oldStyle')) {
+        const selStyles = getStyles(options.style, feat);
+        const newStyles = [featStyles[0], selStyles[0]];
+        feat.set('oldStyle', newStyles[0]);
+        feat.setStyle(newStyles);
+      }
+    };
 
     /**
      * Select interaction to move features
@@ -67,6 +78,7 @@ class ModifyControl extends Control {
       toggleCondition: ol.events.condition.shiftKeyOnly,
       layers: this.layerFilter,
       features: this.featuresToMove,
+      style: this.selectStyle,
     });
 
     if (options.style) {
@@ -80,14 +92,24 @@ class ModifyControl extends Control {
         const feature = evt.element;
         const featureStyles = getStyles(feature.getStyleFunction());
         const selectStyles = getStyles(options.style, feature);
-        const styles = featureStyles.concat(selectStyles);
-        evt.element.setStyle(styles);
+        const styles = [featureStyles[0], selectStyles[0]];
+        feature.setStyle(styles);
+        feature.set('oldStyle', featureStyles[0]);
+
+        this.selectMoveOnchange = feature.on('change', (e) => {
+          // On change style, ensure selected Style rerender.
+          this.renderSelectedStyle(e.target);
+         });
       });
 
       // Remove the select style dynamically when the feature had its own style.
       this.selectMove.getFeatures().on('remove', (evt) => {
         if (!evt.element.getStyleFunction()) {
           return;
+        }
+
+        if (this.selectMoveOnchange) {
+          ol.Observable.unByKey(this.selectMoveOnchange);
         }
 
         // Remove the select styles
@@ -124,7 +146,7 @@ class ModifyControl extends Control {
       toggleCondition: ol.events.condition.shiftKeyOnly,
       layers: this.layerFilter,
       features: this.featuresToModify,
-      style: this.selectStyle,
+      style: this.modifyStyle,
     });
 
     if (options.style) {
@@ -133,19 +155,28 @@ class ModifyControl extends Control {
         if (!evt.element.getStyleFunction()) {
           return;
         }
-
         // Append the select style to the feature's style
         const feature = evt.element;
         const featureStyles = getStyles(feature.getStyleFunction());
         const selectStyles = getStyles(options.style, feature);
-        const styles = featureStyles.concat(selectStyles);
-        evt.element.setStyle(styles);
+        const styles = [featureStyles[0], selectStyles[0]];
+        feature.setStyle(styles);
+        feature.set('oldStyle', featureStyles[0]);
+
+        this.selectModifyOnChange = feature.on('change', (e) => {
+          // On change style, ensure selected Style rerender.
+          this.renderSelectedStyle(e.target);
+        });
       });
 
       // Remove the select style dynamically when the feature had its own style.
       this.selectModify.getFeatures().on('remove', (evt) => {
         if (!evt.element.getStyleFunction()) {
           return;
+        }
+
+        if (this.selectModifyOnChange) {
+          ol.Observable.unByKey(this.selectModifyOnChange);
         }
 
         // Remove the select styles
@@ -179,7 +210,6 @@ class ModifyControl extends Control {
      */
     this.modifyInteraction = new ol.interaction.Modify({
       features: this.selectModify.getFeatures(),
-      style: options.modifyStyle,
     });
 
     /**
@@ -190,7 +220,7 @@ class ModifyControl extends Control {
       handleDownEvent: this.startMoveFeature.bind(this),
       handleDragEvent: this.moveFeature.bind(this),
       handleUpEvent: this.stopMoveFeature.bind(this),
-      handleMoveEvent: this.selectFeature.bind(this),
+      handleMoveEvent: this.moveCursorHandler.bind(this),
     });
   }
 
@@ -233,6 +263,8 @@ class ModifyControl extends Control {
       } else {
         this.coordinate = evt.coordinate;
       }
+      this.editor.setEditFeature(this.feature);
+
       return true;
     }
 
@@ -269,30 +301,12 @@ class ModifyControl extends Control {
    * @param {ol.MapBrowserEvent} evt Event.
    * @private
    */
-  selectFeature(evt) {
-    if (this.feature) {
-      // Remove the select style dynamically when the feature had its own style.
-      if (this.feature.getStyleFunction()) {
-        const styles = getStyles(this.feature.getStyleFunction(), null);
-        const selectStyles = getStyles(this.selectStyle, this.feature);
-        this.feature.setStyle(styles.slice(0, styles.indexOf(selectStyles[0])));
-      }
-    }
-
+  moveCursorHandler(evt) {
     this.feature = evt.map.forEachFeatureAtPixel(
       evt.pixel,
       f => f,
       { layerfilter: this.layerFilter },
     );
-
-    // Apply the select style dynamically when the feature has its own style.
-    if (this.feature && this.feature.getStyleFunction()) {
-      const featureStyles = getStyles(this.feature.getStyleFunction());
-      const selectStyles = getStyles(this.selectStyle, this.feature);
-      this.feature.setStyle(featureStyles.concat(selectStyles));
-    }
-
-    this.editor.setEditFeature(this.feature);
 
     if (this.feature && this.selectMove.getFeatures().getArray().indexOf(this.feature) !== -1) {
       this.changeCursor('move');
