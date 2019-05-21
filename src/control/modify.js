@@ -99,7 +99,7 @@ class ModifyControl extends Control {
         this.selectMoveOnchange = feature.on('change', (e) => {
           // On change style, ensure selected Style rerender.
           this.renderSelectedStyle(e.target);
-         });
+        });
       });
 
       // Remove the select style dynamically when the feature had its own style.
