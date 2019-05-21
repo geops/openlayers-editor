@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## 0.0.4 - 2019-03-11
+## [Unreleased]
 ### Changed
+- Move and Delete control implemented within the Modify tool.
 - Fix bug duplicate creation of dialog.
+
+### Removed
+- ol.control.Move and ol.control.Delete tools have been removed.
 
 ## 0.0.3 - 2019-03-11
 ### Added
