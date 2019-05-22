@@ -19,6 +19,45 @@ const getStyles = (style, feature) => {
   return Array.isArray(styles) ? styles : [styles];
 };
 
+// Default style on modifying geometries
+const modifyStyleFunction = () => {
+  const style = [
+    new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: 5,
+        fill: new ol.style.Fill({
+          color: '#05A0FF',
+        }),
+        stroke: new ol.style.Stroke({ color: '#05A0FF', width: 2 }),
+      }),
+      geometry: (f) => {
+        let coordinates = [];
+        if (f.getGeometry().getType() === 'Polygon') {
+          f.getGeometry().getCoordinates()[0].forEach((coordinate) => {
+            coordinates.push(coordinate);
+          });
+        } else if (f.getGeometry().getType() === 'LineString') {
+          coordinates = f.getGeometry().getCoordinates();
+        } else {
+          coordinates = [f.getGeometry().getCoordinates()];
+        }
+        return new ol.geom.MultiPoint(coordinates);
+      },
+    }),
+    new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: '#05A0FF',
+        width: 3,
+      }),
+      fill: new ol.style.Fill({
+        color: 'rgba(255,255,255,0.4)',
+      }),
+    }),
+  ];
+
+  return style;
+};
+
 /**
  * Control for modifying geometries.
  * @extends {ole.Control}
@@ -55,7 +94,13 @@ class ModifyControl extends Control {
      */
     this.previousCursor = null;
 
-    this.selectStyle = options.style;
+    // Define select style for modifying geometries,
+    // uses default style if none is imported in the options
+    if (options.style) {
+      this.selectStyle = options.style;
+    } else {
+      this.selectStyle = modifyStyleFunction;
+    }
 
     /**
      * Select interaction to move features
