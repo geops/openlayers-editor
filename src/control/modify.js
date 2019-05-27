@@ -98,7 +98,7 @@ class ModifyControl extends Control {
     this.previousCursor = null;
 
     this.selectStyle = options.style;
-    this.modifyStyle = options.modifyStyle;
+    this.modifyStyle = options.modifyStyle || modifyStyleFunction;
 
     this.applySelectStyle = (feature, styleToApply) => {
       const featureStyles = getStyles(feature.getStyleFunction());
