@@ -42,6 +42,9 @@ class ModifyControl extends Control {
       image,
     }, options));
 
+    const OLD_STYLES_PROP = 'oldStyles';
+    const SELECT_MOVE_ON_CHANGE_KEY = 'selectMoveOnChangeKey';
+
     /**
      * @type {ol.Coordinate}
      * @private
@@ -58,13 +61,57 @@ class ModifyControl extends Control {
     this.selectStyle = options.style;
     this.modifyStyle = options.modifyStyle;
 
-    this.renderSelectedStyle = (feat) => {
-      const featStyles = getStyles(feat.getStyleFunction());
-      if (featStyles[0] !== feat.get('oldStyle')) {
-        const selStyles = getStyles(options.style, feat);
-        const newStyles = [featStyles[0], selStyles[0]];
-        feat.set('oldStyle', newStyles[0]);
-        feat.setStyle(newStyles);
+    this.applySelectStyle = (feature, styleToApply) => {
+      const featureStyles = getStyles(feature.getStyleFunction());
+      const stylesToApply = getStyles(styleToApply, feature);
+
+      // At this point featureStyles must not contain the select styles.
+      const newStyles = [...featureStyles, ...stylesToApply];
+      feature.set(OLD_STYLES_PROP, featureStyles);
+      feature.setStyle(newStyles);
+    };
+
+    this.onSelectFeature = (feature, selectStyle) => {
+      if (!feature.getStyleFunction()) {
+        return;
+      }
+
+      // Append the select style to the feature's style
+      this.applySelectStyle(feature, selectStyle);
+
+      feature.set(SELECT_MOVE_ON_CHANGE_KEY, feature.on('change', (e) => {
+        // On change of the feature's style, we re-apply the selected Style.
+        this.onSelectedFeatureChange(e.target, selectStyle);
+      }));
+    };
+
+
+    this.onDeselectFeature = (feature, selectStyle) => {
+      if (!feature.getStyleFunction()) {
+        return;
+      }
+
+      const listenerKey = feature.get(SELECT_MOVE_ON_CHANGE_KEY);
+      if (listenerKey) {
+        ol.Observable.unByKey(listenerKey);
+        feature.unset(SELECT_MOVE_ON_CHANGE_KEY);
+      }
+
+      // Remove the select styles
+      feature.unset(OLD_STYLES_PROP);
+      const styles = getStyles(feature.getStyleFunction(), null);
+      const selectStyles = getStyles(selectStyle, feature);
+      const featureStyles = styles.slice(0, styles.indexOf(selectStyles[0]));
+      feature.setStyle(featureStyles);
+    };
+
+    this.onSelectedFeatureChange = (feature, selectStyle) => {
+      const featureStyles = getStyles(feature.getStyleFunction());
+      const oldStyles = feature.get(OLD_STYLES_PROP);
+      const isStyleChanged = oldStyles.some((style, idx) => (style !== featureStyles[idx]));
+      if (isStyleChanged) {
+        // If the user changes the style of the feature, we reapply the select style.
+        this.applySelectStyle(feature, selectStyle);
       }
     };
 
@@ -81,43 +128,15 @@ class ModifyControl extends Control {
       style: this.selectStyle,
     });
 
-    if (options.style) {
+    if (this.selectStyle) {
       // Apply the select style dynamically when the feature has its own style.
       this.selectMove.getFeatures().on('add', (evt) => {
-        if (!evt.element.getStyleFunction()) {
-          return;
-        }
-
-        // Append the select style to the feature's style
-        const feature = evt.element;
-        const featureStyles = getStyles(feature.getStyleFunction());
-        const selectStyles = getStyles(options.style, feature);
-        const styles = [featureStyles[0], selectStyles[0]];
-        feature.setStyle(styles);
-        feature.set('oldStyle', featureStyles[0]);
-
-        this.selectMoveOnchange = feature.on('change', (e) => {
-          // On change style, ensure selected Style rerender.
-          this.renderSelectedStyle(e.target);
-        });
+        this.onSelectFeature(evt.element, this.selectStyle);
       });
 
       // Remove the select style dynamically when the feature had its own style.
       this.selectMove.getFeatures().on('remove', (evt) => {
-        if (!evt.element.getStyleFunction()) {
-          return;
-        }
-
-        if (this.selectMoveOnchange) {
-          ol.Observable.unByKey(this.selectMoveOnchange);
-        }
-
-        // Remove the select styles
-        const feature = evt.element;
-        const styles = getStyles(feature.getStyleFunction(), null);
-        const selectStyles = getStyles(options.style, feature);
-        const featureStyles = styles.slice(0, styles.indexOf(selectStyles[0]));
-        evt.element.setStyle(featureStyles);
+        this.onDeselectFeature(evt.element, this.selectStyle);
       });
     }
 
@@ -149,42 +168,15 @@ class ModifyControl extends Control {
       style: this.modifyStyle,
     });
 
-    if (options.style) {
+    if (this.modifyStyle) {
       // Apply the select style dynamically when the feature has its own style.
       this.selectModify.getFeatures().on('add', (evt) => {
-        if (!evt.element.getStyleFunction()) {
-          return;
-        }
-        // Append the select style to the feature's style
-        const feature = evt.element;
-        const featureStyles = getStyles(feature.getStyleFunction());
-        const selectStyles = getStyles(options.style, feature);
-        const styles = [featureStyles[0], selectStyles[0]];
-        feature.setStyle(styles);
-        feature.set('oldStyle', featureStyles[0]);
-
-        this.selectModifyOnChange = feature.on('change', (e) => {
-          // On change style, ensure selected Style rerender.
-          this.renderSelectedStyle(e.target);
-        });
+        this.onSelectFeature(evt.element, this.modifyStyle);
       });
 
       // Remove the select style dynamically when the feature had its own style.
       this.selectModify.getFeatures().on('remove', (evt) => {
-        if (!evt.element.getStyleFunction()) {
-          return;
-        }
-
-        if (this.selectModifyOnChange) {
-          ol.Observable.unByKey(this.selectModifyOnChange);
-        }
-
-        // Remove the select styles
-        const feature = evt.element;
-        const styles = getStyles(feature.getStyleFunction(), null);
-        const selectStyles = getStyles(options.style, feature);
-        const featureStyles = styles.slice(0, styles.indexOf(selectStyles[0]));
-        evt.element.setStyle(featureStyles);
+        this.onDeselectFeature(evt.element, this.modifyStyle);
       });
     }
 
