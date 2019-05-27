@@ -1,9 +1,9 @@
 dist: trusty
 language: node_js
 node_js:
-  - 8
-  - 6
   - 10
+  - 8
+  - 12
 
 install: npm install
 
@@ -17,9 +17,12 @@ after_success:
   - echo $CNAME > CNAME
 
 cache:
-  yarn: true
+  # Caches $HOME/.npm when npm ci is default script command
+  # Caches node_modules in all other cases
+  npm: true
   directories:
-    - "node_modules"
+    # we also need to cache folder with Cypress binary
+    - ~/.cache
 
 deploy:
   provider: pages
@@ -27,4 +30,4 @@ deploy:
   github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
   on:
     branch: master
-    node: '8'
+    node: "8"
