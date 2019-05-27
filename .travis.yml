@@ -1,9 +1,9 @@
 dist: trusty
 language: node_js
 node_js:
-  - 8
-  - 6
   - 10
+  - 8
+  - 12
 
 install: npm install
 
