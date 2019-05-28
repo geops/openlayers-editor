@@ -150,19 +150,22 @@ class Editor {
    * @private
    */
   activeStateChange(ctrl) {
-    // deactivate other controls that are not standalone
+    // Deactivate other controls that are not standalone
     if (ctrl.getActive() && ctrl.standalone) {
       for (let i = 0; i < this.controls.getLength(); i += 1) {
-        if ((this.controls.item(i) !== ctrl) &&
-          (this.controls.item(i).standalone)) {
-          this.controls.item(i).deactivate();
+        const otherCtrl = this.controls.item(i);
+        if (otherCtrl !== ctrl && otherCtrl.getActive() && otherCtrl.standalone) {
+          otherCtrl.deactivate();
+          this.activeControls.remove(otherCtrl);
         }
       }
     }
 
-    const ctrls = this.controls.getArray().filter(c => c.getActive());
-    this.activeControls.clear();
-    this.activeControls.extend(ctrls);
+    if (ctrl.getActive()) {
+      this.activeControls.push(ctrl);
+    } else {
+      this.activeControls.remove(ctrl);
+    }
   }
 }
 
