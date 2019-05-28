@@ -140,14 +140,18 @@ class Control extends ol.control.Control {
   /**
    * Activate the control
    */
-  activate() {
+  activate(silent) {
     this.active = true;
     this.element.className += ' active';
-    this.dispatchEvent({
-      type: 'change:active',
-      target: this,
-      detail: { control: this },
-    });
+
+    if (!silent) {
+      this.dispatchEvent({
+        type: 'change:active',
+        target: this,
+        detail: { control: this },
+      });
+    }
+
     this.openDialog();
   }
 

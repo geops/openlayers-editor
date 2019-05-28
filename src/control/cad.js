@@ -153,8 +153,8 @@ class CadControl extends Control {
       const pos = e.target.getArray().indexOf(this.snapInteraction);
 
       if (this.snapInteraction.getActive() && pos > -1 && pos !== e.target.getLength() - 1) {
-        this.deactivate();
-        this.activate();
+        this.deactivate(true);
+        this.activate(true);
       }
       // eslint-disable-next-line no-extra-bind
     }).bind(this));
@@ -357,8 +357,8 @@ class CadControl extends Control {
   /**
    * @inheritdoc
    */
-  activate() {
-    super.activate();
+  activate(silent) {
+    super.activate(silent);
     this.snapLayer.setMap(this.map);
     this.linesLayer.setMap(this.map);
     this.map.addInteraction(this.pointerInteraction);
