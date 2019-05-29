@@ -196,7 +196,7 @@ class ModifyControl extends Control {
       document.addEventListener('keydown', this.deleteFeature.bind(this));
       this.map.addInteraction(this.moveInteraction);
       // Set the target element as initial feature to move.
-      this.feature = t.element;
+      this.feature = evt.element;
     });
 
     this.selectMove.getFeatures().on('remove', () => {
