@@ -190,7 +190,7 @@ class ModifyControl extends Control {
       });
     }
 
-    this.selectMove.getFeatures().on('add', (t) => {
+    this.selectMove.getFeatures().on('add', (evt) => {
       this.selectModify.getFeatures().clear();
       this.changeCursor('move');
       document.addEventListener('keydown', this.deleteFeature.bind(this));
