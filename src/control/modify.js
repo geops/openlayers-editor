@@ -98,11 +98,11 @@ class ModifyControl extends Control {
      */
     this.previousCursor = null;
 
-    if (options.hitTolerance) {
-      this.hitTolerance = options.hitTolerance;
-    } else {
-      this.hitTolerance = 5;
-    }
+    /**
+     * @type {number}
+     * @private
+     */
+    this.hitTolerance = options.hitTolerance || 5;
 
     this.selectStyle = options.style;
     this.modifyStyle = options.modifyStyle || modifyStyleFunction;
