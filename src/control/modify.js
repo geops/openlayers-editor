@@ -98,6 +98,12 @@ class ModifyControl extends Control {
      */
     this.previousCursor = null;
 
+    if (options.hitTolerance) {
+      this.hitTolerance = options.hitTolerance;
+    } else {
+      this.hitTolerance = 5;
+    }
+
     this.selectStyle = options.style;
     this.modifyStyle = options.modifyStyle || modifyStyleFunction;
 
@@ -176,6 +182,7 @@ class ModifyControl extends Control {
       layers: this.layerFilter,
       features: this.featuresToMove,
       style: this.selectStyle,
+      hitTolerance: this.hitTolerance,
     });
 
     if (this.selectStyle) {
@@ -218,6 +225,7 @@ class ModifyControl extends Control {
       layers: this.layerFilter,
       features: this.featuresToModify,
       style: this.modifyStyle,
+      hitTolerance: this.hitTolerance,
     });
 
     this.selectModify.getFeatures().on('add', (evt) => {
