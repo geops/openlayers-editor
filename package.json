@@ -1,6 +1,6 @@
 {
   "name": "ole",
-  "version": "0.0.4-beta.10",
+  "version": "0.0.4-beta.11",
   "description": "OpenLayers Editor",
   "scripts": {
     "build": "neutrino build",
