@@ -10,7 +10,9 @@
     "test": "neutrino test",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "start": "neutrino start",
-    "prepack": "neutrino build"
+    "prepack": "neutrino build",
+    "publish:public": "yarn version && yarn build && git push origin HEAD && yarn publish",
+    "publish:beta": "yarn publish:public --tag beta"
   },
   "keywords": [
     "OpenLayers",
