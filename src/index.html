@@ -10,7 +10,9 @@
     <div id="map"></div>
     <script type="text/javascript">
       var editLayer = new ol.layer.Vector({
-        source: new ol.source.Vector()
+        source: new ol.source.Vector({
+          wrapX: false,
+        })
       });
       const PROJECTION = ol.proj.get("EPSG:3857");
       const PROJECTION_EXTENT = PROJECTION.getExtent();
@@ -19,6 +21,7 @@
         layers: [
           new ol.layer.Tile({
             source: new ol.source.WMTS({
+              wrapX: false,
               url:
                 "https://api.mapbox.com/v4/geops.db9390ee/" +
                 "{TileMatrix}/{TileCol}/{TileRow}.png?access_token=" +
