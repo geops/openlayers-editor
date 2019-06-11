@@ -69,6 +69,8 @@ class ModifyControl extends Control {
    * @param {string} [options.type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
+   * @param {number} [options.hitTolerance] Select tolerance in pixels
+   *   (default is 5)
    * @param {ol.Collection<ol.Feature>} [options.features] Destination for drawing.
    * @param {ol.source.Vector} [options.source] Destination for drawing.
    * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
@@ -183,6 +185,7 @@ class ModifyControl extends Control {
       features: this.featuresToMove,
       style: this.selectStyle,
       hitTolerance: this.hitTolerance,
+      wrapX: false,
     });
 
     if (this.selectStyle) {
@@ -226,6 +229,7 @@ class ModifyControl extends Control {
       features: this.featuresToModify,
       style: this.modifyStyle,
       hitTolerance: this.hitTolerance,
+      wrapX: false,
     });
 
     this.selectModify.getFeatures().on('add', (evt) => {
