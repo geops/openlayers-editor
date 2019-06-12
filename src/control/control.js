@@ -24,8 +24,6 @@ class Control extends ol.control.Control {
     if (!options.element) {
       button = document.createElement('button');
       button.className = `ole-control ${options.className}`;
-    } else {
-      button = options.element;
     }
 
     super({
