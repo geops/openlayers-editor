@@ -7,6 +7,7 @@ class Control extends ol.control.Control {
   /**
    * @inheritdoc
    * @param {Object} options Control options.
+   * @param {HTMLElement} options.element Element which to substitute button.
    * @param {string} options.className Name of the control's HTML class.
    * @param {string} options.title Title of the control toolbar button.
    * @param {Image} options.image Control toolbar image.
@@ -19,11 +20,14 @@ class Control extends ol.control.Control {
    * @param {function} [options.layerFilter] Filter editable layer.
    */
   constructor(options) {
-    const button = document.createElement('button');
-    button.className = `ole-control ${options.className}`;
+    let button = null;
+    if (!options.element) {
+      button = document.createElement('button');
+      button.className = `ole-control ${options.className}`;
+    }
 
     super({
-      element: button,
+      element: options.element || button,
     });
 
     /**
@@ -55,11 +59,15 @@ class Control extends ol.control.Control {
      */
     this.title = options.title;
 
-    const img = document.createElement('img');
-    img.src = options.image;
+    if (button) {
+      const img = document.createElement('img');
+      img.src = options.image;
 
-    button.appendChild(img);
-    button.title = this.title;
+      button.appendChild(img);
+      button.title = this.title;
+
+      button.addEventListener('click', this.onClick.bind(this));
+    }
 
     /**
      * Source with edit features.
@@ -94,8 +102,6 @@ class Control extends ol.control.Control {
      * @private
      */
     this.standalone = true;
-
-    button.addEventListener('click', this.onClick.bind(this));
   }
 
   /**
