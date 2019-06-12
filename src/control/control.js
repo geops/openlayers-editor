@@ -29,7 +29,7 @@ class Control extends ol.control.Control {
     }
 
     super({
-      element: button,
+      element: options.element || button,
     });
 
     /**
