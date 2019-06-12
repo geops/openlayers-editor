@@ -61,7 +61,7 @@ class Control extends ol.control.Control {
      */
     this.title = options.title;
 
-    if (!options.element) {
+    if (button) {
       const img = document.createElement('img');
       img.src = options.image;
 
