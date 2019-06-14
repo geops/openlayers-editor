@@ -8,7 +8,6 @@ const devServer = require('@neutrinojs/dev-server');
 
 module.exports = neutrino => {
   neutrino.use(airbnb, { eslint: {
-    globals: ['jsts', 'ol'],
     rules: {
       'class-methods-use-this': 'off'
     }
@@ -35,7 +34,7 @@ module.exports = neutrino => {
   neutrino.use(devServer);
 
   // neutrino.config.plugins.delete('babel-minify').end();
-  // neutrino.config.externals(['jsts']);
+  neutrino.config.externals(['jsts', 'ol']);
 
   neutrino.on('test', () => new Promise((resolve, reject) =>
     start(neutrino.config.toConfig(), neutrino).fork(

@@ -1,3 +1,4 @@
+import Control from 'ol/control/Control';
 import '../style/ole.css';
 
 /**
@@ -5,7 +6,7 @@ import '../style/ole.css';
  * @class
  * @alias ole.Toolbar
  */
-class Toolbar extends ol.control.Control {
+class Toolbar extends Control {
   /**
    * Constructor.
    * @param {ol.Map} map The map object.

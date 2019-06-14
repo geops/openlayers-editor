@@ -1,3 +1,8 @@
+import { Style, Icon } from 'ol/style';
+import Point from 'ol/geom/Point';
+import Vector from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Pointer from 'ol/interaction/Pointer';
 import Control from './control';
 import rotateSVG from '../../img/rotate.svg';
 import rotateMapSVG from '../../img/rotate_map.svg';
@@ -26,7 +31,7 @@ class RotateControl extends Control {
      * @type {ol.interaction.Pointer}
      * @private
      */
-    this.pointerInteraction = new ol.interaction.Pointer({
+    this.pointerInteraction = new Pointer({
       handleDownEvent: this.onDown.bind(this),
       handleDragEvent: this.onDrag.bind(this),
       handleUpEvent: this.onUp.bind(this),
@@ -43,14 +48,14 @@ class RotateControl extends Control {
      * @type {ol.layer.Vector}
      * @private
      */
-    this.rotateLayer = new ol.layer.Vector({
-      source: new ol.source.Vector(),
+    this.rotateLayer = new Vector({
+      source: new VectorSource(),
       style: options.style || ((f) => {
         const rotation = f.get(this.rotateAttribute);
         return [
-          new ol.style.Style({
-            geometry: new ol.geom.Point(this.center),
-            image: new ol.style.Icon({
+          new Style({
+            geometry: new Point(this.center),
+            image: new Icon({
               rotation,
               src: rotateMapSVG,
             }),

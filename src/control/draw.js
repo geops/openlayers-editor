@@ -1,3 +1,4 @@
+import { Draw } from 'ol/interaction';
 import Control from './control';
 import drawPointSVG from '../../img/draw_point.svg';
 import drawPolygonSVG from '../../img/draw_polygon.svg';
@@ -40,7 +41,7 @@ class DrawControl extends Control {
      * @type {ol.interaction.Draw}
      * @private
      */
-    this.drawInteraction = new ol.interaction.Draw({
+    this.drawInteraction = new Draw({
       type: options.type || 'Point',
       features: options.features,
       source: options.source,
