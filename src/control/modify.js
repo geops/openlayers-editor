@@ -20,43 +20,39 @@ const getStyles = (style, feature) => {
 };
 
 // Default style on modifying geometries
-const modifyStyleFunction = () => {
-  const style = [
-    new ol.style.Style({
-      image: new ol.style.Circle({
-        radius: 5,
-        fill: new ol.style.Fill({
-          color: '#05A0FF',
-        }),
-        stroke: new ol.style.Stroke({ color: '#05A0FF', width: 2 }),
-      }),
-      geometry: (f) => {
-        let coordinates = [];
-        if (f.getGeometry().getType() === 'Polygon') {
-          f.getGeometry().getCoordinates()[0].forEach((coordinate) => {
-            coordinates.push(coordinate);
-          });
-        } else if (f.getGeometry().getType() === 'LineString') {
-          coordinates = f.getGeometry().getCoordinates();
-        } else {
-          coordinates = [f.getGeometry().getCoordinates()];
-        }
-        return new ol.geom.MultiPoint(coordinates);
-      },
+// Default style on modifying geometries
+const modifyStyle = new ol.style.Style({
+  image: new ol.style.Circle({
+    radius: 5,
+    fill: new ol.style.Fill({
+      color: '#05A0FF',
     }),
-    new ol.style.Style({
-      stroke: new ol.style.Stroke({
-        color: '#05A0FF',
-        width: 3,
-      }),
-      fill: new ol.style.Fill({
-        color: 'rgba(255,255,255,0.4)',
-      }),
-    }),
-  ];
-
-  return style;
-};
+    stroke: new ol.style.Stroke({ color: '#05A0FF', width: 2 }),
+  }),
+  stroke: new ol.style.Stroke({
+    color: '#05A0FF',
+    width: 3,
+  }),
+  fill: new ol.style.Fill({
+    color: 'rgba(255,255,255,0.4)',
+  }),
+  geometry: (f) => {
+    let coordinates = [];
+    if (f.getGeometry().getType() === 'Polygon') {
+      f.getGeometry().getCoordinates()[0].forEach((coordinate) => {
+        coordinates.push(coordinate);
+      });
+    } else if (f.getGeometry().getType() === 'LineString') {
+      coordinates = f.getGeometry().getCoordinates();
+    } else {
+      coordinates = [f.getGeometry().getCoordinates()];
+    }
+    return new ol.geom.GeometryCollection([
+      f.getGeometry(),
+      new ol.geom.MultiPoint(coordinates),
+    ]);
+  },
+});
 
 /**
  * Control for modifying geometries.
@@ -107,7 +103,7 @@ class ModifyControl extends Control {
     this.hitTolerance = options.hitTolerance || 5;
 
     this.selectStyle = options.style;
-    this.modifyStyle = options.modifyStyle || modifyStyleFunction;
+    this.modifyStyle = options.modifyStyle || modifyStyle;
 
     this.applySelectStyle = (feature, styleToApply) => {
       const featureStyles = getStyles(feature.getStyleFunction());
