@@ -1,6 +1,7 @@
 import { unByKey } from 'ol/Observable';
 import { getCenter } from 'ol/extent';
 import { Circle, Style, Fill, Stroke } from 'ol/style';
+import GeometryCollection from 'ol/geom/GeometryCollection';
 import { MultiPoint, Point } from 'ol/geom';
 import { Select, Modify, Pointer } from 'ol/interaction';
 import { singleClick, doubleClick, shiftKeyOnly } from 'ol/events/condition';
@@ -27,19 +28,19 @@ const getStyles = (style, feature) => {
 };
 
 // Default style on modifying geometries
-const modifyStyle = new ol.style.Style({
-  image: new ol.style.Circle({
+const modifyStyle = new Style({
+  image: new Circle({
     radius: 5,
-    fill: new ol.style.Fill({
+    fill: new Fill({
       color: '#05A0FF',
     }),
-    stroke: new ol.style.Stroke({ color: '#05A0FF', width: 2 }),
+    stroke: new Stroke({ color: '#05A0FF', width: 2 }),
   }),
-  stroke: new ol.style.Stroke({
+  stroke: new Stroke({
     color: '#05A0FF',
     width: 3,
   }),
-  fill: new ol.style.Fill({
+  fill: new Fill({
     color: 'rgba(255,255,255,0.4)',
   }),
   geometry: (f) => {
@@ -53,9 +54,9 @@ const modifyStyle = new ol.style.Style({
     } else {
       coordinates = [f.getGeometry().getCoordinates()];
     }
-    return new ol.geom.GeometryCollection([
+    return new GeometryCollection([
       f.getGeometry(),
-      new ol.geom.MultiPoint(coordinates),
+      new MultiPoint(coordinates),
     ]);
   },
 });
