@@ -184,17 +184,6 @@ class ModifyControl extends Control {
       wrapX: false,
     });
 
-    if (this.selectStyle) {
-      // Apply the select style dynamically when the feature has its own style.
-      this.selectMove.getFeatures().on('add', (evt) => {
-        this.onSelectFeature(evt.element, this.selectStyle, SELECT_MOVE_ON_CHANGE_KEY);
-      });
-
-      // Remove the select style dynamically when the feature had its own style.
-      this.selectMove.getFeatures().on('remove', (evt) => {
-        this.onDeselectFeature(evt.element, this.selectStyle, SELECT_MOVE_ON_CHANGE_KEY);
-      });
-    }
 
     this.selectMove.getFeatures().on('add', (evt) => {
       this.selectModify.getFeatures().clear();
@@ -203,12 +192,22 @@ class ModifyControl extends Control {
       this.map.addInteraction(this.moveInteraction);
       // Set the target element as initial feature to move.
       this.feature = evt.element;
+
+      if (this.selectStyle) {
+        // Apply the select style dynamically when the feature has its own style.
+        this.onSelectFeature(evt.element, this.selectStyle, SELECT_MOVE_ON_CHANGE_KEY);
+      }
     });
 
-    this.selectMove.getFeatures().on('remove', () => {
+    this.selectMove.getFeatures().on('remove', (evt) => {
       this.changeCursor(null);
       document.removeEventListener('keydown', this.deleteFeature.bind(this));
       this.map.removeInteraction(this.moveInteraction);
+
+      if (this.selectStyle) {
+        // Remove the select style dynamically when the feature had its own style.
+        this.onDeselectFeature(evt.element, this.selectStyle, SELECT_MOVE_ON_CHANGE_KEY);
+      }
     });
 
 
