@@ -1,5 +1,15 @@
-// import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
-// import { BufferOp } from 'jsts/org/locationtech/jts/operation/buffer';
+import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
+import { BufferOp } from 'jsts/org/locationtech/jts/operation/buffer';
+import LinearRing from 'ol/geom/LinearRing';
+import {
+  Point,
+  LineString,
+  Polygon,
+  MultiPoint,
+  MultiLineString,
+  MultiPolygon,
+} from 'ol/geom';
+import Select from 'ol/interaction/Select';
 import Control from './control';
 import bufferSVG from '../../img/buffer.svg';
 
@@ -30,7 +40,7 @@ class BufferControl extends Control {
      * @type {ol.interaction.Select}
      * @private
      */
-    this.selectInteraction = new ol.interaction.Select({
+    this.selectInteraction = new Select({
       layers: this.layerFilter,
       hitTolerance: options.hitTolerance || 10,
       multi: typeof (options.multi) === 'undefined' ? true : options.multi,
@@ -57,11 +67,21 @@ class BufferControl extends Control {
    * @param {Number} width Buffer width in map units.
    */
   buffer(width) {
-    const parser = new jsts.io.OL3Parser();
+    const parser = new OL3Parser();
+    parser.inject(
+      Point,
+      LineString,
+      LinearRing,
+      Polygon,
+      MultiPoint,
+      MultiLineString,
+      MultiPolygon,
+    );
+
     const features = this.selectInteraction.getFeatures().getArray();
     for (let i = 0; i < features.length; i += 1) {
       const jstsGeom = parser.read(features[i].getGeometry());
-      const bo = new jsts.operation.buffer.BufferOp(jstsGeom);
+      const bo = new BufferOp(jstsGeom);
       const buffered = bo.getResultGeometry(width);
       features[i].setGeometry(parser.write(buffered));
     }

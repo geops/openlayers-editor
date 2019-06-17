@@ -1,9 +1,11 @@
+import OLControl from 'ol/control/Control';
+import VectorSource from 'ol/source/Vector';
 /**
  * OLE control base class.
  * @extends ol.control.Control
  * @alias ole.Control
  */
-class Control extends ol.control.Control {
+class Control extends OLControl {
   /**
    * @inheritdoc
    * @param {Object} options Control options.
@@ -76,7 +78,7 @@ class Control extends ol.control.Control {
      */
     this.source =
       options.source ||
-      new ol.source.Vector({
+      new VectorSource({
         features: options.features,
       });
 

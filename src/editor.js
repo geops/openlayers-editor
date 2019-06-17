@@ -1,3 +1,4 @@
+import Collection from 'ol/Collection';
 import Toolbar from './toolbar';
 
 /**
@@ -24,19 +25,19 @@ class Editor {
      * @private
      * @type {ol.Collection<ole.Control>}
      */
-    this.controls = new ol.Collection();
+    this.controls = new Collection();
 
     /**
      * @private
      * @type {ol.Collection<ole.Control>}
      */
-    this.activeControls = new ol.Collection();
+    this.activeControls = new Collection();
 
     /**
      * @private
      * @type {ol.Collection<ole.Service>}
      */
-    this.services = new ol.Collection();
+    this.services = new Collection();
 
     /**
      * @private
@@ -90,8 +91,8 @@ class Editor {
    * @param {ol.Collection<ole.Control>} controls Collection of controls.
    */
   addControls(controls) {
-    const ctrls = controls instanceof ol.Collection ? controls
-      : new ol.Collection(controls);
+    const ctrls = controls instanceof Collection ? controls
+      : new Collection(controls);
 
     for (let i = 0; i < ctrls.getLength(); i += 1) {
       this.addControl(ctrls.item(i));

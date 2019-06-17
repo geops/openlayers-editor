@@ -1,5 +1,13 @@
+import { unByKey } from 'ol/Observable';
+import { getCenter } from 'ol/extent';
+import { Circle, Style, Fill, Stroke } from 'ol/style';
+import GeometryCollection from 'ol/geom/GeometryCollection';
+import { MultiPoint, Point } from 'ol/geom';
+import { Select, Modify, Pointer } from 'ol/interaction';
+import { singleClick, doubleClick, shiftKeyOnly } from 'ol/events/condition';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
+
 
 // Return an array of styles
 const getStyles = (style, feature) => {
@@ -20,20 +28,19 @@ const getStyles = (style, feature) => {
 };
 
 // Default style on modifying geometries
-// Default style on modifying geometries
-const modifyStyle = new ol.style.Style({
-  image: new ol.style.Circle({
+const modifyStyle = new Style({
+  image: new Circle({
     radius: 5,
-    fill: new ol.style.Fill({
+    fill: new Fill({
       color: '#05A0FF',
     }),
-    stroke: new ol.style.Stroke({ color: '#05A0FF', width: 2 }),
+    stroke: new Stroke({ color: '#05A0FF', width: 2 }),
   }),
-  stroke: new ol.style.Stroke({
+  stroke: new Stroke({
     color: '#05A0FF',
     width: 3,
   }),
-  fill: new ol.style.Fill({
+  fill: new Fill({
     color: 'rgba(255,255,255,0.4)',
   }),
   geometry: (f) => {
@@ -47,9 +54,9 @@ const modifyStyle = new ol.style.Style({
     } else {
       coordinates = [f.getGeometry().getCoordinates()];
     }
-    return new ol.geom.GeometryCollection([
+    return new GeometryCollection([
       f.getGeometry(),
-      new ol.geom.MultiPoint(coordinates),
+      new MultiPoint(coordinates),
     ]);
   },
 });
@@ -71,6 +78,8 @@ class ModifyControl extends Control {
    * @param {ol.source.Vector} [options.source] Destination for drawing.
    * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    * @param {ol.style.Style.StyleLike} [options.modifyStyle] Style used by the Modify interaction.
+   * @param {ol.events.condition} [options.moveCondition] Condition to trigger Move select.
+   * @param {ol.events.condition} [options.modifyCondition] Condition to trigger Modify select.
    */
   constructor(options) {
     super(Object.assign({
@@ -126,7 +135,7 @@ class ModifyControl extends Control {
       // Ensure we don't have twice the same event registered.
       const listenerKey = feature.get(listenerPropName);
       if (listenerKey) {
-        ol.Observable.unByKey(listenerKey);
+        unByKey(listenerKey);
         feature.unset(listenerKey);
       }
 
@@ -144,7 +153,7 @@ class ModifyControl extends Control {
 
       const listenerKey = feature.get(listenerPropName);
       if (listenerKey) {
-        ol.Observable.unByKey(listenerKey);
+        unByKey(listenerKey);
         feature.unset(listenerKey);
       }
 
@@ -174,9 +183,9 @@ class ModifyControl extends Control {
      * @type {ol.interaction.Select}
      * @private
      */
-    this.selectMove = new ol.interaction.Select({
-      condition: ol.events.condition.singleClick,
-      toggleCondition: e => (ol.events.condition.doubleClick(e)),
+    this.selectMove = new Select({
+      condition: options.moveCondition || singleClick,
+      toggleCondition: e => doubleClick(e),
       layers: this.layerFilter,
       features: this.featuresToMove,
       style: this.selectStyle,
@@ -217,9 +226,9 @@ class ModifyControl extends Control {
      * @private
      */
 
-    this.selectModify = new ol.interaction.Select({
-      condition: ol.events.condition.doubleClick,
-      toggleCondition: ol.events.condition.shiftKeyOnly,
+    this.selectModify = new Select({
+      condition: options.modifyCondition || doubleClick,
+      toggleCondition: shiftKeyOnly,
       layers: this.layerFilter,
       features: this.featuresToModify,
       style: this.modifyStyle,
@@ -256,7 +265,7 @@ class ModifyControl extends Control {
      * @type {ol.interaction.Modify}
      * @private
      */
-    this.modifyInteraction = new ol.interaction.Modify({
+    this.modifyInteraction = new Modify({
       features: this.selectModify.getFeatures(),
     });
 
@@ -264,7 +273,7 @@ class ModifyControl extends Control {
      * @type {ol.interaction.Pointer}
      * @private
      */
-    this.moveInteraction = new ol.interaction.Pointer({
+    this.moveInteraction = new Pointer({
       handleDownEvent: this.startMoveFeature.bind(this),
       handleDragEvent: this.moveFeature.bind(this),
       handleUpEvent: this.stopMoveFeature.bind(this),
@@ -305,9 +314,9 @@ class ModifyControl extends Control {
    */
   startMoveFeature(evt) {
     if (this.feature && this.selectMove.getFeatures().getArray().indexOf(this.feature) !== -1) {
-      if (this.feature.getGeometry() instanceof ol.geom.Point) {
+      if (this.feature.getGeometry() instanceof Point) {
         const extent = this.feature.getGeometry().getExtent();
-        this.coordinate = ol.extent.getCenter(extent);
+        this.coordinate = getCenter(extent);
       } else {
         this.coordinate = evt.coordinate;
       }
