@@ -78,6 +78,8 @@ class ModifyControl extends Control {
    * @param {ol.source.Vector} [options.source] Destination for drawing.
    * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    * @param {ol.style.Style.StyleLike} [options.modifyStyle] Style used by the Modify interaction.
+   * @param {ol.events.condition} [options.moveCondition] Condition to trigger Move select.
+   * @param {ol.events.condition} [options.modifyCondition] Condition to trigger Modify select.
    */
   constructor(options) {
     super(Object.assign({
@@ -182,7 +184,7 @@ class ModifyControl extends Control {
      * @private
      */
     this.selectMove = new Select({
-      condition: singleClick,
+      condition: options.moveCondition || singleClick,
       toggleCondition: e => doubleClick(e),
       layers: this.layerFilter,
       features: this.featuresToMove,
@@ -225,7 +227,7 @@ class ModifyControl extends Control {
      */
 
     this.selectModify = new Select({
-      condition: doubleClick,
+      condition: options.modifyCondition || doubleClick,
       toggleCondition: shiftKeyOnly,
       layers: this.layerFilter,
       features: this.featuresToModify,
