@@ -14,9 +14,6 @@ module.exports = neutrino => {
   } });
   neutrino.use(library, {
     name: 'ole',
-    externals: {
-      whitelist: ['jsts', 'ol']
-    },
     babel: {
       presets: [
         ['babel-preset-env', {
@@ -37,6 +34,7 @@ module.exports = neutrino => {
   neutrino.use(devServer);
 
   // neutrino.config.plugins.delete('babel-minify').end();
+  neutrino.config.externals(['jsts', 'ol']);
 
   neutrino.on('test', () => new Promise((resolve, reject) =>
     start(neutrino.config.toConfig(), neutrino).fork(

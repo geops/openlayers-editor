@@ -8,7 +8,7 @@
     "cypress:run": "cypress run",
     "lint": "neutrino lint",
     "test": "neutrino test",
-    "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
+    "doc": "jsdoc -p -r -c jsdoc_conf.json src -ds doc README.md",
     "start": "neutrino start",
     "prepack": "neutrino build",
     "publish:public": "yarn version && yarn build && git push origin HEAD && yarn publish",
@@ -19,7 +19,7 @@
     "Editor"
   ],
   "license": "BSD-2-Clause",
-  "main": "src/index.js",
+  "main": "build/index.js",
   "repository": "github:geops/openlayers-editor",
   "dependencies": {
     "jsts": "^2.0.4",
