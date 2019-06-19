@@ -235,14 +235,14 @@ class ModifyControl extends Control {
       hitTolerance: this.hitTolerance,
       wrapX: false,
     });
-
+    let mapKey;
     this.selectModify.getFeatures().on('add', (evt) => {
       this.selectMove.getFeatures().clear();
       this.changeCursor('grab');
       document.addEventListener('keydown', this.deleteFeature.bind(this));
       this.map.addInteraction(this.modifyInteraction);
       this.map.addEventListener('pointermove', this.modifyCursorHandler.bind(this));
-      this.map.addEventListener('click', this.modifyUnselect.bind(this));
+      mapKey = this.map.on('singleclick', this.modifyUnselect.bind(this));
 
       if (this.modifyStyle) {
         // Apply the select style dynamically when the feature has its own style.
@@ -255,7 +255,7 @@ class ModifyControl extends Control {
       document.removeEventListener('keydown', this.deleteFeature.bind(this));
       this.map.removeInteraction(this.modifyInteraction);
       this.map.removeEventListener('pointermove', this.modifyCursorHandler.bind(this));
-
+      unByKey(mapKey);
       if (this.modifyStyle) {
         this.onDeselectFeature(evt.element, this.modifyStyle, SELECT_MODIFY_ON_CHANGE_KEY);
       }
