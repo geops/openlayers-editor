@@ -271,7 +271,7 @@ class ModifyControl extends Control {
      */
     this.modifyInteraction = new Modify({
       features: this.selectModify.getFeatures(),
-      style: this.modifyStyle || undefined,
+      style: this.modifyStyle,
     });
 
     /**
