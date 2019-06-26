@@ -118,6 +118,8 @@ class ModifyControl extends Control {
     this.selectModifyStyle = options.selectModifyStyle || selectModifyStyle;
     this.modifyStyle = options.modifyStyle;
 
+    this.deleteFeature = this.deleteFeature.bind(this);
+
     this.applySelectStyle = (feature, styleToApply) => {
       const featureStyles = getStyles(feature.getStyleFunction());
       const stylesToApply = getStyles(styleToApply, feature);
@@ -201,7 +203,7 @@ class ModifyControl extends Control {
     this.selectMove.getFeatures().on('add', (evt) => {
       this.selectModify.getFeatures().clear();
       this.changeCursor('move');
-      document.addEventListener('keydown', this.deleteFeature.bind(this));
+      document.addEventListener('keydown', this.deleteFeature);
       this.map.addInteraction(this.moveInteraction);
 
       moveMapKey = this.map.on('singleclick', (e) => {
@@ -218,7 +220,7 @@ class ModifyControl extends Control {
 
     this.selectMove.getFeatures().on('remove', (evt) => {
       this.changeCursor(null);
-      document.removeEventListener('keydown', this.deleteFeature.bind(this));
+      document.removeEventListener('keydown', this.deleteFeature);
       this.map.removeInteraction(this.moveInteraction);
       unByKey(moveMapKey);
       if (this.selectMoveStyle) {
@@ -298,6 +300,11 @@ class ModifyControl extends Control {
    * @private
    */
   deleteFeature(evt) {
+    // Ignore if the event comes from textarea and input
+    if (/textarea|input/i.test(evt.target.nodeName)) {
+      return;
+    }
+
     let features;
 
     // Choose feature collection to delete
