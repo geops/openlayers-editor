@@ -114,20 +114,15 @@ class ModifyControl extends Control {
      */
     this.hitTolerance = options.hitTolerance || 5;
 
-<<<<<<< HEAD
-    this.selectStyle = options.style;
-
-    this.modifyStyle = options.modifyStyle || modifyStyle;
-=======
     this.selectMoveStyle = options.selectMoveStyle;
     this.selectModifyStyle = options.selectModifyStyle || selectModifyStyle;
     this.modifyStyle = options.modifyStyle;
->>>>>>> master
 
     this.deleteFeature = this.deleteFeature.bind(this);
 
     this.applySelectStyle = (feature, styleToApply) => {
       const featureStyles = getStyles(feature.getStyleFunction());
+
       const stylesToApply = getStyles(styleToApply, feature);
 
       // At this point featureStyles must not contain the select styles.
