@@ -122,7 +122,6 @@ class ModifyControl extends Control {
 
     this.applySelectStyle = (feature, styleToApply) => {
       const featureStyles = getStyles(feature.getStyleFunction());
-
       const stylesToApply = getStyles(styleToApply, feature);
 
       // At this point featureStyles must not contain the select styles.
