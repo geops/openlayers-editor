@@ -126,8 +126,7 @@ class ModifyControl extends Control {
 
     this.selectFilter = (feature, layer) => {
       if (this.layerFilter) {
-        const bool = this.layerFilter(layer);
-        return bool;
+        return this.layerFilter(layer);
       }
       return true;
     };
@@ -228,7 +227,7 @@ class ModifyControl extends Control {
       toggleCondition: e => doubleClick(e),
       filter: (feature, layer) => {
         // If the feature is already selected by modify interaction ignore the selection.
-        if (this.selectModify.getFeatures().getArray().find(feat => feature === feat)) {
+        if (this.isSelectedByModify(feature)) {
           return false;
         }
         return this.selectFilter(feature, layer);
@@ -247,8 +246,6 @@ class ModifyControl extends Control {
       moveMapKey = this.map.on('singleclick', (e) => {
         this.unselectInteraction(e, this.selectMove);
       });
-      // Set the target element as initial feature to move.
-      this.moveFeature = evt.element;
 
       if (this.selectMoveStyle) {
         // Apply the select style dynamically when the feature has its own style.
