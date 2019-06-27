@@ -115,10 +115,21 @@ class ModifyControl extends Control {
     this.hitTolerance = options.hitTolerance || 5;
 
     this.selectMoveStyle = options.selectMoveStyle;
+
     this.selectModifyStyle = options.selectModifyStyle || selectModifyStyle;
+
     this.modifyStyle = options.modifyStyle;
 
     this.deleteFeature = this.deleteFeature.bind(this);
+
+    this.selectFilter = (feature, layer) => {
+      if (this.layerFilter) {
+        const bool = this.layerFilter(layer);
+        window.console.log(bool);
+        return bool;
+      }
+      return true;
+    };
 
     this.applySelectStyle = (feature, styleToApply) => {
       const featureStyles = getStyles(feature.getStyleFunction());
@@ -192,8 +203,13 @@ class ModifyControl extends Control {
     this.selectMove = new Select({
       condition: options.moveCondition || singleClick,
       toggleCondition: e => doubleClick(e),
-      layers: this.layerFilter,
-      features: this.featuresToMove,
+      filter: (feature, layer) => {
+        // If the feature is already selected by modify interaction ignore the selection.
+        if (this.selectModify.getFeatures().getArray().find(feat => feature === feat)) {
+          return false;
+        }
+        return this.selectFilter(feature, layer);
+      },
       style: this.selectMoveStyle,
       hitTolerance: this.hitTolerance,
       wrapX: false,
@@ -239,8 +255,7 @@ class ModifyControl extends Control {
     this.selectModify = new Select({
       condition: options.modifyCondition || doubleClick,
       toggleCondition: shiftKeyOnly,
-      layers: this.layerFilter,
-      features: this.featuresToModify,
+      filter: this.selectFilter,
       style: this.selectModifyStyle,
       hitTolerance: this.hitTolerance,
       wrapX: false,
@@ -249,7 +264,7 @@ class ModifyControl extends Control {
     this.selectModify.getFeatures().on('add', (evt) => {
       this.selectMove.getFeatures().clear();
       this.changeCursor('grab');
-      document.addEventListener('keydown', this.deleteFeature.bind(this));
+      document.addEventListener('keydown', this.deleteFeature);
       this.map.addInteraction(this.modifyInteraction);
       this.map.addEventListener('pointermove', this.modifyCursorHandler.bind(this));
 
@@ -264,7 +279,7 @@ class ModifyControl extends Control {
 
     this.selectModify.getFeatures().on('remove', (evt) => {
       this.changeCursor(null);
-      document.removeEventListener('keydown', this.deleteFeature.bind(this));
+      document.removeEventListener('keydown', this.deleteFeature);
       this.map.removeInteraction(this.modifyInteraction);
       this.map.removeEventListener('pointermove', this.modifyCursorHandler.bind(this));
       unByKey(modifyMapKey);
