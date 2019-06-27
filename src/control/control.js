@@ -90,7 +90,7 @@ class Control extends OLControl {
      */
     this.layerFilter =
       options.layerFilter ||
-      (layer => layer.getSource() === this.source);
+      (layer => !this.source || (layer && layer.getSource() === this.source));
 
     /**
      * ole.Editor instance.
