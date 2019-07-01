@@ -124,6 +124,8 @@ class ModifyControl extends Control {
 
     this.cursorHandler = this.cursorHandler.bind(this);
 
+    this.cursorTimeout = null;
+
     this.selectFilter = (feature, layer) => {
       if (this.layerFilter) {
         return this.layerFilter(layer);
@@ -426,30 +428,35 @@ class ModifyControl extends Control {
    * @private
    */
   cursorHandler(evt) {
-    if (this.isMoving || this.isModifying) {
-      this.changeCursor('grabbing');
-      return;
+    if (this.cursorTimeout) {
+      clearTimeout(this.cursorTimeout);
     }
-
-    const feature = this.getFeatureAtPixel(evt.pixel);
-    if (!feature) {
-      this.changeCursor(this.previousCursor);
-      this.previousCursor = null;
-      return;
-    }
-
-    if (this.isSelectedByMove(feature)) {
-      this.changeCursor('grab');
-    } else if (this.isSelectedByModify(feature)) {
-      if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
-        this.changeCursor('grab');
-      } else {
-        this.changeCursor(this.previousCursor);
+    this.cursorTimeout = setTimeout(() => {
+      if (evt.dragging || this.isMoving || this.isModifying) {
+        this.changeCursor('grabbing');
+        return;
       }
-    } else {
-      // Feature available for selection.
-      this.changeCursor('pointer');
-    }
+
+      const feature = this.getFeatureAtPixel(evt.pixel);
+      if (!feature) {
+        this.changeCursor(this.previousCursor);
+        this.previousCursor = null;
+        return;
+      }
+
+      if (this.isSelectedByMove(feature)) {
+        this.changeCursor('grab');
+      } else if (this.isSelectedByModify(feature)) {
+        if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
+          this.changeCursor('grab');
+        } else {
+          this.changeCursor(this.previousCursor);
+        }
+      } else {
+        // Feature available for selection.
+        this.changeCursor('pointer');
+      }
+    }, 50);
   }
 
   /**
@@ -470,7 +477,7 @@ class ModifyControl extends Control {
    */
   changeCursor(cursor) {
     const element = this.map.getTargetElement();
-    if (element.style.cursor !== cursor) {
+    if ((element.style.cursor || cursor) && element.style.cursor !== cursor) {
       if (this.previousCursor === null) {
         this.previousCursor = element.style.cursor;
       }
@@ -482,7 +489,8 @@ class ModifyControl extends Control {
    * @inheritdoc
    */
   activate() {
-    this.map.addEventListener('pointermove', this.cursorHandler);
+    clearTimeout(this.cursorTimeout);
+    this.map.on('pointermove', this.cursorHandler);
     this.map.addInteraction(this.selectMove);
     this.map.addInteraction(this.selectModify);
     super.activate();
@@ -492,7 +500,8 @@ class ModifyControl extends Control {
    * @inheritdoc
    */
   deactivate(silent) {
-    this.map.removeEventListener('pointermove', this.cursorHandler);
+    clearTimeout(this.cursorTimeout);
+    this.map.un('pointermove', this.cursorHandler);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
     this.map.removeInteraction(this.selectMove);
