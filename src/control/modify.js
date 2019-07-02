@@ -355,7 +355,7 @@ class ModifyControl extends Control {
     }
 
     // Delete selected features using delete key
-    if (evt.key === 'Delete' && features) {
+    if (evt.keyCode === 46 && features) {
       // Loop delete through selected features array
       features.getArray().forEach((feature, i) => {
         this.source.removeFeature(features.getArray()[i]);
