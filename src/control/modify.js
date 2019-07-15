@@ -83,6 +83,9 @@ class ModifyControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.modifyStyle] Style used by the Modify interaction.
    * @param {ol.events.condition} [options.moveCondition] Condition to trigger Move select.
    * @param {ol.events.condition} [options.modifyCondition] Condition to trigger Modify select.
+   * @param {function} [options.deleteCondition] Function that takes a browser
+   * keyboard event, should return true to delete the current feature selected.
+   *   (default deleteCondition activated on Backspace and Delete key)
    */
   constructor(options) {
     super(Object.assign({
@@ -125,6 +128,9 @@ class ModifyControl extends Control {
     this.cursorHandler = this.cursorHandler.bind(this);
 
     this.cursorTimeout = null;
+
+    this.deleteCondition = options.deleteCondition ||
+      (evt => (evt.keyCode === 46 || evt.keyCode === 8));
 
     this.selectFilter = (feature, layer) => {
       if (this.layerFilter) {
@@ -341,7 +347,7 @@ class ModifyControl extends Control {
    */
   deleteFeature(evt) {
     // Ignore if the event comes from textarea and input
-    if (/textarea|input/i.test(evt.target.nodeName)) {
+    if (/textarea|input/i.test(evt.target.nodeName) || !this.deleteCondition(evt)) {
       return;
     }
 
@@ -355,7 +361,7 @@ class ModifyControl extends Control {
     }
 
     // Delete selected features using delete key
-    if (evt.keyCode === 46 && features) {
+    if (features) {
       // Loop delete through selected features array
       features.getArray().forEach((feature, i) => {
         this.source.removeFeature(features.getArray()[i]);

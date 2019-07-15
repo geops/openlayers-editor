@@ -6,8 +6,8 @@
   </head>
   <body>
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
-    <script src="https://unpkg.com/jsts@2.0.3/dist/jsts.min.js"></script>
-    <script src="https://unpkg.com/ole@0.0.3"></script>
+    <script src="https://unpkg.com/jsts@2.0.6/dist/jsts.min.js"></script>
+    <script src="build/index.js"></script>
     <div id="app">
       <div id="header">
         <nav>
@@ -32,7 +32,7 @@
     <script type="text/javascript">
       var editLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
-          wrapX: false,
+          wrapX: false
         })
       });
 
@@ -107,7 +107,7 @@
           center: [873708.375917, 6105425.847789],
           zoom: 15
         }),
-        wrapX: false,
+        wrapX: false
       });
 
       var editor = new ole.Editor(map);
@@ -135,7 +135,7 @@
       });
 
       var modify = new ole.control.Modify({
-        source: editLayer.getSource(),
+        source: editLayer.getSource()
       });
 
       var buffer = new ole.control.Buffer({
