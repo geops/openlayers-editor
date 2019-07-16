@@ -368,6 +368,10 @@ class ModifyControl extends Control {
       });
       this.changeCursor(null);
       features.clear();
+
+      // Prevent browser history back button action on IE 11
+      evt.stopPropagation();
+      evt.preventDefault();
     }
   }
 
