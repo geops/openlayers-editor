@@ -4,14 +4,14 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
-    <script src="https://unpkg.com/jsts@2.0.3/dist/jsts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/master/build/ol.js"></script>
+    <script src="https://unpkg.com/jsts@2.0.6/dist/jsts.min.js"></script>
     <script src="index.js"></script>
     <div id="map"></div>
     <script type="text/javascript">
       var editLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
-          wrapX: false,
+          wrapX: false
         })
       });
       const PROJECTION = ol.proj.get("EPSG:3857");
@@ -114,7 +114,7 @@
       });
 
       var modify = new ole.control.Modify({
-        source: editLayer.getSource(),
+        source: editLayer.getSource()
       });
 
       var buffer = new ole.control.Buffer({
