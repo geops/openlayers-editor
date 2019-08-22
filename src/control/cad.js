@@ -16,6 +16,8 @@ import cadSVG from '../../img/cad.svg';
 class CadControl extends Control {
   /**
    * @param {Object} [options] Tool options.
+   * @param {Function} [options.filter] Returns an array containing the features
+   *   to include for CAD (takes the source as a single argument).
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
    *   for snap lines. Default is 10.
    * @param {Boolean} [options.showSnapLines] Whether to show
@@ -104,6 +106,13 @@ class CadControl extends Control {
      * @private
      */
     this.snapTolerance = options.snapTolerance || 10;
+
+    /**
+     * Limit the features included when snapping.
+     * @type {Array}
+     * @private
+     */
+    this.snapFeatures = options.filter || null;
 
     /**
      * Interaction for snapping
@@ -206,13 +215,19 @@ class CadControl extends Control {
     const ext = [-Infinity, -Infinity, Infinity, Infinity];
     const featureDict = {};
 
-    this.source.forEachFeatureInExtent(ext, (f) => {
+    const pushSnapFeatures = (f) => {
       const cCoord = f.getGeometry().getClosestPoint(coordinate);
       const dx = cCoord[0] - coordinate[0];
       const dy = cCoord[1] - coordinate[1];
       const dist = (dx * dx) + (dy * dy);
       featureDict[dist] = f;
-    });
+    };
+
+    if (this.filter) {
+      this.filter(this.source).map(f => pushSnapFeatures(f));
+    } else {
+      this.source.forEachFeatureInExtent(ext, f => pushSnapFeatures(f));
+    }
 
     const dists = Object.keys(featureDict);
     const features = [];
