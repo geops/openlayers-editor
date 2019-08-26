@@ -223,8 +223,8 @@ class CadControl extends Control {
       featureDict[dist] = f;
     };
 
-    if (this.filter) {
-      this.filter(this.source).map(f => pushSnapFeatures(f));
+    if (this.snapFeatures) {
+      this.snapFeatures(this.source).map(f => pushSnapFeatures(f));
     } else {
       this.source.forEachFeatureInExtent(ext, f => pushSnapFeatures(f));
     }
