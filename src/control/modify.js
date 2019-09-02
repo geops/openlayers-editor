@@ -7,7 +7,7 @@ import { Select, Modify, Pointer } from 'ol/interaction';
 import { singleClick, doubleClick, shiftKeyOnly } from 'ol/events/condition';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
-
+import MoveEvent, { MoveEventType } from '../helper/move-event';
 
 // Return an array of styles
 const getStyles = (style, feature) => {
@@ -46,9 +46,11 @@ const selectModifyStyle = new Style({
   geometry: (f) => {
     let coordinates = [];
     if (f.getGeometry().getType() === 'Polygon') {
-      f.getGeometry().getCoordinates()[0].forEach((coordinate) => {
-        coordinates.push(coordinate);
-      });
+      f.getGeometry()
+        .getCoordinates()[0]
+        .forEach((coordinate) => {
+          coordinates.push(coordinate);
+        });
     } else if (f.getGeometry().getType() === 'LineString') {
       coordinates = f.getGeometry().getCoordinates();
     } else {
@@ -88,11 +90,14 @@ class ModifyControl extends Control {
    *   (default deleteCondition activated on Backspace and Delete key)
    */
   constructor(options) {
-    super(Object.assign({
-      title: 'Modify geometry',
-      className: 'ole-control-modify',
-      image,
-    }, options));
+    super(Object.assign(
+      {
+        title: 'Modify geometry',
+        className: 'ole-control-modify',
+        image,
+      },
+      options,
+    ));
 
     const OLD_STYLES_PROP = 'oldStyles';
     const SELECT_MOVE_ON_CHANGE_KEY = 'selectMoveOnChangeKey';
@@ -129,8 +134,9 @@ class ModifyControl extends Control {
 
     this.cursorTimeout = null;
 
-    this.deleteCondition = options.deleteCondition ||
-      (evt => (evt.keyCode === 46 || evt.keyCode === 8));
+    this.deleteCondition =
+      options.deleteCondition ||
+      (evt => evt.keyCode === 46 || evt.keyCode === 8);
 
     this.selectFilter = (feature, layer) => {
       if (this.layerFilter) {
@@ -149,15 +155,19 @@ class ModifyControl extends Control {
 
     this.isHoverVertexFeatureAtPixel = (pixel) => {
       let isHoverVertex = false;
-      this.map.forEachFeatureAtPixel(pixel, (feat, layer) => {
-        if (!layer) {
-          isHoverVertex = true;
-          return true;
-        }
-        return false;
-      }, {
-        hitTolerance: this.hitTolerance,
-      });
+      this.map.forEachFeatureAtPixel(
+        pixel,
+        (feat, layer) => {
+          if (!layer) {
+            isHoverVertex = true;
+            return true;
+          }
+          return false;
+        },
+        {
+          hitTolerance: this.hitTolerance,
+        },
+      );
       return isHoverVertex;
     };
 
@@ -186,12 +196,14 @@ class ModifyControl extends Control {
         feature.unset(listenerKey);
       }
 
-      feature.set(listenerPropName, feature.on('change', (e) => {
-        // On change of the feature's style, we re-apply the selected Style.
-        this.onSelectedFeatureChange(e.target, selectStyle);
-      }));
+      feature.set(
+        listenerPropName,
+        feature.on('change', (e) => {
+          // On change of the feature's style, we re-apply the selected Style.
+          this.onSelectedFeatureChange(e.target, selectStyle);
+        }),
+      );
     };
-
 
     this.onDeselectFeature = (feature, selectStyle, listenerPropName) => {
       if (!feature.getStyleFunction()) {
@@ -218,7 +230,7 @@ class ModifyControl extends Control {
       if (!oldStyles) {
         return;
       }
-      const isStyleChanged = oldStyles.some((style, idx) => (style !== featureStyles[idx]));
+      const isStyleChanged = oldStyles.some((style, idx) => style !== featureStyles[idx]);
       if (isStyleChanged) {
         // If the user changes the style of the feature, we reapply the select style.
         this.applySelectStyle(feature, selectStyle);
@@ -257,7 +269,11 @@ class ModifyControl extends Control {
 
       if (this.selectMoveStyle) {
         // Apply the select style dynamically when the feature has its own style.
-        this.onSelectFeature(evt.element, this.selectMoveStyle, SELECT_MOVE_ON_CHANGE_KEY);
+        this.onSelectFeature(
+          evt.element,
+          this.selectMoveStyle,
+          SELECT_MOVE_ON_CHANGE_KEY,
+        );
       }
     });
 
@@ -267,10 +283,13 @@ class ModifyControl extends Control {
       unByKey(moveMapKey);
       if (this.selectMoveStyle) {
         // Remove the select style dynamically when the feature had its own style.
-        this.onDeselectFeature(evt.element, this.selectMoveStyle, SELECT_MOVE_ON_CHANGE_KEY);
+        this.onDeselectFeature(
+          evt.element,
+          this.selectMoveStyle,
+          SELECT_MOVE_ON_CHANGE_KEY,
+        );
       }
     });
-
 
     /**
      * Select interaction to modify features
@@ -297,7 +316,11 @@ class ModifyControl extends Control {
       });
       if (this.selectModifyStyle) {
         // Apply the select style dynamically when the feature has its own style.
-        this.onSelectFeature(evt.element, this.selectModifyStyle, SELECT_MODIFY_ON_CHANGE_KEY);
+        this.onSelectFeature(
+          evt.element,
+          this.selectModifyStyle,
+          SELECT_MODIFY_ON_CHANGE_KEY,
+        );
       }
     });
 
@@ -306,7 +329,11 @@ class ModifyControl extends Control {
       this.map.removeInteraction(this.modifyInteraction);
       unByKey(modifyMapKey);
       if (this.selectModifyStyle) {
-        this.onDeselectFeature(evt.element, this.selectModifyStyle, SELECT_MODIFY_ON_CHANGE_KEY);
+        this.onDeselectFeature(
+          evt.element,
+          this.selectModifyStyle,
+          SELECT_MODIFY_ON_CHANGE_KEY,
+        );
       }
     });
 
@@ -347,7 +374,10 @@ class ModifyControl extends Control {
    */
   deleteFeature(evt) {
     // Ignore if the event comes from textarea and input
-    if (/textarea|input/i.test(evt.target.nodeName) || !this.deleteCondition(evt)) {
+    if (
+      /textarea|input/i.test(evt.target.nodeName) ||
+      !this.deleteCondition(evt)
+    ) {
       return;
     }
 
@@ -376,11 +406,21 @@ class ModifyControl extends Control {
   }
 
   isSelectedByMove(feature) {
-    return this.selectMove.getFeatures().getArray().indexOf(feature) !== -1;
+    return (
+      this.selectMove
+        .getFeatures()
+        .getArray()
+        .indexOf(feature) !== -1
+    );
   }
 
   isSelectedByModify(feature) {
-    return this.selectModify.getFeatures().getArray().indexOf(feature) !== -1;
+    return (
+      this.selectModify
+        .getFeatures()
+        .getArray()
+        .indexOf(feature) !== -1
+    );
   }
 
   /**
@@ -399,6 +439,11 @@ class ModifyControl extends Control {
       }
       this.editor.setEditFeature(this.featureToMove);
       this.isMoving = true;
+      this.moveInteraction.dispatchEvent(new MoveEvent(
+        MoveEventType.MOVESTART,
+        this.featureToMove,
+        evt,
+      ));
 
       return true;
     }
@@ -424,7 +469,12 @@ class ModifyControl extends Control {
    * @param {ol.MapBrowserEvent} evt Event.
    * @private
    */
-  stopMoveFeature() {
+  stopMoveFeature(evt) {
+    this.moveInteraction.dispatchEvent(new MoveEvent(
+      MoveEventType.MOVEEND,
+      this.featureToMove,
+      evt,
+    ));
     this.coordinate = null;
     this.editor.setEditFeature(null);
     this.isMoving = false;
@@ -519,6 +569,5 @@ class ModifyControl extends Control {
     super.deactivate(silent);
   }
 }
-
 
 export default ModifyControl;
