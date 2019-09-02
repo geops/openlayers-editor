@@ -1,20 +1,16 @@
 import Event from 'ol/events/Event';
 
 /**
- * Enum for move event type.
- * @enum {string} MoveEventType MOVESTART or MOVEEND
- * @ignore
+ * @enum {string} MoveEventType
  */
 export const MoveEventType = {
   /**
    * Triggered upon feature move start
-   * @type {string}
    */
   MOVESTART: 'movestart',
 
   /**
    * Triggered upon feature move end
-   * @type {string}
    */
   MOVEEND: 'moveend',
 };
