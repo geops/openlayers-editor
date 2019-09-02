@@ -25,7 +25,6 @@ export const MoveEventType = {
  * @ignore
  */
 export default class MoveEvent extends Event {
-
   /**
    * @inheritdoc
    * @param {MoveEventType} type Type.
