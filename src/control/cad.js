@@ -106,14 +106,14 @@ class CadControl extends Control {
      * @type {Number}
      * @private
      */
-    this.snapTolerance = options.snapTolerance || 10;
+    this.snapTolerance = options.snapTolerance === undefined ? 10 : options.snapTolerance;
 
     /**
-     * Limit the features included when snapping.
-     * @type {Array}
+     * Filter the features to snap with.
+     * @type {Function}
      * @private
      */
-    this.snapFeatures = options.filter || null;
+    this.filter = options.filter || null;
 
     /**
      * Interaction for snapping
@@ -230,11 +230,11 @@ class CadControl extends Control {
       featureDict[dist] = f;
     };
 
-    if (this.snapFeatures) {
-      this.snapFeatures(this.source).map(f => pushSnapFeatures(f));
-    } else {
-      this.source.forEachFeatureInExtent(ext, f => pushSnapFeatures(f));
-    }
+    this.source.forEachFeatureInExtent(ext, (f) => {
+      if (!this.filter || (this.filter && this.filter(f))) {
+        pushSnapFeatures(f);
+      }
+    });
 
     const dists = Object.keys(featureDict);
     const features = [];

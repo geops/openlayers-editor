@@ -120,7 +120,7 @@ class ModifyControl extends Control {
      * @type {number}
      * @private
      */
-    this.hitTolerance = options.hitTolerance || 5;
+    this.hitTolerance = options.hitTolerance === undefined ? 5 : options.hitTolerance;
 
     this.selectMoveStyle = options.selectMoveStyle;
 

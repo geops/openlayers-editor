@@ -30,7 +30,7 @@ class TopologyControl extends Control {
     this.selectInteraction = new Select({
       toggleCondition: () => true,
       layers: this.layerFilter,
-      hitTolerance: options.hitTolerance || 10,
+      hitTolerance: options.hitTolerance === undefined ? 10 : options.hitTolerance,
       multi: true,
       style: options.style,
     });

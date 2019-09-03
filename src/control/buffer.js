@@ -42,7 +42,8 @@ class BufferControl extends Control {
      */
     this.selectInteraction = new Select({
       layers: this.layerFilter,
-      hitTolerance: options.hitTolerance || 10,
+      hitTolerance: options.hitTolerance === undefined ?
+        10 : options.hitTolerance,
       multi: typeof (options.multi) === 'undefined' ? true : options.multi,
       style: options.style,
     });
