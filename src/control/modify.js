@@ -549,11 +549,11 @@ class ModifyControl extends Control {
    * @inheritdoc
    */
   activate() {
+    super.activate();
     clearTimeout(this.cursorTimeout);
     this.map.on('pointermove', this.cursorHandler);
     this.map.addInteraction(this.selectMove);
     this.map.addInteraction(this.selectModify);
-    super.activate();
   }
 
   /**

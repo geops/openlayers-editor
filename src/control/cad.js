@@ -7,6 +7,7 @@ import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
+import SnapEvent, { SnapEventType } from '../helper/snap-event';
 
 /**
  * Control with snapping functionality for geometry alignment.
@@ -165,7 +166,7 @@ class CadControl extends Control {
 
     // Ensure that the snap interaction is at the last position
     // as it must be the first to handle the  pointermove event.
-    this.map.getInteractions().on('change:length', ((e) => {
+    this.map.getInteractions().on('add', ((e) => {
       const pos = e.target.getArray().indexOf(this.snapInteraction);
 
       if (this.snapInteraction.getActive() && pos > -1 && pos !== e.target.getLength() - 1) {
@@ -192,6 +193,12 @@ class CadControl extends Control {
 
     this.linesLayer.getSource().clear();
     this.snapLayer.getSource().clear();
+
+    this.pointerInteraction.dispatchEvent(new SnapEvent(
+      SnapEventType.SNAP,
+      features.length ? features : null,
+      evt,
+    ));
 
     if (this.properties.showSnapLines) {
       this.drawSnapLines(features, evt.coordinate);

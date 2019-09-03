@@ -2,6 +2,7 @@ import Event from 'ol/events/Event';
 
 /**
  * @enum {string} MoveEventType
+ * @ignore
  */
 export const MoveEventType = {
   /**
@@ -18,12 +19,15 @@ export const MoveEventType = {
 /**
  * Events emitted by the move interaction of modify control instances are
  * instances of this type.
+ * @ignore
  */
 export default class MoveEvent extends Event {
   /**
+   * @inheritdoc
    * @param {MoveEventType} type Type.
    * @param {Feature} feature The feature moved.
    * @param {MapBrowserPointerEvent} mapBrowserPointerEvent
+   * @ignore
    */
   constructor(type, feature, mapBrowserPointerEvent) {
     super(type);
@@ -35,7 +39,6 @@ export default class MoveEvent extends Event {
     this.feature = feature;
 
     /**
-     * Associated {@link module:ol/MapBrowserEvent}.
      * @type {MapBrowserPointerEvent}
      */
     this.mapBrowserEvent = mapBrowserPointerEvent;
