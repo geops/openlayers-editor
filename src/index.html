@@ -92,11 +92,9 @@
       var editor = new ole.Editor(map);
 
       var cad = new ole.control.CAD({
-        source: editLayer.getSource(),
+        source: editLayer.getSource()
       });
-      cad.pointerInteraction.on("snap", feats => {
-        console.log(feats);
-      });
+
       var draw = new ole.control.Draw({
         source: editLayer.getSource()
       });

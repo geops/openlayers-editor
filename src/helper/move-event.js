@@ -2,6 +2,7 @@ import Event from 'ol/events/Event';
 
 /**
  * @enum {string} MoveEventType
+ * @ignore
  */
 export const MoveEventType = {
   /**
