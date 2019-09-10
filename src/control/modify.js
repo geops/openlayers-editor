@@ -85,6 +85,10 @@ class ModifyControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.modifyStyle] Style used by the Modify interaction.
    * @param {ol.events.condition} [options.moveCondition] Condition to trigger Move select.
    * @param {ol.events.condition} [options.modifyCondition] Condition to trigger Modify select.
+   * @param {ol.events.condition} [options.moveToggleCondition]
+   * Condition to toggle Move selected features (or multi-select).
+   * @param {ol.events.condition} [options.modifyToggleCondition]
+   * Condition to toggle Modify selected features (or multi-select).
    * @param {function} [options.deleteCondition] Function that takes a browser
    * keyboard event, should return true to delete the current feature selected.
    *   (default deleteCondition activated on Backspace and Delete key)
@@ -244,7 +248,7 @@ class ModifyControl extends Control {
      */
     this.selectMove = new Select({
       condition: options.moveCondition || singleClick,
-      toggleCondition: e => doubleClick(e),
+      toggleCondition: options.moveToggleCondition || doubleClick,
       filter: (feature, layer) => {
         // If the feature is already selected by modify interaction ignore the selection.
         if (this.isSelectedByModify(feature)) {
@@ -299,7 +303,7 @@ class ModifyControl extends Control {
 
     this.selectModify = new Select({
       condition: options.modifyCondition || doubleClick,
-      toggleCondition: shiftKeyOnly,
+      toggleCondition: options.modifyToggleCondition || shiftKeyOnly,
       filter: this.selectFilter,
       style: this.selectModifyStyle,
       hitTolerance: this.hitTolerance,
