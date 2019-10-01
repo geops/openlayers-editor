@@ -1,6 +1,6 @@
 {
   "name": "ole",
-  "version": "1.1.0-beta.6",
+  "version": "1.1.0",
   "description": "OpenLayers Editor",
   "scripts": {
     "build": "neutrino build",
@@ -23,7 +23,7 @@
   "repository": "github:geops/openlayers-editor",
   "dependencies": {
     "jsts": "^2.0.6",
-    "ol": "^6.0.0-beta.11"
+    "ol": "^6.0.1"
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.0",
@@ -43,6 +43,6 @@
   },
   "peerDependencies": {
     "jsts": "^2.0.6",
-    "ol": "^6.0.0-beta.11"
+    "ol": "^6.0.1"
   }
 }
