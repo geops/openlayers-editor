@@ -9,7 +9,7 @@ import {
   MultiLineString,
   MultiPolygon,
 } from 'ol/geom';
-import Select from 'ol/interaction/Select';
+import { Select } from '../interaction';
 import Control from './control';
 import bufferSVG from '../../img/buffer.svg';
 
