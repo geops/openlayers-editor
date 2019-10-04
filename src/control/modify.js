@@ -5,7 +5,7 @@ import GeometryCollection from 'ol/geom/GeometryCollection';
 import { MultiPoint, Point } from 'ol/geom';
 import { Modify, Pointer } from 'ol/interaction';
 import { singleClick, doubleClick, shiftKeyOnly } from 'ol/events/condition';
-import Select from '../interaction/Select';
+import { Select } from '../interaction';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
 import MoveEvent, { MoveEventType } from '../helper/move-event';
