@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.0",
-    "@neutrinojs/airbnb-base": "^8.1.2",
+    "@neutrinojs/airbnb-base": "^9.0.0",
     "@neutrinojs/dev-server": "^8.1.2",
     "@neutrinojs/image-loader": "^8.1.2",
     "@neutrinojs/library": "^8.1.2",
