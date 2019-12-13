@@ -30,7 +30,7 @@
     "@neutrinojs/airbnb-base": "^8.1.2",
     "@neutrinojs/dev-server": "^8.1.2",
     "@neutrinojs/image-loader": "^8.1.2",
-    "@neutrinojs/library": "^8.1.2",
+    "@neutrinojs/library": "^9.0.0",
     "@neutrinojs/style-loader": "^8.1.2",
     "babel-plugin-transform-es2015-destructuring": "^6.23.0",
     "babel-plugin-transform-object-assign": "^6.22.0",
