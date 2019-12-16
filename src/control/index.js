@@ -7,6 +7,7 @@ import Buffer from './buffer';
 import Union from './union';
 import Intersection from './intersection';
 import Difference from './difference';
+import Label from './label';
 
 export {
   Control,
@@ -18,4 +19,5 @@ export {
   Union,
   Intersection,
   Difference,
+  Label,
 };

@@ -1,3 +1,4 @@
+import Overlay from 'ol/Overlay';
 import { unByKey } from 'ol/Observable';
 import { getCenter } from 'ol/extent';
 import { Circle, Style, Fill, Stroke } from 'ol/style';
@@ -9,6 +10,7 @@ import { Select } from '../interaction';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
 import MoveEvent, { MoveEventType } from '../helper/move-event';
+import Constants from '../helper/constants';
 
 // Return an array of styles
 const getStyles = (style, feature) => {
@@ -138,6 +140,66 @@ class ModifyControl extends Control {
     this.cursorHandler = this.cursorHandler.bind(this);
 
     this.cursorTimeout = null;
+
+    this.popup = null;
+
+    this.createLabelEditPopup = () => {
+      const popupDiv = document.createElement('div');
+      popupDiv.innerHTML = `
+        <div class="ol-popup">
+          <input type="text" id="label-popup-input" />
+        </div>`;
+
+      this.popup = new Overlay({
+        element: popupDiv,
+        position: undefined,
+      });
+      this.map.addOverlay(this.popup);
+    };
+
+    this.disposeLabelEditPopup = () => {
+      if (!this.popup) {
+        return;
+      }
+
+      // Dispose the popup
+      this.map.removeOverlay(this.popup);
+      this.popup.setPosition(undefined);
+      this.popup = null;
+    };
+
+    this.openLabelEditPopup = (e) => {
+      const feature = e.element;
+
+      // Create and show the popup
+      this.disposeLabelEditPopup();
+      this.createLabelEditPopup();
+      this.popup.setPosition(feature.getGeometry().getCoordinates());
+
+      // Set input the targeted label value
+      const input = document.getElementById('label-popup-input');
+      input.value = feature.get(Constants.LABEL_PROP_NAME);
+      input.focus();
+      input.select();
+
+      input.onkeydown = (event) => {
+        // Handle only the ENTER key down
+        if (event.keyCode !== 13) {
+          return;
+        }
+
+        // Update label text only with a non-empty value.
+        // Otherwise, leave the label with its current text.
+        if (input.value.length > 0) {
+          feature.set(Constants.LABEL_PROP_NAME, input.value);
+        }
+
+        // Dispose and clear
+        this.disposeLabelEditPopup();
+        this.selectModify.getFeatures().clear();
+        options.source.changed();
+      };
+    };
 
     this.deleteCondition =
       options.deleteCondition ||
@@ -314,9 +376,15 @@ class ModifyControl extends Control {
     this.selectModify.getFeatures().on('add', (evt) => {
       this.selectMove.getFeatures().clear();
       document.addEventListener('keydown', this.deleteFeature);
-      this.map.addInteraction(this.modifyInteraction);
+      // Label features editing implies opening a popup.
+      if (evt.element.get(Constants.LABEL_PROP_NAME)) {
+        this.openLabelEditPopup(evt);
+      } else {
+        this.map.addInteraction(this.modifyInteraction);
+      }
 
       modifyMapKey = this.map.on('singleclick', (e) => {
+        this.disposeLabelEditPopup();
         this.unselectInteraction(e, this.selectModify);
       });
       if (this.selectModifyStyle) {
@@ -556,6 +624,7 @@ class ModifyControl extends Control {
   activate() {
     super.activate();
     clearTimeout(this.cursorTimeout);
+    this.disposeLabelEditPopup();
     this.map.on('pointermove', this.cursorHandler);
     this.map.addInteraction(this.selectMove);
     this.map.addInteraction(this.selectModify);
@@ -566,6 +635,7 @@ class ModifyControl extends Control {
    */
   deactivate(silent) {
     clearTimeout(this.cursorTimeout);
+    this.disposeLabelEditPopup();
     this.map.un('pointermove', this.cursorHandler);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();

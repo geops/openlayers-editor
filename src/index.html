@@ -1,4 +1,4 @@
-<html>
+﻿<html>
   <head>
     <title>OpenLayers Editor</title>
     <meta charset="utf-8" />
@@ -14,11 +14,31 @@
     <script src="index.js"></script>
     <div id="map"></div>
     <script type="text/javascript">
+        
+      var createLabelStyle = (labelTextOptions, defaultStyle) => {
+        return (feature, resolution) => {
+          if (feature.get(ole.constants.LABEL_PROP_NAME)) {
+            const rotation = (labelTextOptions.rotation || 0) + (feature.get('ole_rotation') || 0);
+            return new ol.style.Style({
+              text: new ol.style.Text({ font: '14px sans-serif', text: feature.get(ole.constants.LABEL_PROP_NAME), rotation }),
+            });
+          } else if (defaultStyle) {
+            if (typeof defaultStyle === 'function') { 
+              return defaultStyle(feature, resolution); 
+            }
+            return defaultStyle;
+          }
+          return new Vector().getStyleFunction()();
+        };
+      }
+
       var editLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
           wrapX: false
-        })
+        }),
+        style: createLabelStyle({ font: '14px sans-serif'})
       });
+    
       const PROJECTION = ol.proj.get("EPSG:3857");
       const PROJECTION_EXTENT = PROJECTION.getExtent();
 
@@ -109,6 +129,11 @@
         source: editLayer.getSource()
       });
 
+      var drawLabel = new ole.control.Label({
+        type: "Label",
+        source: editLayer.getSource()
+      });
+
       var rotate = new ole.control.Rotate({
         source: editLayer.getSource()
       });
@@ -141,6 +166,7 @@
       editor.addControls([
         cad,
         draw,
+        drawLabel,
         drawLine,
         drawPoly,
         modify,

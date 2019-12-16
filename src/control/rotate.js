@@ -6,6 +6,7 @@ import Pointer from 'ol/interaction/Pointer';
 import Control from './control';
 import rotateSVG from '../../img/rotate.svg';
 import rotateMapSVG from '../../img/rotate_map.svg';
+import Constants from '../helper/constants';
 
 /**
  * Tool with for rotating geometries.
@@ -117,9 +118,11 @@ class RotateControl extends Control {
 
       const rotationDiff = this.initialRotation - rotation;
       const geomRotation = rotationDiff - this.feature.get(this.rotateAttribute);
-
-      this.feature.getGeometry().rotate(-geomRotation, this.center);
-      this.rotateFeature.getGeometry().rotate(-geomRotation, this.center);
+      if (!this.feature.get(Constants.LABEL_PROP_NAME)) {
+        // The label feature is actually a point.
+        this.feature.getGeometry().rotate(-geomRotation, this.center);
+        this.rotateFeature.getGeometry().rotate(-geomRotation, this.center);
+      }
 
       this.feature.set(this.rotateAttribute, rotationDiff);
       this.rotateFeature.set(this.rotateAttribute, rotationDiff);
