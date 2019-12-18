@@ -30,6 +30,20 @@ For a demo, visit [https://openlayers-editor.geops.de](https://openlayers-editor
 - Run: `npm start`
 - Open your browser and visit [http://localhost:5000](http://localhost:5000)
 
+## Docker & docker-compose
+Build and run locally (image not available on Docker Hub yet!)
+```
+# Docker
+docker build -t openlayers-editor .
+docker run -p 5000:80 openlayers-editor
+```
+or use docker-compose
+```
+# docker-compose
+docker-compose up -d
+```
+Open your browser and visit [http://localhost:5000](http://localhost:5000)
+
 ## Usage
 ```js
 var editor = new ole.Editor(map);
