@@ -1,6 +1,5 @@
 # Openlayers Editor
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/geops/openlayers-editor.svg)](https://greenkeeper.io/)
 [![Travis badge](https://api.travis-ci.org/geops/openlayers-editor.svg?branch=master)](https://travis-ci.org/geops/openlayers-editor)
 
 OpenLayers Editor (OLE) is based on [OpenLayers](https://openlayers.org/) and provides a set of controls for extended editing of spatial data.
