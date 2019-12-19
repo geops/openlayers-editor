@@ -1,8 +1,8 @@
-import { Draw } from 'ol/interaction';
-import Control from './control';
-import drawPointSVG from '../../img/draw_point.svg';
-import drawPolygonSVG from '../../img/draw_polygon.svg';
-import drawLineSVG from '../../img/draw_line.svg';
+import { Draw } from "ol/interaction";
+import Control from "./control";
+import drawPointSVG from "../../img/draw_point.svg";
+import drawPolygonSVG from "../../img/draw_polygon.svg";
+import drawLineSVG from "../../img/draw_line.svg";
 
 /**
  * Control for drawing features.
@@ -21,32 +21,37 @@ class DrawControl extends Control {
     let image = null;
 
     switch (options.type) {
-      case 'Polygon':
+      case "Polygon":
         image = drawPolygonSVG;
         break;
-      case 'LineString':
+      case "LineString":
         image = drawLineSVG;
         break;
       default:
         image = drawPointSVG;
     }
 
-    super(Object.assign({
-      title: `Draw ${(options.type || 'Point')}`,
-      className: 'ole-control-draw',
-      image,
-    }, options));
+    super(
+      Object.assign(
+        {
+          title: `Draw ${options.type || "Point"}`,
+          className: "ole-control-draw",
+          image
+        },
+        options
+      )
+    );
 
     /**
      * @type {ol.interaction.Draw}
      * @private
      */
     this.drawInteraction = new Draw({
-      type: options.type || 'Point',
+      type: options.type || "Point",
       features: options.features,
       source: options.source,
       style: options.style,
-      stopClick: true,
+      stopClick: true
     });
   }
 

@@ -1,16 +1,16 @@
-import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
-import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
-import LinearRing from 'ol/geom/LinearRing';
+import OL3Parser from "jsts/org/locationtech/jts/io/OL3Parser";
+import { OverlayOp } from "jsts/org/locationtech/jts/operation/overlay";
+import LinearRing from "ol/geom/LinearRing";
 import {
   Point,
   LineString,
   Polygon,
   MultiPoint,
   MultiLineString,
-  MultiPolygon,
-} from 'ol/geom';
-import TopologyControl from './topology';
-import unionSVG from '../../img/union.svg';
+  MultiPolygon
+} from "ol/geom";
+import TopologyControl from "./topology";
+import unionSVG from "../../img/union.svg";
 
 /**
  * Control for creating a union of geometries.
@@ -25,11 +25,16 @@ class Union extends TopologyControl {
    *   (default is 10)
    */
   constructor(options) {
-    super(Object.assign({
-      title: 'Union',
-      className: 'ole-control-union',
-      image: unionSVG,
-    }, options));
+    super(
+      Object.assign(
+        {
+          title: "Union",
+          className: "ole-control-union",
+          image: unionSVG
+        },
+        options
+      )
+    );
   }
 
   /**
@@ -46,7 +51,7 @@ class Union extends TopologyControl {
       Polygon,
       MultiPoint,
       MultiLineString,
-      MultiPolygon,
+      MultiPolygon
     );
 
     for (let i = 1; i < features.length; i += 1) {

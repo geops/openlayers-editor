@@ -1,8 +1,7 @@
-
-import { Select } from '../interaction';
-import Control from './control';
-import Util from '../helper/util';
-import delSVG from '../../img/buffer.svg';
+import { Select } from "../interaction";
+import Control from "./control";
+import Util from "../helper/util";
+import delSVG from "../../img/buffer.svg";
 
 /**
  * Control for deleting geometries.
@@ -18,11 +17,16 @@ class TopologyControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    */
   constructor(options) {
-    super(Object.assign({
-      title: 'TopoloyOp',
-      className: 'ole-control-topology',
-      image: delSVG,
-    }, options));
+    super(
+      Object.assign(
+        {
+          title: "TopoloyOp",
+          className: "ole-control-topology",
+          image: delSVG
+        },
+        options
+      )
+    );
 
     /**
      * @type {ol.interaction.Select}
@@ -31,18 +35,19 @@ class TopologyControl extends Control {
     this.selectInteraction = new Select({
       toggleCondition: () => true,
       layers: this.layerFilter,
-      hitTolerance: options.hitTolerance === undefined ? 10 : options.hitTolerance,
+      hitTolerance:
+        options.hitTolerance === undefined ? 10 : options.hitTolerance,
       multi: true,
-      style: options.style,
+      style: options.style
     });
 
-    this.selectInteraction.on('select', () => {
+    this.selectInteraction.on("select", () => {
       const feats = this.selectInteraction.getFeatures();
 
       try {
         this.applyTopologyOperation(feats.getArray());
       } catch (ex) {
-        Util.logError('Unable to process features.');
+        Util.logError("Unable to process features.");
         feats.clear();
       }
     });

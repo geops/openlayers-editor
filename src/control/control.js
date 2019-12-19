@@ -1,5 +1,5 @@
-import OLControl from 'ol/control/Control';
-import VectorSource from 'ol/source/Vector';
+import OLControl from "ol/control/Control";
+import VectorSource from "ol/source/Vector";
 /**
  * OLE control base class.
  * @extends ol.control.Control
@@ -24,12 +24,12 @@ class Control extends OLControl {
   constructor(options) {
     let button = null;
     if (!options.element) {
-      button = document.createElement('button');
+      button = document.createElement("button");
       button.className = `ole-control ${options.className}`;
     }
 
     super({
-      element: options.element || button,
+      element: options.element || button
     });
 
     /**
@@ -62,13 +62,13 @@ class Control extends OLControl {
     this.title = options.title;
 
     if (button) {
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.src = options.image;
 
       button.appendChild(img);
       button.title = this.title;
 
-      button.addEventListener('click', this.onClick.bind(this));
+      button.addEventListener("click", this.onClick.bind(this));
     }
 
     /**
@@ -79,7 +79,7 @@ class Control extends OLControl {
     this.source =
       options.source ||
       new VectorSource({
-        features: options.features,
+        features: options.features
       });
 
     /**
@@ -150,13 +150,13 @@ class Control extends OLControl {
    */
   activate(silent) {
     this.active = true;
-    this.element.className += ' active';
+    this.element.className += " active";
 
     if (!silent) {
       this.dispatchEvent({
-        type: 'change:active',
+        type: "change:active",
         target: this,
-        detail: { control: this },
+        detail: { control: this }
       });
     }
 
@@ -169,13 +169,13 @@ class Control extends OLControl {
    */
   deactivate(silent) {
     this.active = false;
-    this.element.classList.remove('active');
+    this.element.classList.remove("active");
 
     if (!silent) {
       this.dispatchEvent({
-        type: 'change:active',
+        type: "change:active",
         target: this,
-        detail: { control: this },
+        detail: { control: this }
       });
     }
 
@@ -196,14 +196,16 @@ class Control extends OLControl {
   openDialog() {
     this.closeDialog();
     if (this.getDialogTemplate) {
-      this.dialogDiv = document.createElement('div');
+      this.dialogDiv = document.createElement("div");
 
       this.dialogDiv.innerHTML = `
         <div class="ole-dialog">
           ${this.getDialogTemplate()}
         </div>
       `;
-      (this.dialogTarget || this.map.getTargetElement()).appendChild(this.dialogDiv);
+      (this.dialogTarget || this.map.getTargetElement()).appendChild(
+        this.dialogDiv
+      );
     }
   }
 
@@ -213,7 +215,9 @@ class Control extends OLControl {
    */
   closeDialog() {
     if (this.dialogDiv) {
-      (this.dialogTarget || this.map.getTargetElement()).removeChild(this.dialogDiv);
+      (this.dialogTarget || this.map.getTargetElement()).removeChild(
+        this.dialogDiv
+      );
       this.dialogDiv = null;
     }
   }
@@ -228,9 +232,9 @@ class Control extends OLControl {
 
     if (!silent) {
       this.dispatchEvent({
-        type: 'propertychange',
+        type: "propertychange",
         target: this,
-        detail: { properties: this.properties, control: this },
+        detail: { properties: this.properties, control: this }
       });
     }
   }

@@ -3,19 +3,23 @@
  * @module ol/interaction/Select
  * @ignore
  */
-import {getUid} from 'ol/util.js';
-import CollectionEventType from 'ol/CollectionEventType.js';
-import {extend, includes} from 'ol/array.js';
-import Event from 'ol/events/Event.js';
-import {singleClick, never, shiftKeyOnly, pointerMove} from 'ol/events/condition.js';
-import {TRUE} from 'ol/functions.js';
-import GeometryType from 'ol/geom/GeometryType.js';
-import Interaction from 'ol/interaction/Interaction.js';
-import VectorLayer from 'ol/layer/Vector.js';
-import {clear} from 'ol/obj.js';
-import VectorSource from 'ol/source/Vector.js';
-import {createEditingStyle} from 'ol/style/Style.js';
-
+import { getUid } from "ol/util.js";
+import CollectionEventType from "ol/CollectionEventType.js";
+import { extend, includes } from "ol/array.js";
+import Event from "ol/events/Event.js";
+import {
+  singleClick,
+  never,
+  shiftKeyOnly,
+  pointerMove
+} from "ol/events/condition.js";
+import { TRUE } from "ol/functions.js";
+import GeometryType from "ol/geom/GeometryType.js";
+import Interaction from "ol/interaction/Interaction.js";
+import VectorLayer from "ol/layer/Vector.js";
+import { clear } from "ol/obj.js";
+import VectorSource from "ol/source/Vector.js";
+import { createEditingStyle } from "ol/style/Style.js";
 
 /**
  * @enum {string}
@@ -28,9 +32,8 @@ const SelectEventType = {
    * @api
    * @ignore
    */
-  SELECT: 'select'
+  SELECT: "select"
 };
-
 
 /**
  * A function that takes an {ol/Feature} or
@@ -38,7 +41,6 @@ const SelectEventType = {
  * {Layer} and returns `true` if the feature may be
  * selected or `false` otherwise.
  */
-
 
 /**
  * @property {Condition} [addCondition] A function
@@ -95,7 +97,6 @@ const SelectEventType = {
  * the radius around the given position will be checked for features.
  */
 
-
 /**
  * @classdesc
  * Events emitted by {ol/interaction/Select~Select} instances are instances of
@@ -135,11 +136,8 @@ class SelectEvent extends Event {
      * @api
      */
     this.mapBrowserEvent = mapBrowserEvent;
-
   }
-
 }
-
 
 /**
  * @classdesc
@@ -163,7 +161,6 @@ class Select extends Interaction {
    * @ignore
    */
   constructor(opt_options) {
-
     super({
       handleEvent: handleEvent
     });
@@ -186,13 +183,17 @@ class Select extends Interaction {
      * @private
      * @type {Condition}
      */
-    this.removeCondition_ = options.removeCondition ? options.removeCondition : never;
+    this.removeCondition_ = options.removeCondition
+      ? options.removeCondition
+      : never;
 
     /**
      * @private
      * @type {Condition}
      */
-    this.toggleCondition_ = options.toggleCondition ? options.toggleCondition : shiftKeyOnly;
+    this.toggleCondition_ = options.toggleCondition
+      ? options.toggleCondition
+      : shiftKeyOnly;
 
     /**
      * @private
@@ -218,8 +219,7 @@ class Select extends Interaction {
         features: options.features,
         wrapX: options.wrapX
       }),
-      style: options.style ? options.style :
-        getDefaultStyleFunction(),
+      style: options.style ? options.style : getDefaultStyleFunction(),
       updateWhileAnimating: true,
       updateWhileInteracting: true
     });
@@ -233,7 +233,7 @@ class Select extends Interaction {
     /** @type {ol.layer.Layer} */
     let layerFilter;
     if (options.layers) {
-      if (typeof options.layers === 'function') {
+      if (typeof options.layers === "function") {
         layerFilter = options.layers;
       } else {
         const layers = options.layers;
@@ -297,9 +297,9 @@ class Select extends Interaction {
    * @api
    */
   getLayer(feature) {
-    return (
-      /** @type {VectorLayer} */ (this.featureLayerAssociation_[getUid(feature)])
-    );
+    return /** @type {VectorLayer} */ (this.featureLayerAssociation_[
+      getUid(feature)
+    ]);
   }
 
   /**
@@ -342,7 +342,6 @@ class Select extends Interaction {
   }
 }
 
-
 /**
  * Handles the {ol/MapBrowserEvent map browser event} and may change the
  * selected state of features.
@@ -367,23 +366,25 @@ function handleEvent(mapBrowserEvent) {
     // pixel, or clear the selected feature(s) if there is no feature at
     // the pixel.
     clear(this.featureLayerAssociation_);
-    map.forEachFeatureAtPixel(mapBrowserEvent.pixel,
-      (
-        /**
-         * @param {FeatureLike} feature Feature.
-         * @param {Layer} layer Layer.
-         * @return {boolean|undefined} Continue to iterate over the features.
-         */
-        function(feature, layer) {
-          if (this.filter_(feature, layer)) {
-            selected.push(feature);
-            this.addFeatureLayerAssociation_(feature, layer);
-            return !this.multi_;
-          }
-        }).bind(this), {
+    map.forEachFeatureAtPixel(
+      mapBrowserEvent.pixel,
+      /**
+       * @param {FeatureLike} feature Feature.
+       * @param {Layer} layer Layer.
+       * @return {boolean|undefined} Continue to iterate over the features.
+       */
+      function(feature, layer) {
+        if (this.filter_(feature, layer)) {
+          selected.push(feature);
+          this.addFeatureLayerAssociation_(feature, layer);
+          return !this.multi_;
+        }
+      }.bind(this),
+      {
         layerFilter: this.layerFilter_,
         hitTolerance: this.hitTolerance_
-      });
+      }
+    );
     for (let i = features.getLength() - 1; i >= 0; --i) {
       const feature = features.item(i);
       const index = selected.indexOf(feature);
@@ -400,28 +401,33 @@ function handleEvent(mapBrowserEvent) {
     }
   } else {
     // Modify the currently selected feature(s).
-    map.forEachFeatureAtPixel(mapBrowserEvent.pixel,
-      (
-        /**
-         * @param {FeatureLike} feature Feature.
-         * @param {Layer} layer Layer.
-         * @return {boolean|undefined} Continue to iterate over the features.
-         */
-        function(feature, layer) {
-          if (this.filter_(feature, layer)) {
-            if ((add || toggle) && !includes(features.getArray(), feature)) {
-              selected.push(feature);
-              this.addFeatureLayerAssociation_(feature, layer);
-            } else if ((remove || toggle) && includes(features.getArray(), feature)) {
-              deselected.push(feature);
-              this.removeFeatureLayerAssociation_(feature);
-            }
-            return !this.multi_;
+    map.forEachFeatureAtPixel(
+      mapBrowserEvent.pixel,
+      /**
+       * @param {FeatureLike} feature Feature.
+       * @param {Layer} layer Layer.
+       * @return {boolean|undefined} Continue to iterate over the features.
+       */
+      function(feature, layer) {
+        if (this.filter_(feature, layer)) {
+          if ((add || toggle) && !includes(features.getArray(), feature)) {
+            selected.push(feature);
+            this.addFeatureLayerAssociation_(feature, layer);
+          } else if (
+            (remove || toggle) &&
+            includes(features.getArray(), feature)
+          ) {
+            deselected.push(feature);
+            this.removeFeatureLayerAssociation_(feature);
           }
-        }).bind(this), {
+          return !this.multi_;
+        }
+      }.bind(this),
+      {
         layerFilter: this.layerFilter_,
         hitTolerance: this.hitTolerance_
-      });
+      }
+    );
     for (let j = deselected.length - 1; j >= 0; --j) {
       features.remove(deselected[j]);
     }
@@ -429,12 +435,16 @@ function handleEvent(mapBrowserEvent) {
   }
   if (selected.length > 0 || deselected.length > 0) {
     this.dispatchEvent(
-      new SelectEvent(SelectEventType.SELECT,
-        selected, deselected, mapBrowserEvent));
+      new SelectEvent(
+        SelectEventType.SELECT,
+        selected,
+        deselected,
+        mapBrowserEvent
+      )
+    );
   }
   return pointerMove(mapBrowserEvent);
 }
-
 
 /**
  * @return {StyleFunction} Styles.
@@ -442,7 +452,10 @@ function handleEvent(mapBrowserEvent) {
 function getDefaultStyleFunction() {
   const styles = createEditingStyle();
   extend(styles[GeometryType.POLYGON], styles[GeometryType.LINE_STRING]);
-  extend(styles[GeometryType.GEOMETRY_COLLECTION], styles[GeometryType.LINE_STRING]);
+  extend(
+    styles[GeometryType.GEOMETRY_COLLECTION],
+    styles[GeometryType.LINE_STRING]
+  );
 
   return function(feature, resolution) {
     if (!feature.getGeometry()) {
@@ -451,6 +464,5 @@ function getDefaultStyleFunction() {
     return styles[feature.getGeometry().getType()];
   };
 }
-
 
 export default Select;

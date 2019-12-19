@@ -1,4 +1,4 @@
-import Event from 'ol/events/Event';
+import Event from "ol/events/Event";
 
 /**
  * @enum {string} MoveEventType
@@ -8,12 +8,12 @@ export const MoveEventType = {
   /**
    * Triggered upon feature move start
    */
-  MOVESTART: 'movestart',
+  MOVESTART: "movestart",
 
   /**
    * Triggered upon feature move end
    */
-  MOVEEND: 'moveend',
+  MOVEEND: "moveend"
 };
 
 /**

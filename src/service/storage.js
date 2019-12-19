@@ -1,4 +1,4 @@
-import Service from './service';
+import Service from "./service";
 
 /**
  * OLE storage service.
@@ -28,7 +28,7 @@ export default class Storage extends Service {
      * List of properties keys to ignore.
      * @type {array.<string>}
      */
-    this.ignoreKeys = ['title', 'image', 'className'];
+    this.ignoreKeys = ["title", "image", "className"];
   }
 
   /**
@@ -40,15 +40,15 @@ export default class Storage extends Service {
     this.restoreProperties();
     this.restoreActiveControls();
 
-    this.controls.forEach((control) => {
-      control.addEventListener('propertychange', (evt) => {
+    this.controls.forEach(control => {
+      control.addEventListener("propertychange", evt => {
         this.storeProperties(
           evt.detail.control.getProperties().title,
-          evt.detail.properties,
+          evt.detail.properties
         );
       });
 
-      control.addEventListener('change:active', () => {
+      control.addEventListener("change:active", () => {
         this.storeActiveControls();
       });
     });
@@ -60,8 +60,8 @@ export default class Storage extends Service {
   deactivate() {
     super.deactivate();
 
-    this.controls.forEach((control) => {
-      control.removeEventListener('propertychange');
+    this.controls.forEach(control => {
+      control.removeEventListener("propertychange");
     });
   }
 
@@ -76,8 +76,10 @@ export default class Storage extends Service {
 
     for (let i = 0; i < propKeys.length; i += 1) {
       const key = propKeys[i];
-      if (this.ignoreKeys.indexOf(key) === -1 &&
-          !(properties[key] instanceof Object)) {
+      if (
+        this.ignoreKeys.indexOf(key) === -1 &&
+        !(properties[key] instanceof Object)
+      ) {
         storageProps[key] = properties[key];
       }
     }

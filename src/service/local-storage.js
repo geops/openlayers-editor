@@ -1,4 +1,4 @@
-import Storage from './storage';
+import Storage from "./storage";
 
 /**
  * OLE LocalStorage.
@@ -33,14 +33,14 @@ export default class LocalStorage extends Storage {
    */
   storeActiveControls() {
     const activeControlNames = super.storeActiveControls();
-    window.localStorage.setItem('active', JSON.stringify(activeControlNames));
+    window.localStorage.setItem("active", JSON.stringify(activeControlNames));
   }
 
   /**
    * @inheritdoc
    */
   restoreActiveControls() {
-    let activeControlNames = window.localStorage.getItem('active');
+    let activeControlNames = window.localStorage.getItem("active");
     activeControlNames = activeControlNames
       ? JSON.parse(activeControlNames)
       : [];

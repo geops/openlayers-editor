@@ -1,14 +1,14 @@
-import { unByKey } from 'ol/Observable';
-import { getCenter } from 'ol/extent';
-import { Circle, Style, Fill, Stroke } from 'ol/style';
-import GeometryCollection from 'ol/geom/GeometryCollection';
-import { MultiPoint, Point } from 'ol/geom';
-import { Modify, Pointer } from 'ol/interaction';
-import { singleClick, doubleClick, shiftKeyOnly } from 'ol/events/condition';
-import { Select } from '../interaction';
-import Control from './control';
-import image from '../../img/modify_geometry2.svg';
-import MoveEvent, { MoveEventType } from '../helper/move-event';
+import { unByKey } from "ol/Observable";
+import { getCenter } from "ol/extent";
+import { Circle, Style, Fill, Stroke } from "ol/style";
+import GeometryCollection from "ol/geom/GeometryCollection";
+import { MultiPoint, Point } from "ol/geom";
+import { Modify, Pointer } from "ol/interaction";
+import { singleClick, doubleClick, shiftKeyOnly } from "ol/events/condition";
+import { Select } from "../interaction";
+import Control from "./control";
+import image from "../../img/modify_geometry2.svg";
+import MoveEvent, { MoveEventType } from "../helper/move-event";
 
 // Return an array of styles
 const getStyles = (style, feature) => {
@@ -16,7 +16,7 @@ const getStyles = (style, feature) => {
     return [];
   }
   let styles = style;
-  if (typeof style === 'function') {
+  if (typeof style === "function") {
     if (feature) {
       // styleFunction
       styles = style(feature);
@@ -33,35 +33,35 @@ const selectModifyStyle = new Style({
   image: new Circle({
     radius: 5,
     fill: new Fill({
-      color: '#05A0FF',
+      color: "#05A0FF"
     }),
-    stroke: new Stroke({ color: '#05A0FF', width: 2 }),
+    stroke: new Stroke({ color: "#05A0FF", width: 2 })
   }),
   stroke: new Stroke({
-    color: '#05A0FF',
-    width: 3,
+    color: "#05A0FF",
+    width: 3
   }),
   fill: new Fill({
-    color: 'rgba(255,255,255,0.4)',
+    color: "rgba(255,255,255,0.4)"
   }),
-  geometry: (f) => {
+  geometry: f => {
     let coordinates = [];
-    if (f.getGeometry().getType() === 'Polygon') {
+    if (f.getGeometry().getType() === "Polygon") {
       f.getGeometry()
         .getCoordinates()[0]
-        .forEach((coordinate) => {
+        .forEach(coordinate => {
           coordinates.push(coordinate);
         });
-    } else if (f.getGeometry().getType() === 'LineString') {
+    } else if (f.getGeometry().getType() === "LineString") {
       coordinates = f.getGeometry().getCoordinates();
     } else {
       coordinates = [f.getGeometry().getCoordinates()];
     }
     return new GeometryCollection([
       f.getGeometry(),
-      new MultiPoint(coordinates),
+      new MultiPoint(coordinates)
     ]);
-  },
+  }
 });
 
 /**
@@ -95,18 +95,20 @@ class ModifyControl extends Control {
    *   (default deleteCondition activated on Backspace and Delete key)
    */
   constructor(options) {
-    super(Object.assign(
-      {
-        title: 'Modify geometry',
-        className: 'ole-control-modify',
-        image,
-      },
-      options,
-    ));
+    super(
+      Object.assign(
+        {
+          title: "Modify geometry",
+          className: "ole-control-modify",
+          image
+        },
+        options
+      )
+    );
 
-    const OLD_STYLES_PROP = 'oldStyles';
-    const SELECT_MOVE_ON_CHANGE_KEY = 'selectMoveOnChangeKey';
-    const SELECT_MODIFY_ON_CHANGE_KEY = 'selectModifyOnChangeKey';
+    const OLD_STYLES_PROP = "oldStyles";
+    const SELECT_MOVE_ON_CHANGE_KEY = "selectMoveOnChangeKey";
+    const SELECT_MODIFY_ON_CHANGE_KEY = "selectModifyOnChangeKey";
 
     /**
      * @type {ol.Coordinate}
@@ -125,7 +127,8 @@ class ModifyControl extends Control {
      * @type {number}
      * @private
      */
-    this.hitTolerance = options.hitTolerance === undefined ? 5 : options.hitTolerance;
+    this.hitTolerance =
+      options.hitTolerance === undefined ? 5 : options.hitTolerance;
 
     this.selectMoveStyle = options.selectMoveStyle;
 
@@ -150,15 +153,15 @@ class ModifyControl extends Control {
       return true;
     };
 
-    this.getFeatureAtPixel = (pixel) => {
+    this.getFeatureAtPixel = pixel => {
       const feature = (this.map.getFeaturesAtPixel(pixel, {
         hitTolerance: this.hitTolerance,
-        layerFilter: this.layerFilter,
+        layerFilter: this.layerFilter
       }) || [])[0];
       return feature;
     };
 
-    this.isHoverVertexFeatureAtPixel = (pixel) => {
+    this.isHoverVertexFeatureAtPixel = pixel => {
       let isHoverVertex = false;
       this.map.forEachFeatureAtPixel(
         pixel,
@@ -170,8 +173,8 @@ class ModifyControl extends Control {
           return false;
         },
         {
-          hitTolerance: this.hitTolerance,
-        },
+          hitTolerance: this.hitTolerance
+        }
       );
       return isHoverVertex;
     };
@@ -203,10 +206,10 @@ class ModifyControl extends Control {
 
       feature.set(
         listenerPropName,
-        feature.on('change', (e) => {
+        feature.on("change", e => {
           // On change of the feature's style, we re-apply the selected Style.
           this.onSelectedFeatureChange(e.target, selectStyle);
-        }),
+        })
       );
     };
 
@@ -235,7 +238,9 @@ class ModifyControl extends Control {
       if (!oldStyles) {
         return;
       }
-      const isStyleChanged = oldStyles.some((style, idx) => style !== featureStyles[idx]);
+      const isStyleChanged = oldStyles.some(
+        (style, idx) => style !== featureStyles[idx]
+      );
       if (isStyleChanged) {
         // If the user changes the style of the feature, we reapply the select style.
         this.applySelectStyle(feature, selectStyle);
@@ -259,16 +264,16 @@ class ModifyControl extends Control {
       },
       style: this.selectMoveStyle,
       hitTolerance: this.hitTolerance,
-      wrapX: false,
+      wrapX: false
     });
 
     let moveMapKey;
-    this.selectMove.getFeatures().on('add', (evt) => {
+    this.selectMove.getFeatures().on("add", evt => {
       this.selectModify.getFeatures().clear();
-      document.addEventListener('keydown', this.deleteFeature);
+      document.addEventListener("keydown", this.deleteFeature);
       this.map.addInteraction(this.moveInteraction);
 
-      moveMapKey = this.map.on('singleclick', (e) => {
+      moveMapKey = this.map.on("singleclick", e => {
         this.unselectInteraction(e, this.selectMove);
       });
 
@@ -277,13 +282,13 @@ class ModifyControl extends Control {
         this.onSelectFeature(
           evt.element,
           this.selectMoveStyle,
-          SELECT_MOVE_ON_CHANGE_KEY,
+          SELECT_MOVE_ON_CHANGE_KEY
         );
       }
     });
 
-    this.selectMove.getFeatures().on('remove', (evt) => {
-      document.removeEventListener('keydown', this.deleteFeature);
+    this.selectMove.getFeatures().on("remove", evt => {
+      document.removeEventListener("keydown", this.deleteFeature);
       this.map.removeInteraction(this.moveInteraction);
       unByKey(moveMapKey);
       if (this.selectMoveStyle) {
@@ -291,7 +296,7 @@ class ModifyControl extends Control {
         this.onDeselectFeature(
           evt.element,
           this.selectMoveStyle,
-          SELECT_MOVE_ON_CHANGE_KEY,
+          SELECT_MOVE_ON_CHANGE_KEY
         );
       }
     });
@@ -308,15 +313,15 @@ class ModifyControl extends Control {
       filter: this.selectFilter,
       style: this.selectModifyStyle,
       hitTolerance: this.hitTolerance,
-      wrapX: false,
+      wrapX: false
     });
     let modifyMapKey;
-    this.selectModify.getFeatures().on('add', (evt) => {
+    this.selectModify.getFeatures().on("add", evt => {
       this.selectMove.getFeatures().clear();
-      document.addEventListener('keydown', this.deleteFeature);
+      document.addEventListener("keydown", this.deleteFeature);
       this.map.addInteraction(this.modifyInteraction);
 
-      modifyMapKey = this.map.on('singleclick', (e) => {
+      modifyMapKey = this.map.on("singleclick", e => {
         this.unselectInteraction(e, this.selectModify);
       });
       if (this.selectModifyStyle) {
@@ -324,20 +329,20 @@ class ModifyControl extends Control {
         this.onSelectFeature(
           evt.element,
           this.selectModifyStyle,
-          SELECT_MODIFY_ON_CHANGE_KEY,
+          SELECT_MODIFY_ON_CHANGE_KEY
         );
       }
     });
 
-    this.selectModify.getFeatures().on('remove', (evt) => {
-      document.removeEventListener('keydown', this.deleteFeature);
+    this.selectModify.getFeatures().on("remove", evt => {
+      document.removeEventListener("keydown", this.deleteFeature);
       this.map.removeInteraction(this.modifyInteraction);
       unByKey(modifyMapKey);
       if (this.selectModifyStyle) {
         this.onDeselectFeature(
           evt.element,
           this.selectModifyStyle,
-          SELECT_MODIFY_ON_CHANGE_KEY,
+          SELECT_MODIFY_ON_CHANGE_KEY
         );
       }
     });
@@ -348,15 +353,15 @@ class ModifyControl extends Control {
      */
     this.modifyInteraction = new Modify({
       features: this.selectModify.getFeatures(),
-      style: this.modifyStyle,
+      style: this.modifyStyle
     });
 
-    this.modifyInteraction.on('modifystart', (evt) => {
+    this.modifyInteraction.on("modifystart", evt => {
       this.editor.setEditFeature(evt.features.item(0));
       this.isModifying = true;
     });
 
-    this.modifyInteraction.on('modifyend', () => {
+    this.modifyInteraction.on("modifyend", () => {
       this.editor.setEditFeature(null);
       this.isModifying = false;
     });
@@ -368,7 +373,7 @@ class ModifyControl extends Control {
     this.moveInteraction = new Pointer({
       handleDownEvent: this.startMoveFeature.bind(this),
       handleDragEvent: this.moveFeature.bind(this),
-      handleUpEvent: this.stopMoveFeature.bind(this),
+      handleUpEvent: this.stopMoveFeature.bind(this)
     });
   }
 
@@ -444,11 +449,9 @@ class ModifyControl extends Control {
       }
       this.editor.setEditFeature(this.featureToMove);
       this.isMoving = true;
-      this.moveInteraction.dispatchEvent(new MoveEvent(
-        MoveEventType.MOVESTART,
-        this.featureToMove,
-        evt,
-      ));
+      this.moveInteraction.dispatchEvent(
+        new MoveEvent(MoveEventType.MOVESTART, this.featureToMove, evt)
+      );
 
       return true;
     }
@@ -475,11 +478,9 @@ class ModifyControl extends Control {
    * @private
    */
   stopMoveFeature(evt) {
-    this.moveInteraction.dispatchEvent(new MoveEvent(
-      MoveEventType.MOVEEND,
-      this.featureToMove,
-      evt,
-    ));
+    this.moveInteraction.dispatchEvent(
+      new MoveEvent(MoveEventType.MOVEEND, this.featureToMove, evt)
+    );
     this.coordinate = null;
     this.editor.setEditFeature(null);
     this.isMoving = false;
@@ -498,7 +499,7 @@ class ModifyControl extends Control {
     }
     this.cursorTimeout = setTimeout(() => {
       if (evt.dragging || this.isMoving || this.isModifying) {
-        this.changeCursor('grabbing');
+        this.changeCursor("grabbing");
         return;
       }
 
@@ -510,16 +511,16 @@ class ModifyControl extends Control {
       }
 
       if (this.isSelectedByMove(feature)) {
-        this.changeCursor('grab');
+        this.changeCursor("grab");
       } else if (this.isSelectedByModify(feature)) {
         if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
-          this.changeCursor('grab');
+          this.changeCursor("grab");
         } else {
           this.changeCursor(this.previousCursor);
         }
       } else {
         // Feature available for selection.
-        this.changeCursor('pointer');
+        this.changeCursor("pointer");
       }
     }, 50);
   }
@@ -556,7 +557,7 @@ class ModifyControl extends Control {
   activate() {
     super.activate();
     clearTimeout(this.cursorTimeout);
-    this.map.on('pointermove', this.cursorHandler);
+    this.map.on("pointermove", this.cursorHandler);
     this.map.addInteraction(this.selectMove);
     this.map.addInteraction(this.selectModify);
   }
@@ -566,7 +567,7 @@ class ModifyControl extends Control {
    */
   deactivate(silent) {
     clearTimeout(this.cursorTimeout);
-    this.map.un('pointermove', this.cursorHandler);
+    this.map.un("pointermove", this.cursorHandler);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
     this.map.removeInteraction(this.selectMove);

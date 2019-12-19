@@ -1,12 +1,12 @@
-import Control from './control';
-import CAD from './cad';
-import Rotate from './rotate';
-import Draw from './draw';
-import Modify from './modify';
-import Buffer from './buffer';
-import Union from './union';
-import Intersection from './intersection';
-import Difference from './difference';
+import Control from "./control";
+import CAD from "./cad";
+import Rotate from "./rotate";
+import Draw from "./draw";
+import Modify from "./modify";
+import Buffer from "./buffer";
+import Union from "./union";
+import Intersection from "./intersection";
+import Difference from "./difference";
 
 export {
   Control,
@@ -17,5 +17,5 @@ export {
   Buffer,
   Union,
   Intersection,
-  Difference,
+  Difference
 };
