@@ -8,6 +8,7 @@
     "cypress:run": "cypress run",
     "lint": "neutrino lint",
     "test": "neutrino test",
+    "format": "prettier --write src/**/*.js",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "start": "neutrino start",
     "prepack": "neutrino build",
@@ -39,6 +40,7 @@
     "jsdoc": "^3.6.3",
     "jsdoc-export-default-interop": "^0.3.1",
     "neutrino": "^8.1.2",
+    "prettier": "1.19.1",
     "webpack": "^4.35.3"
   },
   "peerDependencies": {
