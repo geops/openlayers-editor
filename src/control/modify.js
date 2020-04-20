@@ -94,7 +94,7 @@ class ModifyControl extends Control {
    * keyboard event, should return true to delete the current feature selected.
    * (default deleteCondition activated on Backspace and Delete key)
    * @param {function} [options.deleteNodeCondition] Function that takes a
-   * mapBrowser event, should return true to delete the current feature selected.
+   * mapBrowser event, should return true to delete node.
    * (default deleteNodeCondition activated on node click)
    */
   constructor(options) {
