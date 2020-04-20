@@ -4,7 +4,7 @@ import { Circle, Style, Fill, Stroke } from 'ol/style';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import { MultiPoint, Point } from 'ol/geom';
 import { Modify, Pointer } from 'ol/interaction';
-import { singleClick, doubleClick, shiftKeyOnly } from 'ol/events/condition';
+import { singleClick, doubleClick, shiftKeyOnly, click } from 'ol/events/condition';
 import { Select } from '../interaction';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
@@ -92,7 +92,10 @@ class ModifyControl extends Control {
    * Condition to toggle Modify selected features (or multi-select).
    * @param {function} [options.deleteCondition] Function that takes a browser
    * keyboard event, should return true to delete the current feature selected.
-   *   (default deleteCondition activated on Backspace and Delete key)
+   * (default deleteCondition activated on Backspace and Delete key)
+   * @param {function} [options.deleteNodeCondition] Function that takes a
+   * mapBrowser event, should return true to delete the current feature selected.
+   * (default deleteNodeCondition activated on node click)
    */
   constructor(options) {
     super(Object.assign(
@@ -142,6 +145,9 @@ class ModifyControl extends Control {
     this.deleteCondition =
       options.deleteCondition ||
       (evt => evt.keyCode === 46 || evt.keyCode === 8);
+
+    this.deleteNodeCondition =
+      options.deleteNodeCondition || click;
 
     this.selectFilter = (feature, layer) => {
       if (this.layerFilter) {
@@ -268,6 +274,8 @@ class ModifyControl extends Control {
       document.addEventListener('keydown', this.deleteFeature);
       this.map.addInteraction(this.moveInteraction);
 
+      // Remove key before adding to prevent listener stacking
+      unByKey(moveMapKey);
       moveMapKey = this.map.on('singleclick', (e) => {
         this.unselectInteraction(e, this.selectMove);
       });
@@ -316,9 +324,12 @@ class ModifyControl extends Control {
       document.addEventListener('keydown', this.deleteFeature);
       this.map.addInteraction(this.modifyInteraction);
 
+      // Remove key before adding to prevent listener stacking
+      unByKey(modifyMapKey);
       modifyMapKey = this.map.on('singleclick', (e) => {
         this.unselectInteraction(e, this.selectModify);
       });
+
       if (this.selectModifyStyle) {
         // Apply the select style dynamically when the feature has its own style.
         this.onSelectFeature(
@@ -349,6 +360,12 @@ class ModifyControl extends Control {
     this.modifyInteraction = new Modify({
       features: this.selectModify.getFeatures(),
       style: this.modifyStyle,
+      deleteCondition: (e) => {
+        if (this.deleteNodeCondition(e)) {
+          this.deleteNode = true;
+        }
+        return this.deleteNodeCondition(e);
+      },
     });
 
     this.modifyInteraction.on('modifystart', (evt) => {
@@ -398,9 +415,9 @@ class ModifyControl extends Control {
     // Delete selected features using delete key
     if (features) {
       // Loop delete through selected features array
-      features.getArray().forEach((feature, i) => {
-        this.source.removeFeature(features.getArray()[i]);
-      });
+      features.getArray().forEach((feature, i) => this.source
+        .removeFeature(features.getArray()[i]));
+
       this.changeCursor(null);
       features.clear();
 
@@ -493,6 +510,7 @@ class ModifyControl extends Control {
    * @private
    */
   cursorHandler(evt) {
+    this.pixel = evt.pixel;
     if (this.cursorTimeout) {
       clearTimeout(this.cursorTimeout);
     }
@@ -512,7 +530,7 @@ class ModifyControl extends Control {
       if (this.isSelectedByMove(feature)) {
         this.changeCursor('grab');
       } else if (this.isSelectedByModify(feature)) {
-        if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
+        if (this.isHoverVertexFeatureAtPixel(this.pixel)) {
           this.changeCursor('grab');
         } else {
           this.changeCursor(this.previousCursor);
@@ -530,7 +548,13 @@ class ModifyControl extends Control {
    * @private
    */
   unselectInteraction(evt, interaction) {
-    if (!this.map.hasFeatureAtPixel(evt.pixel)) {
+    // Override unselect when a node is deleted with a click
+    if (this.deleteNode) {
+      this.deleteNode = false;
+      return;
+    }
+
+    if (!this.map.hasFeatureAtPixel(evt.pixel) && !this.deleteNode) {
       interaction.getFeatures().clear();
     }
   }
