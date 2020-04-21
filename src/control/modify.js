@@ -510,7 +510,6 @@ class ModifyControl extends Control {
    * @private
    */
   cursorHandler(evt) {
-    this.pixel = evt.pixel;
     if (this.cursorTimeout) {
       clearTimeout(this.cursorTimeout);
     }
@@ -530,7 +529,7 @@ class ModifyControl extends Control {
       if (this.isSelectedByMove(feature)) {
         this.changeCursor('grab');
       } else if (this.isSelectedByModify(feature)) {
-        if (this.isHoverVertexFeatureAtPixel(this.pixel)) {
+        if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
           this.changeCursor('grab');
         } else {
           this.changeCursor(this.previousCursor);
