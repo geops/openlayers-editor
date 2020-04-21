@@ -554,7 +554,7 @@ class ModifyControl extends Control {
       return;
     }
 
-    if (!this.map.hasFeatureAtPixel(evt.pixel) && !this.deleteNode) {
+    if (!this.map.hasFeatureAtPixel(evt.pixel)) {
       interaction.getFeatures().clear();
     }
   }
