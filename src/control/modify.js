@@ -84,17 +84,16 @@ class ModifyControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.selectModifyStyle]
    * Style used when a feature is selected to be modified.
    * @param {ol.style.Style.StyleLike} [options.modifyStyle] Style used by the Modify interaction.
-   * @param {ol.events.condition} [options.moveCondition] Condition to trigger Move select.
-   * @param {ol.events.condition} [options.modifyCondition] Condition to trigger Modify select.
+   * @param {ol.events.condition} [options.moveCondition] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to trigger Move select.
+   * @param {ol.events.condition} [options.modifyCondition] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to trigger Modify select.
    * @param {ol.events.condition} [options.moveToggleCondition]
-   * Condition to toggle Move selected features (or multi-select).
+   * {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to toggle Move selected features (or multi-select).
    * @param {ol.events.condition} [options.modifyToggleCondition]
-   * Condition to toggle Modify selected features (or multi-select).
+   * {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to toggle Modify selected features (or multi-select).
    * @param {function} [options.deleteCondition] Function that takes a browser
    * keyboard event, should return true to delete the current feature selected.
    * (default deleteCondition activated on Backspace and Delete key)
-   * @param {function} [options.deleteNodeCondition] Function that takes a
-   * mapBrowser event, should return true to delete node.
+   * @param {ol.events.condition} [options.deleteNodeCondition] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to trigger a node delete
    * (default deleteNodeCondition activated on node click)
    */
   constructor(options) {
