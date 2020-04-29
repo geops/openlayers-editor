@@ -84,21 +84,15 @@ class ModifyControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.selectModifyStyle]
    * Style used when a feature is selected to be modified.
    * @param {ol.style.Style.StyleLike} [options.modifyStyle] Style used by the Modify interaction.
-   * @param {ol.events.condition} [options.moveCondition] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to trigger Move select
-   * (default is single click on feature).
-   * @param {ol.events.condition} [options.modifyCondition] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to trigger Modify select
-   * (default is double click on feature).
-   * @param {ol.events.condition} [options.moveToggleCondition]
-   * {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to toggle/multi-select features for Move Selection
-   * (default is shift + single click on feature).
-   * @param {ol.events.condition} [options.modifyToggleCondition]
-   * {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to toggle/multi-select features for Modify Selection
-   * (default is shift + double click on feature).
-   * @param {function} [options.deleteCondition] Function that takes a browser
-   * keyboard event, should return true to delete selected features
-   * (default is Backspace or Delete key).
-   * @param {ol.events.condition} [options.deleteNodeCondition] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to trigger a node delete
-   * (default is click on node).
+   * @param {ol.events.condition} [options.moveCondition=singleClick] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to select feature to move.
+   * @param {ol.events.condition} [options.modifyCondition=doubleClick] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to select feature to modify.
+   * @param {ol.events.condition} [options.moveToggleCondition=shift+singleClick]
+   * {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to toggle/multi-select features to move.
+   * @param {ol.events.condition} [options.modifyToggleCondition=shift+doubleClick]
+   * {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to toggle/multi-select features to modify.
+   * @param {function} [options.deleteCondition=backspace key || delete key]
+   * Function that takes a browser keyboard event, should return true to delete selected features.
+   * @param {ol.events.condition} [options.deleteNodeCondition=click] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to delete a node when modifying a feature.
    */
   constructor(options) {
     super(Object.assign(
