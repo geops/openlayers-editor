@@ -75,8 +75,7 @@ class ModifyControl extends Control {
    * @param {string} [options.type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
-   * @param {number} [options.hitTolerance] Select tolerance in pixels
-   *   (default is 5)
+   * @param {number} [options.hitTolerance=5] Select tolerance in pixels.
    * @param {ol.Collection<ol.Feature>} [options.features] Destination for drawing.
    * @param {ol.source.Vector} [options.source] Destination for drawing.
    * @param {ol.style.Style.StyleLike} [options.selectMoveStyle]
