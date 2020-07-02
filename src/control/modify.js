@@ -56,13 +56,13 @@ const selectModifyStyle = new Style({
     geometries.forEach((geom) => {
       let multiGeometries = [geom];
       if (geom.getLineStrings) {
-        multiGeometries = geometry.getLineStrings();
+        multiGeometries = geom.getLineStrings();
       }
       if (geom.getPolygons) {
-        multiGeometries = geometry.getPolygons();
+        multiGeometries = geom.getPolygons();
       }
       if (geom.getPoints) {
-        multiGeometries = geometry.getPoints();
+        multiGeometries = geom.getPoints();
       }
       // At this point multiGeometries contains only single geometry.
       multiGeometries.forEach((geomm) => {
