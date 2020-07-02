@@ -45,18 +45,40 @@ const selectModifyStyle = new Style({
     color: 'rgba(255,255,255,0.4)',
   }),
   geometry: (f) => {
-    let coordinates = [];
-    if (f.getGeometry().getType() === 'Polygon') {
-      f.getGeometry()
-        .getCoordinates()[0]
-        .forEach((coordinate) => {
-          coordinates.push(coordinate);
-        });
-    } else if (f.getGeometry().getType() === 'LineString') {
-      coordinates = f.getGeometry().getCoordinates();
-    } else {
-      coordinates = [f.getGeometry().getCoordinates()];
+    const coordinates = [];
+    const geometry = f.getGeometry();
+    let geometries = [geometry];
+    if (geometry.getGeometriesArrayRecursive) {
+      geometries = geometry.getGeometriesArrayRecursive();
     }
+
+    // At this point geometries doesn't contains any GeometryCollections.
+    geometries.forEach((geom) => {
+      let multiGeometries = [geom];
+      if (geom.getLineStrings) {
+        multiGeometries = geometry.getLineStrings();
+      }
+      if (geom.getPolygons) {
+        multiGeometries = geometry.getPolygons();
+      }
+      if (geom.getPoints) {
+        multiGeometries = geometry.getPoints();
+      }
+      // At this point multiGeometries contains only single geometry.
+      multiGeometries.forEach((geomm) => {
+        if (geomm.getType() === 'Polygon') {
+          geomm
+            .getCoordinates()[0]
+            .forEach((coordinate) => {
+              coordinates.push(coordinate);
+            });
+        } else if (geomm.getType() === 'LineString') {
+          coordinates.push(...geomm.getCoordinates());
+        } else {
+          coordinates.push(geomm.getCoordinates());
+        }
+      });
+    });
     return new GeometryCollection([
       f.getGeometry(),
       new MultiPoint(coordinates),
