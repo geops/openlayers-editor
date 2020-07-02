@@ -3,15 +3,7 @@ import { getCenter } from 'ol/extent';
 import { Circle, Style, Fill, Stroke } from 'ol/style';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import { MultiPoint, Point } from 'ol/geom';
-import {
-  POINT,
-  LINE_STRING,
-  POLYGON,
-  MULTI_POINT,
-  MULTI_LINE_STRING,
-  MULTI_POLYGON,
-  GEOMETRY_COLLECTION,
-} from 'ol/geom/GeometryType';
+import GeometryType from 'ol/geom/GeometryType';
 import { Modify, Pointer } from 'ol/interaction';
 import { singleClick, doubleClick, shiftKeyOnly, click } from 'ol/events/condition';
 import { Select } from '../interaction';
@@ -57,29 +49,29 @@ const selectModifyStyle = new Style({
     const coordinates = [];
     const geometry = f.getGeometry();
     let geometries = [geometry];
-    if (geometry.getType() === GEOMETRY_COLLECTION) {
+    if (geometry.getType() === GeometryType.GEOMETRY_COLLECTION) {
       geometries = geometry.getGeometriesArrayRecursive();
     }
 
     // At this point geometries doesn't contains any GeometryCollections.
     geometries.forEach((geom) => {
       let multiGeometries = [geom];
-      if (geom.getType() === MULTI_LINE_STRING) {
+      if (geom.getType() === GeometryType.MULTI_LINE_STRING) {
         multiGeometries = geom.getLineStrings();
-      } else if (geom.getType() === MULTI_POLYGON) {
+      } else if (geom.getType() === GeometryType.MULTI_POLYGON) {
         multiGeometries = geom.getPolygons();
-      } else if (geom.getType() === MULTI_POINT) {
+      } else if (geom.getType() === GeometryType.MULTI_POINT) {
         multiGeometries = geom.getPoints();
       }
       // At this point multiGeometries contains only single geometry.
       multiGeometries.forEach((geomm) => {
-        if (geomm.getType() === POLYGON) {
+        if (geomm.getType() === GeometryType.POLYGON) {
           geomm.getCoordinates()[0].forEach((coordinate) => {
             coordinates.push(coordinate);
           });
-        } else if (geomm.getType() === LINE_STRING) {
+        } else if (geomm.getType() === GeometryType.LINE_STRING) {
           coordinates.push(...geomm.getCoordinates());
-        } else if (geomm.getType() === POINT) {
+        } else if (geomm.getType() === GeometryType.POINT) {
           coordinates.push(geomm.getCoordinates());
         }
       });
