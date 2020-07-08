@@ -164,19 +164,25 @@ class ModifyControl extends Control {
     this.deleteNodeCondition =
       options.deleteNodeCondition || click;
 
-    this.selectFilter = (feature, layer) => {
-      if (this.layerFilter) {
+    this.selectFilter = options.selectFilter || ((feature, layer) => {
+      if (layer && this.layerFilter) {
         return this.layerFilter(layer);
       }
       return true;
-    };
+    });
+
+    this.getFeatureFilter = options.getFeatureFilter || (() => true);
 
     this.getFeatureAtPixel = (pixel) => {
       const feature = (this.map.getFeaturesAtPixel(pixel, {
         hitTolerance: this.hitTolerance,
         layerFilter: this.layerFilter,
       }) || [])[0];
-      return feature;
+
+      if (this.getFeatureFilter(feature)) {
+        return feature;
+      }
+      return null;
     };
 
     this.isHoverVertexFeatureAtPixel = (pixel) => {
