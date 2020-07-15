@@ -1,6 +1,6 @@
 {
   "name": "ole",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "OpenLayers Editor",
   "scripts": {
     "build": "neutrino build",
@@ -34,8 +34,8 @@
     "cypress": "4.5.0",
     "jsdoc": "3.6.4",
     "jsdoc-export-default-interop": "0.3.1",
-    "neutrino": "8.3.0",
     "jsts": "^2.0.6",
+    "neutrino": "8.3.0",
     "ol": "^6.0.1",
     "webpack": "4.43.0"
   },
