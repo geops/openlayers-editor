@@ -34,9 +34,9 @@
     "cypress": "4.5.0",
     "jsdoc": "3.6.4",
     "jsdoc-export-default-interop": "0.3.1",
-    "jsts": "^2.0.6",
+    "jsts": "2.3.0",
     "neutrino": "8.3.0",
-    "ol": "^6.0.1",
+    "ol": "6.3.1",
     "webpack": "4.43.0"
   },
   "peerDependencies": {
