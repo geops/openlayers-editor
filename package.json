@@ -22,7 +22,7 @@
   "main": "build/index.js",
   "repository": "github:geops/openlayers-editor",
   "devDependencies": {
-    "@cypress/webpack-preprocessor": "5.1.2",
+    "@cypress/webpack-preprocessor": "5.4.1",
     "@neutrinojs/airbnb-base": "8.3.0",
     "@neutrinojs/dev-server": "8.3.0",
     "@neutrinojs/image-loader": "8.3.0",
