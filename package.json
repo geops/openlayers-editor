@@ -30,7 +30,7 @@
     "@neutrinojs/image-loader": "8.3.0",
     "@neutrinojs/library": "8.3.0",
     "@neutrinojs/style-loader": "8.3.0",
-    "babel-core": "^7.0.0-bridge.0",
+    "babel-core": "7.0.0-bridge.0",
     "babel-loader": "7.0.0",
     "babel-plugin-transform-es2015-destructuring": "6.23.0",
     "babel-plugin-transform-object-assign": "6.22.0",
