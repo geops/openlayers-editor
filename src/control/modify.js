@@ -5,7 +5,7 @@ import GeometryCollection from 'ol/geom/GeometryCollection';
 import { MultiPoint, Point } from 'ol/geom';
 import GeometryType from 'ol/geom/GeometryType';
 import { Modify, Pointer } from 'ol/interaction';
-import { singleClick, doubleClick, shiftKeyOnly, click } from 'ol/events/condition';
+import { singleClick, shiftKeyOnly, click } from 'ol/events/condition';
 import { Select } from '../interaction';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
@@ -335,15 +335,11 @@ class ModifyControl extends Control {
      * @private
      */
 
-    const defaultModifyCondition = (evt) => {
-      /* Only double click select when no features present, otherwise zoom map */
-      if (evt.type==='dblclick') {
-        return this.map.hasFeatureAtPixel(evt.pixel)
-      }
-    };
+    /* Only double click select when no features present, otherwise zoom map */
+    const defaultModifyCondition = evt => evt.type === 'dblclick' && this.map.hasFeatureAtPixel(evt.pixel);
 
     this.selectModify = new Select({
-      condition: options.modifyCondition || ((evt) => defaultModifyCondition(evt)),
+      condition: options.modifyCondition || (evt => defaultModifyCondition(evt)),
       toggleCondition: options.modifyToggleCondition || shiftKeyOnly,
       filter: this.selectFilter,
       style: this.selectModifyStyle,
