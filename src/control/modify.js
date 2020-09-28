@@ -5,7 +5,7 @@ import GeometryCollection from 'ol/geom/GeometryCollection';
 import { MultiPoint, Point } from 'ol/geom';
 import GeometryType from 'ol/geom/GeometryType';
 import { Modify, Pointer } from 'ol/interaction';
-import { singleClick, doubleClick, shiftKeyOnly, click } from 'ol/events/condition';
+import { singleClick, shiftKeyOnly, click } from 'ol/events/condition';
 import { Select } from '../interaction';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
@@ -111,6 +111,8 @@ class ModifyControl extends Control {
    * @param {function} [options.deleteCondition=backspace key || delete key]
    * Function that takes a browser keyboard event, should return true to delete selected features.
    * @param {ol.events.condition} [options.deleteNodeCondition=click] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to delete a node when modifying a feature.
+   * @param {function} [options.onMapClick=Clears feature selection]
+   * Function that takes a {@link https://openlayers.org/en/latest/apidoc/module-ol_MapBrowserEvent-MapBrowserEvent.html|openlayers MapBrowserEvent} (click) and the ModifyControl iteself as arguments.
    */
   constructor(options) {
     super(Object.assign(
@@ -172,6 +174,8 @@ class ModifyControl extends Control {
     });
 
     this.getFeatureFilter = options.getFeatureFilter || (() => true);
+
+    this.onMapClick = options.onMapClick;
 
     this.getFeatureAtPixel = (pixel) => {
       const feature = (this.map.getFeaturesAtPixel(pixel, {
@@ -331,8 +335,11 @@ class ModifyControl extends Control {
      * @private
      */
 
+    /* Only double click select when no features present, otherwise zoom map */
+    const defaultModifyCondition = evt => evt.type === 'dblclick' && this.map.hasFeatureAtPixel(evt.pixel);
+
     this.selectModify = new Select({
-      condition: options.modifyCondition || doubleClick,
+      condition: options.modifyCondition || (evt => defaultModifyCondition(evt)),
       toggleCondition: options.modifyToggleCondition || shiftKeyOnly,
       filter: this.selectFilter,
       style: this.selectModifyStyle,
@@ -575,6 +582,14 @@ class ModifyControl extends Control {
     }
 
     if (!this.map.hasFeatureAtPixel(evt.pixel)) {
+      // Apply onMapClick from options if defined
+      if (this.onMapClick) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        this.onMapClick(evt, this);
+        return;
+      }
+      // Default: Clear selection
       interaction.getFeatures().clear();
     }
   }
