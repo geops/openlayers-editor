@@ -41,11 +41,7 @@ a.active {
 }
 
 #map {
-  position: absolute;
-  left: 0;
-  top: 62px;
-  bottom: 0;
-  right: 0;
+  height: 100%;
  }
 
 #app {
