@@ -28,6 +28,7 @@
       const PROJECTION = ol.proj.get("EPSG:3857");
       const PROJECTION_EXTENT = PROJECTION.getExtent();
 
+      // Code taken from https://openlayers.org/en/latest/examples/mapbox-layer.html
       var mbMap = new mapboxgl.Map({
         style: 'https://maps.geops.io/styles/travic/style.json?key=5cc87b12d7c5370001c1d655e96f1d54c5404bbb8cc4cfcd2ff5111b',
         attributionControl: false,
