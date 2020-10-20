@@ -538,7 +538,6 @@ class ModifyControl extends Control {
    * @private
    */
   cursorHandler(evt) {
-    console.log(evt);
     if (this.cursorTimeout) {
       clearTimeout(this.cursorTimeout);
     }
