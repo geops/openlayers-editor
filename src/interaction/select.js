@@ -411,7 +411,7 @@ function handleEvent(mapBrowserEvent) {
          * @return {boolean|undefined} Continue to iterate over the features.
          */
         function(feature, layer) {
-          if (this.filter_(feature, layer) && layer) {
+          if (layer && this.filter_(feature, layer)) {
             if ((add || toggle) && !includes(features.getArray(), feature)) {
               selected.push(feature);
               this.addFeatureLayerAssociation_(feature, layer);
