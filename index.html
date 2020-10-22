@@ -7,10 +7,12 @@
       type="text/css"
       href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io/en/v6.3.1/css/ol.css"
     />
+    <link rel="stylesheet" href="https://unpkg.com/mapbox-gl@1.2.0/dist/mapbox-gl.css">
     <meta charset="utf-8" />
   </head>
   <body>
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io/en/v6.3.1/build/ol.js"></script>
+    <script src="https://unpkg.com/mapbox-gl@1.2.0/dist/mapbox-gl.js"></script>
     <script src="https://unpkg.com/jsts@2.0.6/dist/jsts.min.js"></script>
     <script src="build/index.js"></script>
     <div id="app">
@@ -34,85 +36,65 @@
         © OpenStreetMap contributors © Mapbox
       </div>
     </div>
+    <div id="map"></div>
     <script type="text/javascript">
       var editLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
           wrapX: false
         })
       });
+      const PROJECTION = ol.proj.get("EPSG:3857");
 
-      var projection = ol.proj.get("EPSG:3857");
+      // Code taken from https://openlayers.org/en/latest/examples/mapbox-layer.html
+      var mbMap = new mapboxgl.Map({
+        style: 'https://maps.geops.io/styles/travic/style.json?key=5cc87b12d7c5370001c1d655e96f1d54c5404bbb8cc4cfcd2ff5111b',
+        attributionControl: false,
+        boxZoom: false,
+        center: ol.proj.toLonLat([873708.375917, 6105425.847789], PROJECTION),
+        container: 'map',
+        doubleClickZoom: false,
+        dragPan: false,
+        dragRotate: false,
+        interactive: false,
+        keyboard: false,
+        pitchWithRotate: false,
+        scrollZoom: false,
+        touchZoomRotate: false,
+      });
+
+      var mbLayer = new ol.layer.Layer({
+        render: function (frameState) {
+          var canvas = mbMap.getCanvas();
+          var viewState = frameState.viewState;
+          var visible = mbLayer.getVisible();
+          canvas.style.display = visible ? 'block' : 'none';
+
+          var opacity = mbLayer.getOpacity();
+          canvas.style.opacity = opacity;
+
+          // adjust view parameters in mapbox
+          var rotation = viewState.rotation;
+          mbMap.jumpTo({
+            center: ol.proj.toLonLat(viewState.center),
+            zoom: viewState.zoom - 1,
+            bearing: (-rotation * 180) / Math.PI,
+            animate: false,
+          });
+
+          return canvas;
+        },
+      });
 
       var map = new ol.Map({
         layers: [
-          new ol.layer.Tile({
-            source: new ol.source.WMTS({
-              url:
-                "https://api.mapbox.com/v4/geops.db9390ee/" +
-                "{TileMatrix}/{TileCol}/{TileRow}.png?access_token=" +
-                "pk.eyJ1IjoiZ2VvcHMiLCJhIjoiVnlkeXdzayJ9.aGtp4w0C-0vZZae1HneLGg",
-              requestEncoding: "REST",
-              crossOrigin: "anonymous",
-              layer: "0",
-              format: "image/png",
-              projection: projection,
-              tileGrid: new ol.tilegrid.WMTS({
-                origin: ol.extent.getTopLeft(projection.getExtent()),
-                resolutions: [
-                  156543.03392811998,
-                  78271.51696419998,
-                  39135.758481959994,
-                  19567.879241008,
-                  9783.939620504,
-                  4891.969810252,
-                  2445.984905126,
-                  1222.9924525644,
-                  611.4962262807999,
-                  305.74811314039994,
-                  152.87405657047998,
-                  76.43702828523999,
-                  38.21851414248,
-                  19.109257071295996,
-                  9.554628535647998,
-                  4.777314267823999,
-                  2.3886571339119995,
-                  1.1943285669559998,
-                  0.5971642834779999,
-                  0.29858214174039993
-                ],
-                matrixIds: [
-                  "0",
-                  "1",
-                  "2",
-                  "3",
-                  "4",
-                  "5",
-                  "6",
-                  "7",
-                  "8",
-                  "9",
-                  "10",
-                  "11",
-                  "12",
-                  "13",
-                  "14",
-                  "15",
-                  "16",
-                  "17",
-                  "18",
-                  "19"
-                ]
-              })
-            })
-          }),
-          editLayer
+          mbLayer,
+          editLayer,
         ],
         target: "map",
         view: new ol.View({
           center: [873708.375917, 6105425.847789],
           zoom: 15
-        }),
-        wrapX: false
+        })
       });
 
       var editor = new ole.Editor(map);
@@ -140,7 +122,7 @@
       });
 
       var modify = new ole.control.Modify({
-        source: editLayer.getSource()
+        source: editLayer.getSource(),
       });
 
       var buffer = new ole.control.Buffer({

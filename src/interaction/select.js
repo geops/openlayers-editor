@@ -375,7 +375,10 @@ function handleEvent(mapBrowserEvent) {
          * @return {boolean|undefined} Continue to iterate over the features.
          */
         function(feature, layer) {
-          if (this.filter_(feature, layer)) {
+          /* If feature layer is null, omit the selection.
+           * Prevents mistakenly selecting features from the overlay.
+           */
+          if (layer && this.filter_(feature, layer)) {
             selected.push(feature);
             this.addFeatureLayerAssociation_(feature, layer);
             return !this.multi_;
@@ -408,7 +411,7 @@ function handleEvent(mapBrowserEvent) {
          * @return {boolean|undefined} Continue to iterate over the features.
          */
         function(feature, layer) {
-          if (this.filter_(feature, layer)) {
+          if (layer && this.filter_(feature, layer)) {
             if ((add || toggle) && !includes(features.getArray(), feature)) {
               selected.push(feature);
               this.addFeatureLayerAssociation_(feature, layer);
