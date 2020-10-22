@@ -375,6 +375,9 @@ function handleEvent(mapBrowserEvent) {
          * @return {boolean|undefined} Continue to iterate over the features.
          */
         function(feature, layer) {
+          /* If feature layer is null, omit the selection.
+           * Prevents mistakenly selecting features from the overlay.
+           */
           if (layer && this.filter_(feature, layer)) {
             selected.push(feature);
             this.addFeatureLayerAssociation_(feature, layer);
