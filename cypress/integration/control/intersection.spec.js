@@ -16,7 +16,7 @@ describe('Intersect control', function () {
       cy.get('.ol-overlaycontainer').dblclick(400, 300, FORCE);
     });
 
-  it('intersect two polygons to one polygon with correct nodes', function () {
+  it('should intersect two overlapping polygons resulting in one with correct nodes', function () {
     cy.window().then((win) => {
       // Activate union tool
       cy.get('.ole-control-intersection').click().then(() => {

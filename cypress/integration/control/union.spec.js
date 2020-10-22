@@ -16,7 +16,7 @@ describe('Union control', function () {
       cy.get('.ol-overlaycontainer').dblclick(400, 300, FORCE);
     });
 
-  it('unite two polygons to one polygon with correct nodes', function () {
+  it('should unite two overlapping polygons to one polygon with correct nodes', function () {
     cy.window().then((win) => {
       // Activate union tool
       cy.get('.ole-control-union').click().then(() => {
