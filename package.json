@@ -5,7 +5,7 @@
   "scripts": {
     "build": "neutrino build",
     "cy:open": "cypress open",
-    "cy:test": "start-server-and-test start http://localhost:3000 'cypress run'",
+    "cy:test": "start-server-and-test start http://localhost:5000 'cypress run --headless'",
     "lint": "neutrino lint",
     "test": "neutrino test",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
