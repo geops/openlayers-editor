@@ -11,14 +11,14 @@ describe('CAD control', function () {
   beforeEach(function () {
       cy.visit('/');
   
-      // Draw point
+      // Draw point (click on map canvas container at x: 500 and y: 500)
       cy.get('[title="Draw Point"]').click();
       cy.get('.ol-overlaycontainer').click(500, 500, FORCE);
     });
 
   it('should not snap new points when CAD deactivated', function () {
       cy.window().then((win) => {
-        // Draw new point
+        // Draw new point (click on map canvas container at x: 507 and y: 500)
         cy.get('.ol-overlaycontainer').click(507, 500, FORCE).then(() => {
           const newPoint = win.editLayer.getSource().getFeatures()[1];
           // New point should not have additional snapping distance in coordinate
@@ -30,9 +30,9 @@ describe('CAD control', function () {
 
   it('should snap new points to CAD point with CAD active', function () {
     cy.window().then((win) => {
-      // Activate CAD control
+      // Activate CAD control (click on toolbar)
       cy.get('.ole-control-cad').click();
-      // Draw new point
+      // Draw new point (click on map canvas container at x: 507 and y: 500)
       cy.get('.ol-overlaycontainer').click(507, 500, FORCE).then(() => {
         const snapDistance = win.cad.properties.snapPointDist;
         const newPoint = win.editLayer.getSource().getFeatures()[1];
