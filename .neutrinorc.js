@@ -7,12 +7,12 @@ const styleLoader = require('@neutrinojs/style-loader');
 const devServer = require('@neutrinojs/dev-server');
 
 module.exports = neutrino => {
-  neutrino.use(airbnb, { eslint: {
+  neutrino.use(airbnb({ eslint: {
     rules: {
       'class-methods-use-this': 'off'
     }
-  } });
-  neutrino.use(library, {
+  }}));
+  neutrino.use(library({
     name: 'ole',
     babel: {
       presets: [
@@ -28,10 +28,10 @@ module.exports = neutrino => {
         'transform-object-rest-spread',
       ]
     }
-  });
-  neutrino.use(imageLoader);
-  neutrino.use(styleLoader, { extract: false });
-  neutrino.use(devServer);
+  }));
+  neutrino.use(imageLoader());
+  neutrino.use(styleLoader({ extract: false }));
+  neutrino.use(devServer());
 
   // neutrino.config.plugins.delete('babel-minify').end();
   neutrino.config.externals(['jsts', 'ol']);
