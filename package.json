@@ -22,9 +22,9 @@
   "main": "build/index.js",
   "repository": "github:geops/openlayers-editor",
   "devDependencies": {
-    "@babel/core": "7.11.6",
-    "@babel/preset-env": "7.11.5",
-    "@cypress/webpack-preprocessor": "5.1.2",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@cypress/webpack-preprocessor": "^5.4.8",
     "@neutrinojs/airbnb-base": "8.3.0",
     "@neutrinojs/dev-server": "8.3.0",
     "@neutrinojs/image-loader": "8.3.0",
