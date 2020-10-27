@@ -4,8 +4,8 @@
   "description": "OpenLayers Editor",
   "scripts": {
     "build": "neutrino build",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
+    "cy:open": "cypress open",
+    "cy:test": "start-server-and-test start http://localhost:5000 'cypress run --headless'",
     "lint": "neutrino lint",
     "test": "neutrino test",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
@@ -41,7 +41,8 @@
     "jsts": "2.5.1",
     "neutrino": "8.3.0",
     "ol": "6.3.1",
-    "webpack": "4.44.2"
+    "webpack": "4.44.2",
+    "start-server-and-test": "^1.11.5"
   },
   "peerDependencies": {
     "jsts": "^2.0.6",
