@@ -40,7 +40,7 @@
     "jsdoc-export-default-interop": "0.3.1",
     "jsts": "2.5.1",
     "neutrino": "8.3.0",
-    "ol": "6.3.1",
+    "ol": "6.4.3",
     "webpack": "4.44.2",
     "start-server-and-test": "^1.11.5"
   },
