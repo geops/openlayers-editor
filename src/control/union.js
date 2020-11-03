@@ -25,11 +25,12 @@ class Union extends TopologyControl {
    *   (default is 10)
    */
   constructor(options) {
-    super(Object.assign({
+    super({
       title: 'Union',
       className: 'ole-control-union',
       image: unionSVG,
-    }, options));
+      ...options,
+    });
   }
 
   /**

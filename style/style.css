@@ -1,13 +1,12 @@
-<style>
 html {
-  margin:0px;
-  padding:0px;
+  margin: 0;
+  padding: 0;
   height: 100%;
 }
 
 body {
-  margin:0px;
-  padding:0px;
+  margin: 0;
+  padding: 0;
   height: 100%;
 }
 
@@ -37,12 +36,12 @@ a.active {
 }
 
 #header a:last-child {
-    margin-right: 0;
+  margin-right: 0;
 }
 
 #map {
   height: 100%;
- }
+}
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -79,7 +78,7 @@ a.active {
   border: 2px solid white;
   color: white;
   font-size: 14px;
-  font-family: Sans-Serif;
+  font-family: sans-serif;
   font-weight: bold;
   margin: 2px;
   padding: 0 70px;
@@ -90,15 +89,14 @@ a.active {
 }
 
 #copyrightDiv {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   font-size: 12px;
   background-color: rgba(255, 255, 255, 0.7);
-  box-shadow: 1px 2px 4px rgba(0,0,0,0.7);
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.7);
   position: absolute;
   padding: 5px;
   bottom: 0;
-  left:0;
+  left: 0;
   right: 0;
 }
-
 </style>

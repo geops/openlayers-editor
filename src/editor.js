@@ -91,8 +91,8 @@ class Editor {
    * @param {ol.Collection<ole.Control>} controls Collection of controls.
    */
   addControls(controls) {
-    const ctrls = controls instanceof Collection ? controls
-      : new Collection(controls);
+    const ctrls =
+      controls instanceof Collection ? controls : new Collection(controls);
 
     for (let i = 0; i < ctrls.getLength(); i += 1) {
       this.addControl(ctrls.item(i));
@@ -156,7 +156,11 @@ class Editor {
     if (ctrl.getActive() && ctrl.standalone) {
       for (let i = 0; i < this.controls.getLength(); i += 1) {
         const otherCtrl = this.controls.item(i);
-        if (otherCtrl !== ctrl && otherCtrl.getActive() && otherCtrl.standalone) {
+        if (
+          otherCtrl !== ctrl &&
+          otherCtrl.getActive() &&
+          otherCtrl.standalone
+        ) {
           otherCtrl.deactivate();
           this.activeControls.remove(otherCtrl);
         }

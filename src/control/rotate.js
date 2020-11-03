@@ -21,11 +21,12 @@ class RotateControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.style] Style used for the rotation layer.
    */
   constructor(options) {
-    super(Object.assign({
+    super({
       title: 'Rotate',
       className: 'icon-rotate',
       image: rotateSVG,
-    }, options));
+      ...options,
+    });
 
     /**
      * @type {ol.interaction.Pointer}
@@ -50,18 +51,20 @@ class RotateControl extends Control {
      */
     this.rotateLayer = new Vector({
       source: new VectorSource(),
-      style: options.style || ((f) => {
-        const rotation = f.get(this.rotateAttribute);
-        return [
-          new Style({
-            geometry: new Point(this.center),
-            image: new Icon({
-              rotation,
-              src: rotateMapSVG,
+      style:
+        options.style ||
+        ((f) => {
+          const rotation = f.get(this.rotateAttribute);
+          return [
+            new Style({
+              geometry: new Point(this.center),
+              image: new Icon({
+                rotation,
+                src: rotateMapSVG,
+              }),
             }),
-          }),
-        ];
-      }),
+          ];
+        }),
     });
   }
 
@@ -116,7 +119,8 @@ class RotateControl extends Control {
       );
 
       const rotationDiff = this.initialRotation - rotation;
-      const geomRotation = rotationDiff - this.feature.get(this.rotateAttribute);
+      const geomRotation =
+        rotationDiff - this.feature.get(this.rotateAttribute);
 
       this.feature.getGeometry().rotate(-geomRotation, this.center);
       this.rotateFeature.getGeometry().rotate(-geomRotation, this.center);

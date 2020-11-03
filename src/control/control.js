@@ -90,7 +90,7 @@ class Control extends OLControl {
      */
     this.layerFilter =
       options.layerFilter ||
-      (layer => !this.source || (layer && layer.getSource() === this.source));
+      ((layer) => !this.source || (layer && layer.getSource() === this.source));
 
     /**
      * ole.Editor instance.
@@ -203,7 +203,9 @@ class Control extends OLControl {
           ${this.getDialogTemplate()}
         </div>
       `;
-      (this.dialogTarget || this.map.getTargetElement()).appendChild(this.dialogDiv);
+      (this.dialogTarget || this.map.getTargetElement()).appendChild(
+        this.dialogDiv,
+      );
     }
   }
 
@@ -213,7 +215,9 @@ class Control extends OLControl {
    */
   closeDialog() {
     if (this.dialogDiv) {
-      (this.dialogTarget || this.map.getTargetElement()).removeChild(this.dialogDiv);
+      (this.dialogTarget || this.map.getTargetElement()).removeChild(
+        this.dialogDiv,
+      );
       this.dialogDiv = null;
     }
   }

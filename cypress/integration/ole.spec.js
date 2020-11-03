@@ -1,11 +1,9 @@
 describe('OLE', function () {
-
   beforeEach(function () {
-    cy.visit('/')
+    cy.visit('/');
   });
 
   it('should initialize OLE toolbar', function () {
-    cy.get('#ole-toolbar').should('exist')
+    cy.get('#ole-toolbar').should('exist');
   });
-
 });

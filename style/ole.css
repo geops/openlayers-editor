@@ -4,6 +4,13 @@
   top: 20px;
 }
 
+/* shadow */
+#ole-toolbar button.ole-control,
+.ole-dialog {
+  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* buttons */
 #ole-toolbar button.ole-control {
   background: #fafafa;
   border: 0;
@@ -12,8 +19,8 @@
   font-size: 14px;
   line-height: 36px;
   height: 45px;
-  padding: 0 8px;
-  transition: all .3s ease-out;
+  transition: all 0.3s ease-out;
+  padding: 5px;
 }
 
 #ole-toolbar button.ole-control:first-child {
@@ -33,20 +40,14 @@
 }
 
 #ole-toolbar button.ole-control.active {
-  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.3);
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
   color: #5c5c5c;
   filter: brightness(90%);
-}
-
-/* buttons */
-#ole-toolbar button.ole-control {
-  padding: 5px;
 }
 
 #ole-toolbar button.ole-control img {
   height: 35px;
 }
-
 
 /* dialog */
 .ole-dialog {
@@ -62,14 +63,10 @@
 }
 
 /* font */
-#ole-toolbar, .ole-dialog {
-  font-family: Arial;
-  font-size:  14px;
-}
-
-/* shadow */
-#ole-toolbar button.ole-control, .ole-dialog {
-  box-shadow: 0 3px 3px 0 rgba(0,0,0,0.2);
+#ole-toolbar,
+.ole-dialog {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
 }
 
 #width-input {

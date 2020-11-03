@@ -29,12 +29,13 @@ class BufferControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.style] Style used when a feature is selected.
    */
   constructor(options) {
-    super(Object.assign({
+    super({
       title: 'Buffer geometry',
       className: 'ole-control-buffer',
       image: bufferSVG,
       buffer: 50,
-    }, options));
+      ...options,
+    });
 
     /**
      * @type {ol.interaction.Select}
@@ -42,9 +43,9 @@ class BufferControl extends Control {
      */
     this.selectInteraction = new Select({
       layers: this.layerFilter,
-      hitTolerance: options.hitTolerance === undefined ?
-        10 : options.hitTolerance,
-      multi: typeof (options.multi) === 'undefined' ? true : options.multi,
+      hitTolerance:
+        options.hitTolerance === undefined ? 10 : options.hitTolerance,
+      multi: typeof options.multi === 'undefined' ? true : options.multi,
       style: options.style,
     });
   }

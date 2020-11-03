@@ -16,19 +16,22 @@
     "@babel/preset-env": "7.12.1",
     "@constgen/neutrino-svg-loader": "1.9.2",
     "@cypress/webpack-preprocessor": "5.4.8",
-    "@neutrinojs/airbnb-base": "9.4.0",
-    "@neutrinojs/dev-server": "9.4.0",
     "@neutrinojs/image-loader": "9.4.0",
     "@neutrinojs/library": "9.4.0",
     "@neutrinojs/style-loader": "9.4.0",
     "babel-core": "6.26.3",
+    "babel-eslint": "10.1.0",
     "babel-loader": "8.1.0",
     "cypress": "5.5.0",
     "eslint": "7.12.0",
+    "eslint-config-airbnb-base": "14.2.0",
     "eslint-config-prettier": "6.14.0",
+    "eslint-plugin-cypress": "2.11.2",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "3.1.4",
     "fixpack": "3.0.6",
     "husky": "4.3.0",
+    "jest": "26.6.2",
     "jsdoc": "3.6.6",
     "jsdoc-export-default-interop": "0.3.1",
     "jsts": "2.6.1",
@@ -36,20 +39,47 @@
     "neutrino": "9.4.0",
     "ol": "6.4.3",
     "prettier": "2.1.2",
+    "start-server-and-test": "^1.11.5",
+    "stylelint": "13.7.2",
+    "stylelint-config-standard": "20.0.0",
     "webpack": "4",
     "webpack-cli": "3",
     "webpack-dev-server": "3.11.0"
   },
   "scripts": {
-    "build": "webpack --inspect --mode production ",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
+    "build": "webpack --mode development ",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run  --headed",
+    "cy:test": "start-server-and-test start http://localhost:8080 cy:run",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
-    "format": "prettier --write 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'src/**/*.css' 'src/**/*.scss' --fix",
-    "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src",
-    "publish:beta": "yarn publish:public --tag beta",
-    "publish:public": "yarn version && yarn build && git push origin HEAD && yarn publish",
-    "start": "webpack-dev-server --mode development --open"
+    "format": "prettier --write 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
+    "lint": "eslint 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
+    "publish:beta": "npm run publish:public --tag beta",
+    "publish:public": "npm version && npm run build && git push origin HEAD && npm publish",
+    "start": "webpack-dev-server --mode development --open",
+    "test": "jest \"front/.*\\.test\\.js\" --passWithNoTests --env=jsdom --transformIgnorePatterns \"/node_modules/(?!(ol|ol-mapbox-style)/).*/\"",
+    "test:watch": "npm test --watchAll"
+  },
+  "eslintConfig": {
+    "env": {
+      "cypress/globals": true,
+      "node": true,
+      "browser": true,
+      "es6": true,
+      "jest": true
+    },
+    "parser": "babel-eslint",
+    "extends": [
+      "airbnb-base",
+      "prettier"
+    ],
+    "plugins": [
+      "cypress",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": "error"
+    }
   },
   "husky": {
     "hooks": {
@@ -67,7 +97,7 @@
     "(src|__mocks__)/**/*.js": [
       "eslint --fix",
       "prettier --write",
-      "yarn test --bail --findRelatedTests"
+      "npm test --bail --findRelatedTests"
     ],
     "package.json": [
       "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
@@ -82,12 +112,8 @@
   },
   "repository": "github:geops/openlayers-editor",
   "stylelint": {
-    "plugins": [
-      "stylelint-scss"
-    ],
     "extends": [
-      "stylelint-config-standard",
-      "stylelint-config-recommended-scss"
+      "stylelint-config-standard"
     ]
   }
 }

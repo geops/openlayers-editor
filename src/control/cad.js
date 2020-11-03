@@ -33,14 +33,15 @@ class CadControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.linesStyle] Style used for the lines layer.
    */
   constructor(options) {
-    super(Object.assign({
+    super({
       title: 'CAD control',
       className: 'ole-control-cad',
       image: cadSVG,
       showSnapPoints: true,
       showSnapLines: false,
       snapPointDist: 10,
-    }, options));
+      ...options,
+    });
 
     /**
      * Interaction for handling move events.
@@ -106,7 +107,8 @@ class CadControl extends Control {
      * @type {Number}
      * @private
      */
-    this.snapTolerance = options.snapTolerance === undefined ? 10 : options.snapTolerance;
+    this.snapTolerance =
+      options.snapTolerance === undefined ? 10 : options.snapTolerance;
 
     /**
      * Filter the features to snap with.
@@ -166,15 +168,22 @@ class CadControl extends Control {
 
     // Ensure that the snap interaction is at the last position
     // as it must be the first to handle the  pointermove event.
-    this.map.getInteractions().on('add', ((e) => {
-      const pos = e.target.getArray().indexOf(this.snapInteraction);
+    this.map.getInteractions().on(
+      'add',
+      ((e) => {
+        const pos = e.target.getArray().indexOf(this.snapInteraction);
 
-      if (this.snapInteraction.getActive() && pos > -1 && pos !== e.target.getLength() - 1) {
-        this.deactivate(true);
-        this.activate(true);
-      }
-      // eslint-disable-next-line no-extra-bind
-    }).bind(this));
+        if (
+          this.snapInteraction.getActive() &&
+          pos > -1 &&
+          pos !== e.target.getLength() - 1
+        ) {
+          this.deactivate(true);
+          this.activate(true);
+        }
+        // eslint-disable-next-line no-extra-bind
+      }).bind(this),
+    );
   }
 
   /**
@@ -194,11 +203,9 @@ class CadControl extends Control {
     this.linesLayer.getSource().clear();
     this.snapLayer.getSource().clear();
 
-    this.pointerInteraction.dispatchEvent(new SnapEvent(
-      SnapEventType.SNAP,
-      features.length ? features : null,
-      evt,
-    ));
+    this.pointerInteraction.dispatchEvent(
+      new SnapEvent(SnapEventType.SNAP, features.length ? features : null, evt),
+    );
 
     if (this.properties.showSnapLines) {
       this.drawSnapLines(features, evt.coordinate);
@@ -226,7 +233,7 @@ class CadControl extends Control {
       const cCoord = f.getGeometry().getClosestPoint(coordinate);
       const dx = cCoord[0] - coordinate[0];
       const dy = cCoord[1] - coordinate[1];
-      const dist = (dx * dx) + (dy * dy);
+      const dist = dx * dx + dy * dy;
       featureDict[dist] = f;
     };
 
@@ -278,8 +285,7 @@ class CadControl extends Control {
         }
 
         // filling auxCoords
-        const coords = fromExtent(geom.getExtent())
-          .getCoordinates()[0];
+        const coords = fromExtent(geom.getExtent()).getCoordinates()[0];
         auxCoords = auxCoords.concat(coords);
       }
     }
@@ -290,19 +296,21 @@ class CadControl extends Control {
     for (let i = 0; i < auxCoords.length; i += 1) {
       const tol = this.snapTolerance;
       const auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
-      const drawVLine = (px[0] > auxPx[0] - (this.snapTolerance / 2)) &&
-        (px[0] < auxPx[0] + (this.snapTolerance / 2));
-      const drawHLine = (px[1] > auxPx[1] - (this.snapTolerance / 2)) &&
-        (px[1] < auxPx[1] + (this.snapTolerance / 2));
+      const drawVLine =
+        px[0] > auxPx[0] - this.snapTolerance / 2 &&
+        px[0] < auxPx[0] + this.snapTolerance / 2;
+      const drawHLine =
+        px[1] > auxPx[1] - this.snapTolerance / 2 &&
+        px[1] < auxPx[1] + this.snapTolerance / 2;
 
       if (drawVLine) {
         let newY = px[1];
-        newY += (px[1] < auxPx[1]) ? -tol * 2 : tol * 2;
+        newY += px[1] < auxPx[1] ? -tol * 2 : tol * 2;
         const newPt = this.map.getCoordinateFromPixel([auxPx[0], newY]);
         lineCoords = [[auxCoords[i][0], newPt[1]], auxCoords[i]];
       } else if (drawHLine) {
         let newX = px[0];
-        newX += (px[0] < auxPx[0]) ? -tol * 2 : tol * 2;
+        newX += px[0] < auxPx[0] ? -tol * 2 : tol * 2;
         const newPt = this.map.getCoordinateFromPixel([newX, auxPx[1]]);
         lineCoords = [[newPt[0], auxCoords[i][1]], auxCoords[i]];
       }

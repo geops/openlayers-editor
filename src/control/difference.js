@@ -25,11 +25,12 @@ class Difference extends TopologyControl {
    *   (default is 10)
    */
   constructor(options) {
-    super(Object.assign({
+    super({
       title: 'Difference',
       className: 'ole-control-difference',
       image: diffSVG,
-    }, options));
+      ...options,
+    });
   }
 
   /**
