@@ -49,7 +49,7 @@
   "scripts": {
     "build": "webpack --mode production ",
     "cy:open": "cypress open",
-    "cy:run": "cypress run  --headed",
+    "cy:run": "cypress run --headless",
     "cy:test": "start-server-and-test start http://localhost:8080 cy:run",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "format": "prettier --write 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
