@@ -1,55 +1,93 @@
 {
   "name": "ole",
-  "version": "1.1.8-beta.2",
+  "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
+  "version": "1.1.8-beta.2",
+  "main": "build/index.js",
+  "peerDependencies": {
+    "jsts": "^2",
+    "ol": "^6"
+  },
+  "devDependencies": {
+    "@babel/core": "7.12.3",
+    "@babel/plugin-proposal-object-rest-spread": "7.12.1",
+    "@babel/plugin-transform-destructuring": "7.12.1",
+    "@babel/plugin-transform-object-assign": "7.12.1",
+    "@babel/preset-env": "7.12.1",
+    "@constgen/neutrino-svg-loader": "1.9.2",
+    "@cypress/webpack-preprocessor": "5.4.8",
+    "@neutrinojs/airbnb-base": "9.4.0",
+    "@neutrinojs/dev-server": "9.4.0",
+    "@neutrinojs/image-loader": "9.4.0",
+    "@neutrinojs/library": "9.4.0",
+    "@neutrinojs/style-loader": "9.4.0",
+    "babel-core": "6.26.3",
+    "babel-loader": "8.1.0",
+    "cypress": "5.5.0",
+    "eslint": "7.12.0",
+    "eslint-config-prettier": "6.14.0",
+    "eslint-plugin-prettier": "3.1.4",
+    "fixpack": "3.0.6",
+    "husky": "4.3.0",
+    "jsdoc": "3.6.6",
+    "jsdoc-export-default-interop": "0.3.1",
+    "jsts": "2.6.1",
+    "lint-staged": "10.5.1",
+    "neutrino": "9.4.0",
+    "ol": "6.4.3",
+    "prettier": "2.1.2",
+    "webpack": "4",
+    "webpack-cli": "3",
+    "webpack-dev-server": "3.11.0"
+  },
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "webpack --inspect --mode production ",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
-    "start": "webpack-dev-server --mode development --open",
+    "format": "prettier --write 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'src/**/*.css' 'src/**/*.scss' --fix",
+    "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src",
+    "publish:beta": "yarn publish:public --tag beta",
     "publish:public": "yarn version && yarn build && git push origin HEAD && yarn publish",
-    "publish:beta": "yarn publish:public --tag beta"
+    "start": "webpack-dev-server --mode development --open"
+  },
+  "husky": {
+    "hooks": {
+      "post-checkout": "npm install --frozen-lockfile",
+      "post-merge": "npm install --frozen-lockfile",
+      "post-rebase": "npm install --frozen-lockfile",
+      "pre-commit": "CI=true lint-staged   "
+    }
   },
   "keywords": [
-    "OpenLayers",
-    "Editor"
+    "Editor",
+    "OpenLayers"
   ],
-  "license": "BSD-2-Clause",
-  "main": "build/index.js",
-  "repository": "github:geops/openlayers-editor",
-  "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@babel/preset-env": "^7.12.1",
-    "@constgen/neutrino-svg-loader": "^1.9.2",
-    "@cypress/webpack-preprocessor": "^5.4.8",
-    "@neutrinojs/airbnb-base": "^9.4.0",
-    "@neutrinojs/dev-server": "^9.4.0",
-    "@neutrinojs/image-loader": "^9.4.0",
-    "@neutrinojs/library": "^9.4.0",
-    "@neutrinojs/style-loader": "^9.4.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^8.1.0",
-    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
-    "babel-plugin-transform-object-assign": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "cypress": "4.12.1",
-    "eslint": "^7.12.0",
-    "eslint-config-prettier": "^6.14.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "jsdoc": "^3.6.6",
-    "jsdoc-export-default-interop": "0.3.1",
-    "jsts": "^2.6.1",
-    "neutrino": "^9.4.0",
-    "ol": "6.3.1",
-    "prettier": "^2.1.2",
-    "webpack": "^4",
-    "webpack-cli": "^3",
-    "webpack-dev-server": "^3.11.0"
+  "lint-staged": {
+    "(src|__mocks__)/**/*.js": [
+      "eslint --fix",
+      "prettier --write",
+      "yarn test --bail --findRelatedTests"
+    ],
+    "package.json": [
+      "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
+    ],
+    "src/**/*.{css,scss}": [
+      "stylelint --fix"
+    ]
   },
-  "peerDependencies": {
-    "jsts": "^2.0.6",
-    "ol": "^6.0.1"
+  "prettier": {
+    "trailingComma": "all",
+    "singleQuote": true
+  },
+  "repository": "github:geops/openlayers-editor",
+  "stylelint": {
+    "plugins": [
+      "stylelint-scss"
+    ],
+    "extends": [
+      "stylelint-config-standard",
+      "stylelint-config-recommended-scss"
+    ]
   }
 }

@@ -1,9 +1,10 @@
 const cypress = require('cypress');
 const { start } = require('neutrino');
-const airbnb = require('@neutrinojs/airbnb-base');
 const library = require('@neutrinojs/library');
 const imageLoader = require('@constgen/neutrino-svg-loader');
 const styleLoader = require('@neutrinojs/style-loader');
+const devServer = require('@neutrinojs/dev-server');
+
 
 // module.exports = neutrino => {
 //   neutrino.use([
@@ -44,22 +45,33 @@ const styleLoader = require('@neutrinojs/style-loader');
 //     )
 //   ));
 // };
-
 module.exports = {
   options: {
     root: __dirname,
   },
   use: [
-    airbnb({
-      eslint: {
-        baseConfig: {
-          extends: ['prettier'],
-          plugins: ['prettier'],
-        },
-      },
+    library({
+      name: 'ole',
+      babel: {
+        presets: [
+          ['@babel/preset-env', {
+            targets: {
+              browsers: ["last 2 versions", "ie >= 10"]
+            }
+          }]
+        ],
+        plugins: [
+          '@babel/plugin-transform-destructuring',
+          '@babel/plugin-transform-object-assign',
+          '@babel/plugin-proposal-object-rest-spread',
+        ]
+      }
     }),
     imageLoader(),
+    styleLoader({ extract: false }),
+    (neutrino) => {
+      /* make customizations */
+      neutrino.config.externals(['jsts', 'ol']);
+    }
   ],
-  externals: ['jsts', 'ol'],
 };
-
