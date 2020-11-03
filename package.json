@@ -47,7 +47,7 @@
     "webpack-dev-server": "3.11.0"
   },
   "scripts": {
-    "build": "webpack --mode development ",
+    "build": "webpack --mode production ",
     "cy:open": "cypress open",
     "cy:run": "cypress run  --headed",
     "cy:test": "start-server-and-test start http://localhost:8080 cy:run",
