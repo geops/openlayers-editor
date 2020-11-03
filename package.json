@@ -41,7 +41,7 @@
     "jsts": "2.5.1",
     "neutrino": "8.3.0",
     "ol": "6.3.1",
-    "webpack": "4.44.2",
+    "webpack": "5.4.0",
     "start-server-and-test": "^1.11.5"
   },
   "peerDependencies": {
