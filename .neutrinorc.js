@@ -29,16 +29,7 @@ module.exports = {
     imageLoader(),
     styleLoader({ extract: false }),
     (neutrino) => {
-      /* make customizations */
       neutrino.config.externals(['jsts', 'ol']);
     },
-    // (neutrino)=> {
-    //   neutrino.on('test', () => new Promise((resolve, reject) =>
-    //     start(neutrino.config.toConfig(), neutrino).fork(
-    //       errors => errors.forEach(err => console.error(err)),
-    //       compiler => cypress.run().then(() => resolve()).catch(() => reject())
-    //     )
-    //   ));
-    // }
   ],
 };
