@@ -1,87 +1,12 @@
-import { unByKey } from 'ol/Observable';
-import { getCenter } from 'ol/extent';
-import { Circle, Style, Fill, Stroke } from 'ol/style';
-import GeometryCollection from 'ol/geom/GeometryCollection';
-import { MultiPoint, Point } from 'ol/geom';
-import GeometryType from 'ol/geom/GeometryType';
-import { Modify, Pointer } from 'ol/interaction';
-import { singleClick, shiftKeyOnly, click } from 'ol/events/condition';
-import { Select } from '../interaction';
+import { Modify } from 'ol/interaction';
+import { click } from 'ol/events/condition';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
-import MoveEvent, { MoveEventType } from '../helper/move-event';
-
-// Return an array of styles
-const getStyles = (style, feature) => {
-  if (!style) {
-    return [];
-  }
-  let styles = style;
-  if (typeof style === 'function') {
-    if (feature) {
-      // styleFunction
-      styles = style(feature);
-    } else {
-      // featureStyleFunction
-      styles = style();
-    }
-  }
-  return Array.isArray(styles) ? styles : [styles];
-};
-
-// Default style on modifying geometries
-const selectModifyStyle = new Style({
-  image: new Circle({
-    radius: 5,
-    fill: new Fill({
-      color: '#05A0FF',
-    }),
-    stroke: new Stroke({ color: '#05A0FF', width: 2 }),
-  }),
-  stroke: new Stroke({
-    color: '#05A0FF',
-    width: 3,
-  }),
-  fill: new Fill({
-    color: 'rgba(255,255,255,0.4)',
-  }),
-  geometry: (f) => {
-    const coordinates = [];
-    const geometry = f.getGeometry();
-    let geometries = [geometry];
-    if (geometry.getType() === GeometryType.GEOMETRY_COLLECTION) {
-      geometries = geometry.getGeometriesArrayRecursive();
-    }
-
-    // At this point geometries doesn't contains any GeometryCollections.
-    geometries.forEach((geom) => {
-      let multiGeometries = [geom];
-      if (geom.getType() === GeometryType.MULTI_LINE_STRING) {
-        multiGeometries = geom.getLineStrings();
-      } else if (geom.getType() === GeometryType.MULTI_POLYGON) {
-        multiGeometries = geom.getPolygons();
-      } else if (geom.getType() === GeometryType.MULTI_POINT) {
-        multiGeometries = geom.getPoints();
-      }
-      // At this point multiGeometries contains only single geometry.
-      multiGeometries.forEach((geomm) => {
-        if (geomm.getType() === GeometryType.POLYGON) {
-          geomm.getCoordinates()[0].forEach((coordinate) => {
-            coordinates.push(coordinate);
-          });
-        } else if (geomm.getType() === GeometryType.LINE_STRING) {
-          coordinates.push(...geomm.getCoordinates());
-        } else if (geomm.getType() === GeometryType.POINT) {
-          coordinates.push(geomm.getCoordinates());
-        }
-      });
-    });
-    return new GeometryCollection([
-      f.getGeometry(),
-      new MultiPoint(coordinates),
-    ]);
-  },
-});
+import SelectMove from '../interaction/selectmove';
+import SelectModify from '../interaction/selectmodify';
+import Move from '../interaction/move';
+import { onSelectFeature, onDeselectFeature } from '../helper/styles';
+import Delete from '../interaction/delete';
 
 /**
  * Control for modifying geometries.
@@ -91,28 +16,15 @@ const selectModifyStyle = new Style({
 class ModifyControl extends Control {
   /**
    * @param {Object} [options] Tool options.
-   * @param {string} [options.type] Geometry type ('Point', 'LineString', 'Polygon',
-   *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
-   *   Default is 'Point'.
    * @param {number} [options.hitTolerance=5] Select tolerance in pixels.
    * @param {ol.Collection<ol.Feature>} [options.features] Destination for drawing.
    * @param {ol.source.Vector} [options.source] Destination for drawing.
-   * @param {ol.style.Style.StyleLike} [options.selectMoveStyle]
-   * Style used when a feature is selected to be moved.
-   * @param {ol.style.Style.StyleLike} [options.selectModifyStyle]
-   * Style used when a feature is selected to be modified.
-   * @param {ol.style.Style.StyleLike} [options.modifyStyle] Style used by the Modify interaction.
-   * @param {ol.events.condition} [options.moveCondition=singleClick] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to select feature to move.
-   * @param {ol.events.condition} [options.modifyCondition=doubleClick] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to select feature to modify.
-   * @param {ol.events.condition} [options.moveToggleCondition=shift+singleClick]
-   * {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to toggle/multi-select features to move.
-   * @param {ol.events.condition} [options.modifyToggleCondition=shift+doubleClick]
-   * {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to toggle/multi-select features to modify.
-   * @param {function} [options.deleteCondition=backspace key || delete key]
-   * Function that takes a browser keyboard event, should return true to delete selected features.
-   * @param {ol.events.condition} [options.deleteNodeCondition=click] {@link https://openlayers.org/en/latest/apidoc/module-ol_events_condition.html|openlayers condition} to delete a node when modifying a feature.
-   * @param {function} [options.onMapClick=Clears feature selection]
-   * Function that takes a {@link https://openlayers.org/en/latest/apidoc/module-ol_MapBrowserEvent-MapBrowserEvent.html|openlayers MapBrowserEvent} (click) and the ModifyControl iteself as arguments.
+   * @param {Object} [options.selectMoveOptions] Options for the select interaction used to move features.
+   * @param {Object} [options.selectModifyOptions] Options for the select interaction used to modify features.
+   * @param {Object} [options.moveInteractionOptions] Options for the move interaction.
+   * @param {Object} [options.modifyInteractionOptions] Options for the modify interaction.
+   * @param {Object} [options.deleteInteractionOptions] Options for the delete interaction.
+   *
    */
   constructor(options) {
     super({
@@ -122,16 +34,8 @@ class ModifyControl extends Control {
       ...options,
     });
 
-    const OLD_STYLES_PROP = 'oldStyles';
     const SELECT_MOVE_ON_CHANGE_KEY = 'selectMoveOnChangeKey';
     const SELECT_MODIFY_ON_CHANGE_KEY = 'selectModifyOnChangeKey';
-
-    /**
-     * @type {ol.Coordinate}
-     * @private
-     */
-
-    this.coordinate = null;
 
     /**
      * @type {string}
@@ -146,23 +50,13 @@ class ModifyControl extends Control {
     this.hitTolerance =
       options.hitTolerance === undefined ? 5 : options.hitTolerance;
 
-    this.selectMoveStyle = options.selectMoveStyle;
-
-    this.selectModifyStyle = options.selectModifyStyle || selectModifyStyle;
-
-    this.modifyStyle = options.modifyStyle;
-
-    this.deleteFeature = this.deleteFeature.bind(this);
+    this.getFeatureAtPixel = this.getFeatureAtPixel.bind(this);
 
     this.cursorHandler = this.cursorHandler.bind(this);
 
     this.cursorTimeout = null;
 
-    this.deleteCondition =
-      options.deleteCondition ||
-      ((evt) => evt.keyCode === 46 || evt.keyCode === 8);
-
-    this.deleteNodeCondition = options.deleteNodeCondition || click;
+    // this.deleteNodeCondition = options.deleteNodeCondition || click;
 
     this.selectFilter =
       options.selectFilter ||
@@ -175,114 +69,15 @@ class ModifyControl extends Control {
 
     this.getFeatureFilter = options.getFeatureFilter || (() => true);
 
-    this.onMapClick = options.onMapClick;
+    // this.onMapClick = options.onMapClick;
 
-    this.getFeatureAtPixel = (pixel) => {
-      const feature = (this.map.getFeaturesAtPixel(pixel, {
-        hitTolerance: this.hitTolerance,
-        layerFilter: this.layerFilter,
-      }) || [])[0];
-
-      if (this.getFeatureFilter(feature)) {
-        return feature;
-      }
-      return null;
-    };
-
-    this.isHoverVertexFeatureAtPixel = (pixel) => {
-      let isHoverVertex = false;
-      this.map.forEachFeatureAtPixel(
-        pixel,
-        (feat, layer) => {
-          if (!layer) {
-            isHoverVertex = true;
-            return true;
-          }
-          return false;
-        },
-        {
-          hitTolerance: this.hitTolerance,
-        },
-      );
-      return isHoverVertex;
-    };
-
-    this.applySelectStyle = (feature, styleToApply) => {
-      const featureStyles = getStyles(feature.getStyleFunction());
-      const stylesToApply = getStyles(styleToApply, feature);
-
-      // At this point featureStyles must not contain the select styles.
-      const newStyles = [...featureStyles, ...stylesToApply];
-      feature.set(OLD_STYLES_PROP, featureStyles);
-      feature.setStyle(newStyles);
-    };
-
-    this.onSelectFeature = (feature, selectStyle, listenerPropName) => {
-      if (!feature.getStyleFunction()) {
-        return;
-      }
-
-      // Append the select style to the feature's style
-      this.applySelectStyle(feature, selectStyle);
-
-      // Ensure we don't have twice the same event registered.
-      const listenerKey = feature.get(listenerPropName);
-      if (listenerKey) {
-        unByKey(listenerKey);
-        feature.unset(listenerKey);
-      }
-
-      feature.set(
-        listenerPropName,
-        feature.on('change', (e) => {
-          // On change of the feature's style, we re-apply the selected Style.
-          this.onSelectedFeatureChange(e.target, selectStyle);
-        }),
-      );
-    };
-
-    this.onDeselectFeature = (feature, selectStyle, listenerPropName) => {
-      if (!feature.getStyleFunction()) {
-        return;
-      }
-
-      const listenerKey = feature.get(listenerPropName);
-      if (listenerKey) {
-        unByKey(listenerKey);
-        feature.unset(listenerKey);
-      }
-
-      // Remove the select styles
-      feature.unset(OLD_STYLES_PROP);
-      const styles = getStyles(feature.getStyleFunction(), null);
-      const selectStyles = getStyles(selectStyle, feature);
-      const featureStyles = styles.slice(0, styles.indexOf(selectStyles[0]));
-      feature.setStyle(featureStyles);
-    };
-
-    this.onSelectedFeatureChange = (feature, selectStyle) => {
-      const featureStyles = getStyles(feature.getStyleFunction());
-      const oldStyles = feature.get(OLD_STYLES_PROP);
-      if (!oldStyles) {
-        return;
-      }
-      const isStyleChanged = oldStyles.some(
-        (style, idx) => style !== featureStyles[idx],
-      );
-      if (isStyleChanged) {
-        // If the user changes the style of the feature, we reapply the select style.
-        this.applySelectStyle(feature, selectStyle);
-      }
-    };
-
+    /* Interactions */
     /**
      * Select interaction to move features
      * @type {ol.interaction.Select}
      * @private
      */
-    this.selectMove = new Select({
-      condition: options.moveCondition || singleClick,
-      toggleCondition: options.moveToggleCondition || shiftKeyOnly,
+    this.selectMove = new SelectMove({
       filter: (feature, layer) => {
         // If the feature is already selected by modify interaction ignore the selection.
         if (this.isSelectedByModify(feature)) {
@@ -290,26 +85,26 @@ class ModifyControl extends Control {
         }
         return this.selectFilter(feature, layer);
       },
-      style: this.selectMoveStyle,
       hitTolerance: this.hitTolerance,
-      wrapX: false,
+      ...options.selectMoveOptions,
     });
 
-    let moveMapKey;
+    // let moveMapKey;
     this.selectMove.getFeatures().on('add', (evt) => {
       this.selectModify.getFeatures().clear();
-      document.addEventListener('keydown', this.deleteFeature);
       this.map.addInteraction(this.moveInteraction);
+      this.deleteInteraction.setFeatures(this.selectMove.getFeatures());
 
       // Remove key before adding to prevent listener stacking
-      unByKey(moveMapKey);
-      moveMapKey = this.map.on('singleclick', (e) => {
-        this.unselectInteraction(e, this.selectMove);
-      });
+      // unByKey(moveMapKey);
+      // moveMapKey = this.map.on('singleclick', (e) => {
+      //   console.log('singleclick move');
+      //   this.unselectInteraction(e, this.selectMove);
+      // });
 
       if (this.selectMoveStyle) {
         // Apply the select style dynamically when the feature has its own style.
-        this.onSelectFeature(
+        onSelectFeature(
           evt.element,
           this.selectMoveStyle,
           SELECT_MOVE_ON_CHANGE_KEY,
@@ -318,12 +113,13 @@ class ModifyControl extends Control {
     });
 
     this.selectMove.getFeatures().on('remove', (evt) => {
-      document.removeEventListener('keydown', this.deleteFeature);
       this.map.removeInteraction(this.moveInteraction);
-      unByKey(moveMapKey);
+      this.deleteInteraction.setFeatures();
+
+      // unByKey(moveMapKey);
       if (this.selectMoveStyle) {
         // Remove the select style dynamically when the feature had its own style.
-        this.onDeselectFeature(
+        onDeselectFeature(
           evt.element,
           this.selectMoveStyle,
           SELECT_MOVE_ON_CHANGE_KEY,
@@ -336,35 +132,27 @@ class ModifyControl extends Control {
      * @type {ol.interaction.Select}
      * @private
      */
-
-    /* Only double click select when no features present, otherwise zoom map */
-    const defaultModifyCondition = (evt) =>
-      evt.type === 'dblclick' && this.map.hasFeatureAtPixel(evt.pixel);
-
-    this.selectModify = new Select({
-      condition:
-        options.modifyCondition || ((evt) => defaultModifyCondition(evt)),
-      toggleCondition: options.modifyToggleCondition || shiftKeyOnly,
+    this.selectModify = new SelectModify({
       filter: this.selectFilter,
-      style: this.selectModifyStyle,
       hitTolerance: this.hitTolerance,
-      wrapX: false,
+      ...options.selectModifyOptions,
     });
-    let modifyMapKey;
+    // let modifyMapKey;
     this.selectModify.getFeatures().on('add', (evt) => {
       this.selectMove.getFeatures().clear();
-      document.addEventListener('keydown', this.deleteFeature);
       this.map.addInteraction(this.modifyInteraction);
+      this.deleteInteraction.setFeatures(this.selectModify.getFeatures());
 
       // Remove key before adding to prevent listener stacking
-      unByKey(modifyMapKey);
-      modifyMapKey = this.map.on('singleclick', (e) => {
-        this.unselectInteraction(e, this.selectModify);
-      });
+      // unByKey(modifyMapKey);
+      // modifyMapKey = this.map.on('singleclick', (e) => {
+      //   console.log('singleclick modify');
+      //   this.unselectInteraction(e, this.selectModify);
+      // });
 
       if (this.selectModifyStyle) {
         // Apply the select style dynamically when the feature has its own style.
-        this.onSelectFeature(
+        onSelectFeature(
           evt.element,
           this.selectModifyStyle,
           SELECT_MODIFY_ON_CHANGE_KEY,
@@ -373,11 +161,10 @@ class ModifyControl extends Control {
     });
 
     this.selectModify.getFeatures().on('remove', (evt) => {
-      document.removeEventListener('keydown', this.deleteFeature);
       this.map.removeInteraction(this.modifyInteraction);
-      unByKey(modifyMapKey);
+      // unByKey(modifyMapKey);
       if (this.selectModifyStyle) {
-        this.onDeselectFeature(
+        onDeselectFeature(
           evt.element,
           this.selectModifyStyle,
           SELECT_MODIFY_ON_CHANGE_KEY,
@@ -385,19 +172,47 @@ class ModifyControl extends Control {
       }
     });
 
+    this.createModifyInteraction(options.modifyInteractionOptions);
+    this.createMoveInteraction(options.moveInteractionOptions);
+    this.createDeleteInteraction(options.deleteInteractionOptions);
+  }
+
+  /**
+   * Create the interaction used to move feature.
+   * @param {*} options
+   */
+  createMoveInteraction(options = {}) {
+    /**
+     * @type {ole.interaction.Move}
+     * @private
+     */
+    this.moveInteraction = new Move({
+      features: this.selectMove.getFeatures(),
+      ...options,
+    });
+    this.moveInteraction.on('movestart', (evt) => {
+      this.editor.setEditFeature(evt.feature);
+      this.isMoving = true;
+    });
+    this.moveInteraction.on('moveend', () => {
+      this.editor.setEditFeature(null);
+      this.isMoving = false;
+    });
+  }
+
+  /**
+   * Create the interaction used to modify vertexes of features.
+   * @param {*} options
+   */
+  createModifyInteraction(options = {}) {
     /**
      * @type {ol.interaction.Modify}
      * @private
      */
     this.modifyInteraction = new Modify({
       features: this.selectModify.getFeatures(),
-      style: this.modifyStyle,
-      deleteCondition: (e) => {
-        if (this.deleteNodeCondition(e)) {
-          this.deleteNode = true;
-        }
-        return this.deleteNodeCondition(e);
-      },
+      deleteCondition: click,
+      ...options,
     });
 
     this.modifyInteraction.on('modifystart', (evt) => {
@@ -409,57 +224,60 @@ class ModifyControl extends Control {
       this.editor.setEditFeature(null);
       this.isModifying = false;
     });
+  }
 
+  /**
+   * Create the interaction used to delete selected features.
+   * @param {*} options
+   */
+  createDeleteInteraction(options = {}) {
     /**
-     * @type {ol.interaction.Pointer}
+     * @type {ol.interaction.Delete}
      * @private
      */
-    this.moveInteraction = new Pointer({
-      handleDownEvent: this.startMoveFeature.bind(this),
-      handleDragEvent: this.moveFeature.bind(this),
-      handleUpEvent: this.stopMoveFeature.bind(this),
+    this.deleteInteraction = new Delete({ source: this.source, ...options });
+
+    this.deleteInteraction.on('delete', () => {
+      this.changeCursor(null);
     });
   }
 
   /**
-   * Handle the event of the delete event listener.
-   * @param {Event} evt Event.
-   * @private
+   * Get a selectable feature at a pixel.
+   * @param {*} pixel
    */
-  deleteFeature(evt) {
-    // Ignore if the event comes from textarea and input
-    if (
-      /textarea|input/i.test(evt.target.nodeName) ||
-      !this.deleteCondition(evt)
-    ) {
-      return;
+  getFeatureAtPixel(pixel) {
+    const feature = (this.map.getFeaturesAtPixel(pixel, {
+      hitTolerance: this.hitTolerance,
+      layerFilter: this.layerFilter,
+    }) || [])[0];
+
+    if (this.getFeatureFilter(feature)) {
+      return feature;
     }
+    return null;
+  }
 
-    let features;
-
-    // Choose feature collection to delete
-    if (this.selectMove.getFeatures().getArray().length > 0) {
-      features = this.selectMove.getFeatures();
-    } else if (this.selectModify.getFeatures().getArray().length > 0) {
-      features = this.selectModify.getFeatures();
-    }
-
-    // Delete selected features using delete key
-    if (features) {
-      // Loop delete through selected features array
-      features
-        .getArray()
-        .forEach((feature, i) =>
-          this.source.removeFeature(features.getArray()[i]),
-        );
-
-      this.changeCursor(null);
-      features.clear();
-
-      // Prevent browser history back button action on IE 11
-      evt.stopPropagation();
-      evt.preventDefault();
-    }
+  /**
+   * Detect if a vertex is hovered.
+   * @param {*} pixel
+   */
+  isHoverVertexFeatureAtPixel(pixel) {
+    let isHoverVertex = false;
+    this.map.forEachFeatureAtPixel(
+      pixel,
+      (feat, layer) => {
+        if (!layer) {
+          isHoverVertex = true;
+          return true;
+        }
+        return false;
+      },
+      {
+        hitTolerance: this.hitTolerance,
+      },
+    );
+    return isHoverVertex;
   }
 
   isSelectedByMove(feature) {
@@ -468,61 +286,6 @@ class ModifyControl extends Control {
 
   isSelectedByModify(feature) {
     return this.selectModify.getFeatures().getArray().indexOf(feature) !== -1;
-  }
-
-  /**
-   * Handle the down event of the move interaction.
-   * @param {ol.MapBrowserEvent} evt Event.
-   * @private
-   */
-  startMoveFeature(evt) {
-    this.featureToMove = this.getFeatureAtPixel(evt.pixel);
-    if (this.featureToMove && this.isSelectedByMove(this.featureToMove)) {
-      if (this.featureToMove.getGeometry() instanceof Point) {
-        const extent = this.featureToMove.getGeometry().getExtent();
-        this.coordinate = getCenter(extent);
-      } else {
-        this.coordinate = evt.coordinate;
-      }
-      this.editor.setEditFeature(this.featureToMove);
-      this.isMoving = true;
-      this.moveInteraction.dispatchEvent(
-        new MoveEvent(MoveEventType.MOVESTART, this.featureToMove, evt),
-      );
-
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Handle the drag event of the move interaction.
-   * @param {ol.MapBrowserEvent} evt Event.
-   * @private
-   */
-  moveFeature(evt) {
-    const deltaX = evt.coordinate[0] - this.coordinate[0];
-    const deltaY = evt.coordinate[1] - this.coordinate[1];
-
-    this.featureToMove.getGeometry().translate(deltaX, deltaY);
-    this.coordinate = evt.coordinate;
-  }
-
-  /**
-   * Handle the up event of the pointer interaction.
-   * @param {ol.MapBrowserEvent} evt Event.
-   * @private
-   */
-  stopMoveFeature(evt) {
-    this.moveInteraction.dispatchEvent(
-      new MoveEvent(MoveEventType.MOVEEND, this.featureToMove, evt),
-    );
-    this.coordinate = null;
-    this.editor.setEditFeature(null);
-    this.isMoving = false;
-    this.featureToMove = null;
-    return false;
   }
 
   /**
@@ -562,30 +325,29 @@ class ModifyControl extends Control {
     }, 50);
   }
 
-  /**
-   * Deselect features when editing geometries on a single click on map.
-   * @param {ol.MapBrowserEvent} evt Event.
-   * @private
-   */
-  unselectInteraction(evt, interaction) {
-    // Override unselect when a node is deleted with a click
-    if (this.deleteNode) {
-      this.deleteNode = false;
-      return;
-    }
-
-    if (!this.map.hasFeatureAtPixel(evt.pixel)) {
-      // Apply onMapClick from options if defined
-      if (this.onMapClick) {
-        evt.stopPropagation();
-        evt.preventDefault();
-        this.onMapClick(evt, this);
-        return;
-      }
-      // Default: Clear selection
-      interaction.getFeatures().clear();
-    }
-  }
+  // /**
+  //  * Deselect features when editing geometries on a single click on map.
+  //  * @param {ol.MapBrowserEvent} evt Event.
+  //  * @private
+  //  */
+  // unselectInteraction(evt, interaction) {
+  // Override unselect when a node is deleted with a click
+  // if (this.deleteNode) {
+  //   this.deleteNode = false;
+  //   return;
+  // }
+  // if (!this.map.hasFeatureAtPixel(evt.pixel)) {
+  //   // Apply onMapClick from options if defined
+  //   if (this.onMapClick) {
+  //     evt.stopPropagation();
+  //     evt.preventDefault();
+  //     this.onMapClick(evt, this);
+  //     return;
+  //   }
+  //   // Default: Clear selection
+  //   interaction.getFeatures().clear();
+  // }
+  // }
 
   /**
    * Change cursor style.
@@ -609,8 +371,11 @@ class ModifyControl extends Control {
     super.activate();
     clearTimeout(this.cursorTimeout);
     this.map.on('pointermove', this.cursorHandler);
-    this.map.addInteraction(this.selectMove);
+    this.map.addInteraction(this.deleteInteraction);
     this.map.addInteraction(this.selectModify);
+    // For the default behvior it's very important to add selectMove after selectModify.
+    // It will avoid single/dbleclick mess.
+    this.map.addInteraction(this.selectMove);
   }
 
   /**
@@ -621,6 +386,8 @@ class ModifyControl extends Control {
     this.map.un('pointermove', this.cursorHandler);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
+
+    this.map.removeInteraction(this.deleteInteraction);
     this.map.removeInteraction(this.selectMove);
     this.map.removeInteraction(this.selectModify);
     super.deactivate(silent);
