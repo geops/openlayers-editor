@@ -25,11 +25,12 @@ class Intersection extends TopologyControl {
    *   (default is 10)
    */
   constructor(options) {
-    super(Object.assign({
+    super({
       title: 'Intersection',
       className: 'ole-control-intersection',
       image: intersectionSVG,
-    }, options));
+      ...options,
+    });
   }
 
   /**

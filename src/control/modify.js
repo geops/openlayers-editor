@@ -115,14 +115,12 @@ class ModifyControl extends Control {
    * Function that takes a {@link https://openlayers.org/en/latest/apidoc/module-ol_MapBrowserEvent-MapBrowserEvent.html|openlayers MapBrowserEvent} (click) and the ModifyControl iteself as arguments.
    */
   constructor(options) {
-    super(Object.assign(
-      {
-        title: 'Modify geometry',
-        className: 'ole-control-modify',
-        image,
-      },
-      options,
-    ));
+    super({
+      title: 'Modify geometry',
+      className: 'ole-control-modify',
+      image,
+      ...options,
+    });
 
     const OLD_STYLES_PROP = 'oldStyles';
     const SELECT_MOVE_ON_CHANGE_KEY = 'selectMoveOnChangeKey';
@@ -145,7 +143,8 @@ class ModifyControl extends Control {
      * @type {number}
      * @private
      */
-    this.hitTolerance = options.hitTolerance === undefined ? 5 : options.hitTolerance;
+    this.hitTolerance =
+      options.hitTolerance === undefined ? 5 : options.hitTolerance;
 
     this.selectMoveStyle = options.selectMoveStyle;
 
@@ -161,17 +160,18 @@ class ModifyControl extends Control {
 
     this.deleteCondition =
       options.deleteCondition ||
-      (evt => evt.keyCode === 46 || evt.keyCode === 8);
+      ((evt) => evt.keyCode === 46 || evt.keyCode === 8);
 
-    this.deleteNodeCondition =
-      options.deleteNodeCondition || click;
+    this.deleteNodeCondition = options.deleteNodeCondition || click;
 
-    this.selectFilter = options.selectFilter || ((feature, layer) => {
-      if (layer && this.layerFilter) {
-        return this.layerFilter(layer);
-      }
-      return true;
-    });
+    this.selectFilter =
+      options.selectFilter ||
+      ((feature, layer) => {
+        if (layer && this.layerFilter) {
+          return this.layerFilter(layer);
+        }
+        return true;
+      });
 
     this.getFeatureFilter = options.getFeatureFilter || (() => true);
 
@@ -266,7 +266,9 @@ class ModifyControl extends Control {
       if (!oldStyles) {
         return;
       }
-      const isStyleChanged = oldStyles.some((style, idx) => style !== featureStyles[idx]);
+      const isStyleChanged = oldStyles.some(
+        (style, idx) => style !== featureStyles[idx],
+      );
       if (isStyleChanged) {
         // If the user changes the style of the feature, we reapply the select style.
         this.applySelectStyle(feature, selectStyle);
@@ -336,10 +338,12 @@ class ModifyControl extends Control {
      */
 
     /* Only double click select when no features present, otherwise zoom map */
-    const defaultModifyCondition = evt => evt.type === 'dblclick' && this.map.hasFeatureAtPixel(evt.pixel);
+    const defaultModifyCondition = (evt) =>
+      evt.type === 'dblclick' && this.map.hasFeatureAtPixel(evt.pixel);
 
     this.selectModify = new Select({
-      condition: options.modifyCondition || (evt => defaultModifyCondition(evt)),
+      condition:
+        options.modifyCondition || ((evt) => defaultModifyCondition(evt)),
       toggleCondition: options.modifyToggleCondition || shiftKeyOnly,
       filter: this.selectFilter,
       style: this.selectModifyStyle,
@@ -443,8 +447,11 @@ class ModifyControl extends Control {
     // Delete selected features using delete key
     if (features) {
       // Loop delete through selected features array
-      features.getArray().forEach((feature, i) => this.source
-        .removeFeature(features.getArray()[i]));
+      features
+        .getArray()
+        .forEach((feature, i) =>
+          this.source.removeFeature(features.getArray()[i]),
+        );
 
       this.changeCursor(null);
       features.clear();
@@ -456,21 +463,11 @@ class ModifyControl extends Control {
   }
 
   isSelectedByMove(feature) {
-    return (
-      this.selectMove
-        .getFeatures()
-        .getArray()
-        .indexOf(feature) !== -1
-    );
+    return this.selectMove.getFeatures().getArray().indexOf(feature) !== -1;
   }
 
   isSelectedByModify(feature) {
-    return (
-      this.selectModify
-        .getFeatures()
-        .getArray()
-        .indexOf(feature) !== -1
-    );
+    return this.selectModify.getFeatures().getArray().indexOf(feature) !== -1;
   }
 
   /**
@@ -489,11 +486,9 @@ class ModifyControl extends Control {
       }
       this.editor.setEditFeature(this.featureToMove);
       this.isMoving = true;
-      this.moveInteraction.dispatchEvent(new MoveEvent(
-        MoveEventType.MOVESTART,
-        this.featureToMove,
-        evt,
-      ));
+      this.moveInteraction.dispatchEvent(
+        new MoveEvent(MoveEventType.MOVESTART, this.featureToMove, evt),
+      );
 
       return true;
     }
@@ -520,11 +515,9 @@ class ModifyControl extends Control {
    * @private
    */
   stopMoveFeature(evt) {
-    this.moveInteraction.dispatchEvent(new MoveEvent(
-      MoveEventType.MOVEEND,
-      this.featureToMove,
-      evt,
-    ));
+    this.moveInteraction.dispatchEvent(
+      new MoveEvent(MoveEventType.MOVEEND, this.featureToMove, evt),
+    );
     this.coordinate = null;
     this.editor.setEditFeature(null);
     this.isMoving = false;

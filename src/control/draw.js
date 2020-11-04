@@ -31,11 +31,12 @@ class DrawControl extends Control {
         image = drawPointSVG;
     }
 
-    super(Object.assign({
-      title: `Draw ${(options.type || 'Point')}`,
+    super({
+      title: `Draw ${options.type || 'Point'}`,
       className: 'ole-control-draw',
       image,
-    }, options));
+      ...options,
+    });
 
     /**
      * @type {ol.interaction.Draw}

@@ -76,8 +76,10 @@ export default class Storage extends Service {
 
     for (let i = 0; i < propKeys.length; i += 1) {
       const key = propKeys[i];
-      if (this.ignoreKeys.indexOf(key) === -1 &&
-          !(properties[key] instanceof Object)) {
+      if (
+        this.ignoreKeys.indexOf(key) === -1 &&
+        !(properties[key] instanceof Object)
+      ) {
         storageProps[key] = properties[key];
       }
     }
@@ -88,6 +90,7 @@ export default class Storage extends Service {
   /**
    * Restore the control properties.
    */
+  // eslint-disable-next-line class-methods-use-this
   restoreProperties() {
     // to be implemented by child class
   }
@@ -97,12 +100,13 @@ export default class Storage extends Service {
    */
   storeActiveControls() {
     const activeControls = this.editor.getActiveControls();
-    return activeControls.getArray().map(c => c.getProperties().title);
+    return activeControls.getArray().map((c) => c.getProperties().title);
   }
 
   /**
    * Restore the active state of the controls.
    */
+  // eslint-disable-next-line class-methods-use-this
   restoreActiveControls() {
     // to be implemented by child class
   }

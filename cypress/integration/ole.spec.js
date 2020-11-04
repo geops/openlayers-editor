@@ -1,5 +1,4 @@
 describe('OLE', function () {
-
   beforeEach(function () {
     cy.visit('/');
   });
