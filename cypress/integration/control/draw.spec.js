@@ -1,10 +1,9 @@
 import DrawControl from '../../../src/control/draw';
 
 describe('Draw control', function () {
-
   it('should instantiate', function () {
     const draw = new DrawControl({});
-    expect(draw).to.be.instanceOf(DrawControl)
+    expect(draw).to.be.instanceOf(DrawControl);
   });
 
   it('should draw points per default', function () {
@@ -21,5 +20,4 @@ describe('Draw control', function () {
     const draw = new DrawControl({ type: 'Polygon' });
     expect(draw.title).to.equal('Draw Polygon');
   });
-
 });
