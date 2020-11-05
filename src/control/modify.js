@@ -91,6 +91,7 @@ class ModifyControl extends Control {
 
     // let moveMapKey;
     this.selectMove.getFeatures().on('add', (evt) => {
+      console.log('add select move', evt);
       this.selectModify.getFeatures().clear();
       this.map.addInteraction(this.moveInteraction);
       this.deleteInteraction.setFeatures(this.selectMove.getFeatures());
@@ -139,6 +140,7 @@ class ModifyControl extends Control {
     });
     // let modifyMapKey;
     this.selectModify.getFeatures().on('add', (evt) => {
+      console.log('add select modify', evt);
       this.selectMove.getFeatures().clear();
       this.map.addInteraction(this.modifyInteraction);
       this.deleteInteraction.setFeatures(this.selectModify.getFeatures());
@@ -150,11 +152,11 @@ class ModifyControl extends Control {
       //   this.unselectInteraction(e, this.selectModify);
       // });
 
-      if (this.selectModifyStyle) {
+      if (options.selectModifyOptions.style2) {
         // Apply the select style dynamically when the feature has its own style.
         onSelectFeature(
           evt.element,
-          this.selectModifyStyle,
+          options.selectModifyOptions.style2,
           SELECT_MODIFY_ON_CHANGE_KEY,
         );
       }
@@ -163,10 +165,10 @@ class ModifyControl extends Control {
     this.selectModify.getFeatures().on('remove', (evt) => {
       this.map.removeInteraction(this.modifyInteraction);
       // unByKey(modifyMapKey);
-      if (this.selectModifyStyle) {
+      if (options.selectModifyOptions.style2) {
         onDeselectFeature(
           evt.element,
-          this.selectModifyStyle,
+          options.selectModifyOptions.style2,
           SELECT_MODIFY_ON_CHANGE_KEY,
         );
       }
