@@ -1,4 +1,6 @@
-import Select from './select';
+import Delete from './delete';
+import SelectMove from './selectmove';
+import SelectModify from './selectmodify';
+import Move from './move';
 
-// eslint-disable-next-line import/prefer-default-export
-export { Select };
+export default { Delete, SelectModify, SelectMove, Move };
