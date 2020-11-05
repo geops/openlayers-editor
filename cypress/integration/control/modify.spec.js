@@ -60,12 +60,12 @@ describe('ModifyControl', function () {
             selectedFeaturesArray[0].getGeometry().getCoordinates()[0].length,
           ).to.equal(4);
           // Check that no features from the overlay are mistakenly selected
-          expect(
-            omitFeatureSelectSpy.withArgs(
-              omitFeatureSelectSpy.args[0][0],
-              null,
-            ),
-          ).to.not.be.called;
+          const toTest = omitFeatureSelectSpy.withArgs(
+            omitFeatureSelectSpy.args[0][0],
+            null,
+          );
+          // eslint-disable-next-line no-unused-expressions
+          expect(toTest).to.not.be.called;
         });
 
       // Select line (double click line in map canvas container to start modifying)
@@ -100,6 +100,7 @@ describe('ModifyControl', function () {
             selectedFeaturesArray[0].getGeometry().getCoordinates().length,
           ).to.equal(2);
           // Check that no features from the overlay are mistakenly selected
+          // eslint-disable-next-line no-unused-expressions
           expect(
             omitFeatureSelectSpy.withArgs(
               omitFeatureSelectSpy.args[0][0],
