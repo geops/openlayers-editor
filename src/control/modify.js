@@ -152,7 +152,7 @@ class ModifyControl extends Control {
       //   this.unselectInteraction(e, this.selectModify);
       // });
 
-      if (options.selectModifyOptions.style2) {
+      if (options.selectModifyOptions && options.selectModifyOptions.style2) {
         // Apply the select style dynamically when the feature has its own style.
         onSelectFeature(
           evt.element,
@@ -165,7 +165,7 @@ class ModifyControl extends Control {
     this.selectModify.getFeatures().on('remove', (evt) => {
       this.map.removeInteraction(this.modifyInteraction);
       // unByKey(modifyMapKey);
-      if (options.selectModifyOptions.style2) {
+      if (options.selectModifyOptions && options.selectModifyOptions.style2) {
         onDeselectFeature(
           evt.element,
           options.selectModifyOptions.style2,
