@@ -38,125 +38,131 @@
     </div>
     <div id="map"></div>
     <script type="text/javascript">
-      var editLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-          wrapX: false
-        })
-      });
-      const PROJECTION = ol.proj.get("EPSG:3857");
+      // Get the public api key
+      fetch('https://developer.geops.io/publickey')
+        .then((response) => response.json())
+        .then(function(data = {}) {
 
-      // Code taken from https://openlayers.org/en/latest/examples/mapbox-layer.html
-      var mbMap = new mapboxgl.Map({
-        style: 'https://maps.geops.io/styles/travic/style.json?key=5cc87b12d7c5370001c1d655e96f1d54c5404bbb8cc4cfcd2ff5111b',
-        attributionControl: false,
-        boxZoom: false,
-        center: ol.proj.toLonLat([873708.375917, 6105425.847789], PROJECTION), 
-        container: 'map',
-        doubleClickZoom: false,
-        dragPan: false,
-        dragRotate: false,
-        interactive: false,
-        keyboard: false,
-        pitchWithRotate: false,
-        scrollZoom: false,
-        touchZoomRotate: false,
-      });
+          var editLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+              wrapX: false
+            })
+          });
+          const PROJECTION = ol.proj.get("EPSG:3857");
 
-      var mbLayer = new ol.layer.Layer({
-        render: function (frameState) {
-          var canvas = mbMap.getCanvas();
-          var viewState = frameState.viewState;
-          var visible = mbLayer.getVisible();
-          canvas.style.display = visible ? 'block' : 'none';
-
-          var opacity = mbLayer.getOpacity();
-          canvas.style.opacity = opacity;
-
-          // adjust view parameters in mapbox
-          var rotation = viewState.rotation;
-          mbMap.jumpTo({
-            center: ol.proj.toLonLat(viewState.center),
-            zoom: viewState.zoom - 1,
-            bearing: (-rotation * 180) / Math.PI,
-            animate: false,
+          // Code taken from https://openlayers.org/en/latest/examples/mapbox-layer.html
+          var mbMap = new mapboxgl.Map({
+            style: 'https://maps.geops.io/styles/travic/style.json?key=' + data.key,
+            attributionControl: false,
+            boxZoom: false,
+            center: ol.proj.toLonLat([873708.375917, 6105425.847789], PROJECTION), 
+            container: 'map',
+            doubleClickZoom: false,
+            dragPan: false,
+            dragRotate: false,
+            interactive: false,
+            keyboard: false,
+            pitchWithRotate: false,
+            scrollZoom: false,
+            touchZoomRotate: false,
           });
 
-          return canvas;
-        },
-      });
+          var mbLayer = new ol.layer.Layer({
+            render: function (frameState) {
+              var canvas = mbMap.getCanvas();
+              var viewState = frameState.viewState;
+              var visible = mbLayer.getVisible();
+              canvas.style.display = visible ? 'block' : 'none';
 
-      var map = new ol.Map({
-        layers: [
-          mbLayer,
-          editLayer,
-        ],
-        target: "map",
-        view: new ol.View({
-          center: [873708.375917, 6105425.847789],
-          zoom: 15
-        })
-      });
+              var opacity = mbLayer.getOpacity();
+              canvas.style.opacity = opacity;
 
-      var editor = new ole.Editor(map);
+              // adjust view parameters in mapbox
+              var rotation = viewState.rotation;
+              mbMap.jumpTo({
+                center: ol.proj.toLonLat(viewState.center),
+                zoom: viewState.zoom - 1,
+                bearing: (-rotation * 180) / Math.PI,
+                animate: false,
+              });
 
-      var cad = new ole.control.CAD({
-        source: editLayer.getSource()
-      });
+              return canvas;
+            },
+          });
 
-      var draw = new ole.control.Draw({
-        source: editLayer.getSource()
-      });
+          var map = new ol.Map({
+            layers: [
+              mbLayer,
+              editLayer,
+            ],
+            target: "map",
+            view: new ol.View({
+              center: [873708.375917, 6105425.847789],
+              zoom: 15
+            })
+          });
 
-      var drawLine = new ole.control.Draw({
-        type: "LineString",
-        source: editLayer.getSource()
-      });
+          var editor = new ole.Editor(map);
 
-      var rotate = new ole.control.Rotate({
-        source: editLayer.getSource()
-      });
+          var cad = new ole.control.CAD({
+            source: editLayer.getSource()
+          });
 
-      var drawPoly = new ole.control.Draw({
-        type: "Polygon",
-        source: editLayer.getSource()
-      });
+          var draw = new ole.control.Draw({
+            source: editLayer.getSource()
+          });
 
-      var modify = new ole.control.Modify({
-        source: editLayer.getSource(),
-      });
+          var drawLine = new ole.control.Draw({
+            type: "LineString",
+            source: editLayer.getSource()
+          });
 
-      var buffer = new ole.control.Buffer({
-        source: editLayer.getSource()
-      });
+          var rotate = new ole.control.Rotate({
+            source: editLayer.getSource()
+          });
 
-      var union = new ole.control.Union({
-        source: editLayer.getSource()
-      });
+          var drawPoly = new ole.control.Draw({
+            type: "Polygon",
+            source: editLayer.getSource()
+          });
 
-      var intersection = new ole.control.Intersection({
-        source: editLayer.getSource()
-      });
+          var modify = new ole.control.Modify({
+            source: editLayer.getSource(),
+          });
 
-      var difference = new ole.control.Difference({
-        source: editLayer.getSource()
-      });
+          var buffer = new ole.control.Buffer({
+            source: editLayer.getSource()
+          });
 
-      editor.addControls([
-        cad,
-        draw,
-        drawLine,
-        drawPoly,
-        modify,
-        rotate,
-        buffer,
-        union,
-        intersection,
-        difference
-      ]);
+          var union = new ole.control.Union({
+            source: editLayer.getSource()
+          });
 
-      var ls = new ole.service.LocalStorage();
+          var intersection = new ole.control.Intersection({
+            source: editLayer.getSource()
+          });
 
-      editor.addService(ls);
+          var difference = new ole.control.Difference({
+            source: editLayer.getSource()
+          });
+
+          editor.addControls([
+            cad,
+            draw,
+            drawLine,
+            drawPoly,
+            modify,
+            rotate,
+            buffer,
+            union,
+            intersection,
+            difference
+          ]);
+
+          var ls = new ole.service.LocalStorage();
+
+          editor.addService(ls);
+        });
     </script>
   </body>
 </html>
