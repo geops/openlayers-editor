@@ -86,7 +86,7 @@
       "post-checkout": "npm install --frozen-lockfile",
       "post-merge": "npm install --frozen-lockfile",
       "post-rebase": "npm install --frozen-lockfile",
-      "pre-commit": "CI=true lint-staged   "
+      "pre-commit": "(if git grep -n -E \"[a-f0-9]{55-56}\"; then exit \"REMOVE API KEYS !!!!\";  fi;) && CI=true lint-staged   "
     }
   },
   "keywords": [
