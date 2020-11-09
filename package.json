@@ -2,7 +2,7 @@
   "name": "ole",
   "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
-  "version": "1.1.8-beta.2",
+  "version": "1.1.8-beta.6",
   "main": "build/index.js",
   "peerDependencies": {
     "jsts": "^2",
@@ -14,6 +14,8 @@
     "@babel/plugin-transform-destructuring": "7.12.1",
     "@babel/plugin-transform-object-assign": "7.12.1",
     "@babel/preset-env": "7.12.1",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@constgen/neutrino-svg-loader": "1.9.2",
     "@cypress/webpack-preprocessor": "5.4.10",
     "@neutrinojs/image-loader": "9.4.0",
@@ -51,15 +53,16 @@
     "build": "webpack --mode production ",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",
-    "cy:test": "npm run build && start-server-and-test start http://localhost:8080 cy:run",
+    "cy:test": "yarn build && start-server-and-test start http://localhost:8080 cy:run",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "format": "prettier --write 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
     "lint": "eslint 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
-    "publish:beta": "npm run publish:public --tag beta",
-    "publish:public": "npm version && npm run build && git push origin HEAD && npm publish",
-    "start": "npm run build && webpack-dev-server --mode development --open",
+    "publish:beta": "yarn release -- --prerelease beta && yarn build && git push origin HEAD && yarn publish --tag beta",
+    "publish:public": "yarn release && yarn build && git push origin HEAD && yarn publish",
+    "release": "standard-version",
+    "start": "yarn build && webpack-dev-server --mode development --open",
     "test": "jest \"front/.*\\.test\\.js\" --passWithNoTests --env=jsdom --transformIgnorePatterns \"/node_modules/(?!(ol|ol-mapbox-style)/).*/\"",
-    "test:watch": "npm test --watchAll"
+    "test:watch": "yarn test --watchAll"
   },
   "eslintConfig": {
     "env": {
@@ -84,10 +87,11 @@
   },
   "husky": {
     "hooks": {
-      "post-checkout": "npm install --frozen-lockfile",
-      "post-merge": "npm install --frozen-lockfile",
-      "post-rebase": "npm install --frozen-lockfile",
-      "pre-commit": "CI=true lint-staged   "
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "post-checkout": "yarn install --frozen-lockfile",
+      "post-merge": "yarn install --frozen-lockfile",
+      "post-rebase": "yarn install --frozen-lockfile",
+      "pre-commit": "(if git grep -n -E \"5cc87b12d7c5370001c1d65(5)\"; then exit \"Remove private geOps API keys !!!!\";  fi;) && CI=true lint-staged   "
     }
   },
   "keywords": [
@@ -98,7 +102,7 @@
     "(src|__mocks__)/**/*.js": [
       "eslint --fix",
       "prettier --write",
-      "npm test --bail --findRelatedTests"
+      "yarn test --bail --findRelatedTests"
     ],
     "package.json": [
       "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
