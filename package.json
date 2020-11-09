@@ -2,7 +2,7 @@
   "name": "ole",
   "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
-  "version": "1.1.8-beta.2",
+  "version": "1.2.0",
   "main": "build/index.js",
   "peerDependencies": {
     "jsts": "^2",
@@ -57,6 +57,7 @@
     "lint": "eslint 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
     "publish:beta": "npm run publish:public --tag beta",
     "publish:public": "npm version && npm run build && git push origin HEAD && npm publish",
+    "release": "standard-version",
     "start": "npm run build && webpack-dev-server --mode development --open",
     "test": "jest \"front/.*\\.test\\.js\" --passWithNoTests --env=jsdom --transformIgnorePatterns \"/node_modules/(?!(ol|ol-mapbox-style)/).*/\"",
     "test:watch": "npm test --watchAll"
