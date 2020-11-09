@@ -38,32 +38,34 @@
     </div>
     <div id="map"></div>
     <script type="text/javascript">
+
       var editLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
           wrapX: false
         })
       });
-      const PROJECTION = ol.proj.get("EPSG:3857");
 
       // Code taken from https://openlayers.org/en/latest/examples/mapbox-layer.html
       var mbMap = new mapboxgl.Map({
-        style: 'https://maps.geops.io/styles/travic/style.json?key=5cc87b12d7c5370001c1d655e96f1d54c5404bbb8cc4cfcd2ff5111b',
-        attributionControl: false,
-        boxZoom: false,
-        center: ol.proj.toLonLat([873708.375917, 6105425.847789], PROJECTION),
         container: 'map',
-        doubleClickZoom: false,
-        dragPan: false,
-        dragRotate: false,
+        center: ol.proj.toLonLat([873708.375917, 6105425.847789]), 
+        attributionControl: false,
         interactive: false,
-        keyboard: false,
-        pitchWithRotate: false,
-        scrollZoom: false,
-        touchZoomRotate: false,
+      });
+      
+      // Get the public api key
+      fetch('https://developer.geops.io/publickey')
+        .then((response) => response.json())
+        .then(function(data = {}) {
+          mbMap.setStyle('https://maps.geops.io/styles/travic/style.json?key=' + data.key)
       });
 
+      // Code taken from https://openlayers.org/en/latest/examples/mapbox-layer.html
       var mbLayer = new ol.layer.Layer({
         render: function (frameState) {
+          if (!mbMap) {
+            return null;
+          }
           var canvas = mbMap.getCanvas();
           var viewState = frameState.viewState;
           var visible = mbLayer.getVisible();
