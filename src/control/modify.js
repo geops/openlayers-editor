@@ -1,5 +1,5 @@
 import { Modify } from 'ol/interaction';
-import { click } from 'ol/events/condition';
+import { singleClick } from 'ol/events/condition';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
@@ -19,6 +19,7 @@ class ModifyControl extends Control {
    * @param {number} [options.hitTolerance=5] Select tolerance in pixels.
    * @param {ol.Collection<ol.Feature>} [options.features] Destination for drawing.
    * @param {ol.source.Vector} [options.source] Destination for drawing.
+   * @param {boolean} [options.useAppendSelectStyle=false] useAppendSelectStyle Append the select style to the feature instead of replacing it.
    * @param {Object} [options.selectMoveOptions] Options for the select interaction used to move features.
    * @param {Object} [options.selectModifyOptions] Options for the select interaction used to modify features.
    * @param {Object} [options.moveInteractionOptions] Options for the move interaction.
@@ -34,30 +35,27 @@ class ModifyControl extends Control {
       ...options,
     });
 
-    const SELECT_MOVE_ON_CHANGE_KEY = 'selectMoveOnChangeKey';
-    const SELECT_MODIFY_ON_CHANGE_KEY = 'selectModifyOnChangeKey';
-
     /**
-     * @type {string}
-     * @private
-     */
-    this.previousCursor = null;
-
-    /**
-     * @type {number}
+     * Buffer around the coordintate clicked.
+     * @type {number=5} Buffer's size in piyels.
      * @private
      */
     this.hitTolerance =
       options.hitTolerance === undefined ? 5 : options.hitTolerance;
 
-    this.getFeatureAtPixel = this.getFeatureAtPixel.bind(this);
+    /**
+     * By default select interactions replace the current feature's style by the select style.
+     * If true, the select style is append to the feature's style.
+     * @type {boolean=false}
+     * @private
+     */
+    this.useAppendSelectStyle = !!options.useAppendSelectStyle || false;
 
-    this.cursorHandler = this.cursorHandler.bind(this);
-
-    this.cursorTimeout = null;
-
-    // this.deleteNodeCondition = options.deleteNodeCondition || click;
-
+    /**
+     * Filter function to determine which features are elligible for selection.
+     * @type {function(ol.Feature, ol.layer.Layer)}
+     * @private
+     */
     this.selectFilter =
       options.selectFilter ||
       ((feature, layer) => {
@@ -67,49 +65,50 @@ class ModifyControl extends Control {
         return true;
       });
 
-    this.getFeatureFilter = options.getFeatureFilter || (() => true);
-
-    // this.onMapClick = options.onMapClick;
+    /* Cursor management */
+    this.previousCursor = null;
+    this.cursorTimeout = null;
+    this.cursorFilter = options.cursorFilter || (() => true);
+    this.cursorHandler = this.cursorHandler.bind(this);
+    this.getFeatureAtPixel = this.getFeatureAtPixel.bind(this);
 
     /* Interactions */
+    this.createSelectMoveInteraction(options.selectMoveOptions);
+    this.createSelectModifyInteraction(options.selectModifyOptions);
+    this.createModifyInteraction(options.modifyInteractionOptions);
+    this.createMoveInteraction(options.moveInteractionOptions);
+    this.createDeleteInteraction(options.deleteInteractionOptions);
+  }
+
+  /**
+   * Create the interaction used to select feature to move.
+   * @param {*} options
+   * @private
+   */
+  createSelectMoveInteraction(options = {}) {
+    const ON_CHANGE_KEY = 'selectMoveOnChangeKey';
+    const useAppendSelectStyle =
+      this.useAppendSelectStyle && options && options.style;
+
     /**
-     * Select interaction to move features
+     * Select interaction to move features.
      * @type {ol.interaction.Select}
      * @private
      */
     this.selectMove = new SelectMove({
-      filter: (feature, layer) => {
-        // If the feature is already selected by modify interaction ignore the selection.
-        if (this.isSelectedByModify(feature)) {
-          return false;
-        }
-        return this.selectFilter(feature, layer);
-      },
+      filter: this.selectFilter,
       hitTolerance: this.hitTolerance,
-      ...options.selectMoveOptions,
+      ...options,
     });
 
-    // let moveMapKey;
     this.selectMove.getFeatures().on('add', (evt) => {
-      console.log('add select move', evt);
       this.selectModify.getFeatures().clear();
       this.map.addInteraction(this.moveInteraction);
       this.deleteInteraction.setFeatures(this.selectMove.getFeatures());
 
-      // Remove key before adding to prevent listener stacking
-      // unByKey(moveMapKey);
-      // moveMapKey = this.map.on('singleclick', (e) => {
-      //   console.log('singleclick move');
-      //   this.unselectInteraction(e, this.selectMove);
-      // });
-
-      if (this.selectMoveStyle) {
-        // Apply the select style dynamically when the feature has its own style.
-        onSelectFeature(
-          evt.element,
-          this.selectMoveStyle,
-          SELECT_MOVE_ON_CHANGE_KEY,
-        );
+      if (useAppendSelectStyle) {
+        // Append the select style dynamically when the feature has its own style.
+        onSelectFeature(evt.element, options.style, ON_CHANGE_KEY);
       }
     });
 
@@ -117,66 +116,54 @@ class ModifyControl extends Control {
       this.map.removeInteraction(this.moveInteraction);
       this.deleteInteraction.setFeatures();
 
-      // unByKey(moveMapKey);
-      if (this.selectMoveStyle) {
+      if (useAppendSelectStyle) {
         // Remove the select style dynamically when the feature had its own style.
-        onDeselectFeature(
-          evt.element,
-          this.selectMoveStyle,
-          SELECT_MOVE_ON_CHANGE_KEY,
-        );
+        onDeselectFeature(evt.element, options.style, ON_CHANGE_KEY);
       }
     });
+  }
+
+  /**
+   * Create the interaction used to select feature to modify.
+   * @param {*} options
+   * @private
+   */
+
+  createSelectModifyInteraction(options = {}) {
+    const ON_CHANGE_KEY = 'selectModifyOnChangeKey';
+    const useAppendSelectStyle =
+      this.useAppendSelectStyle && options && options.style;
 
     /**
-     * Select interaction to modify features
+     * Select interaction to modify features.
      * @type {ol.interaction.Select}
      * @private
      */
     this.selectModify = new SelectModify({
       filter: this.selectFilter,
       hitTolerance: this.hitTolerance,
-      ...options.selectModifyOptions,
+      ...options,
     });
-    // let modifyMapKey;
+
     this.selectModify.getFeatures().on('add', (evt) => {
-      console.log('add select modify', evt);
       this.selectMove.getFeatures().clear();
       this.map.addInteraction(this.modifyInteraction);
       this.deleteInteraction.setFeatures(this.selectModify.getFeatures());
 
-      // Remove key before adding to prevent listener stacking
-      // unByKey(modifyMapKey);
-      // modifyMapKey = this.map.on('singleclick', (e) => {
-      //   console.log('singleclick modify');
-      //   this.unselectInteraction(e, this.selectModify);
-      // });
-
-      if (options.selectModifyOptions && options.selectModifyOptions.style2) {
+      if (useAppendSelectStyle) {
         // Apply the select style dynamically when the feature has its own style.
-        onSelectFeature(
-          evt.element,
-          options.selectModifyOptions.style2,
-          SELECT_MODIFY_ON_CHANGE_KEY,
-        );
+        onSelectFeature(evt.element, options.style, ON_CHANGE_KEY);
       }
     });
 
     this.selectModify.getFeatures().on('remove', (evt) => {
       this.map.removeInteraction(this.modifyInteraction);
-      // unByKey(modifyMapKey);
-      if (options.selectModifyOptions && options.selectModifyOptions.style2) {
-        onDeselectFeature(
-          evt.element,
-          options.selectModifyOptions.style2,
-          SELECT_MODIFY_ON_CHANGE_KEY,
-        );
+
+      if (useAppendSelectStyle) {
+        // Remove the select style dynamically when the feature had its own style.
+        onDeselectFeature(evt.element, options.style, ON_CHANGE_KEY);
       }
     });
-
-    this.createModifyInteraction(options.modifyInteractionOptions);
-    this.createMoveInteraction(options.moveInteractionOptions);
-    this.createDeleteInteraction(options.deleteInteractionOptions);
   }
 
   /**
@@ -192,10 +179,12 @@ class ModifyControl extends Control {
       features: this.selectMove.getFeatures(),
       ...options,
     });
+
     this.moveInteraction.on('movestart', (evt) => {
       this.editor.setEditFeature(evt.feature);
       this.isMoving = true;
     });
+
     this.moveInteraction.on('moveend', () => {
       this.editor.setEditFeature(null);
       this.isMoving = false;
@@ -213,7 +202,7 @@ class ModifyControl extends Control {
      */
     this.modifyInteraction = new Modify({
       features: this.selectModify.getFeatures(),
-      deleteCondition: click,
+      deleteCondition: singleClick,
       ...options,
     });
 
@@ -254,7 +243,7 @@ class ModifyControl extends Control {
       layerFilter: this.layerFilter,
     }) || [])[0];
 
-    if (this.getFeatureFilter(feature)) {
+    if (this.cursorFilter(feature)) {
       return feature;
     }
     return null;

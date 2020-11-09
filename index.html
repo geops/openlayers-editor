@@ -5,16 +5,16 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io/en/v6.3.1/css/ol.css"
+      href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io/en/v6.4.3/css/ol.css"
     />
-    <link rel="stylesheet" href="https://unpkg.com/mapbox-gl@1.2.0/dist/mapbox-gl.css">
+    <link rel="stylesheet" href="https://unpkg.com/mapbox-gl@1.12.0/dist/mapbox-gl.css">
     <meta charset="utf-8" />
   </head>
   <body>
-    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io/en/v6.3.1/build/ol.js"></script>
-    <script src="https://unpkg.com/mapbox-gl@1.2.0/dist/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io/en/v6.4.3/build/ol.js"></script>
+    <script src="https://unpkg.com/mapbox-gl@1.12.0/dist/mapbox-gl.js"></script>
     <script src="https://unpkg.com/jsts@2.0.6/dist/jsts.min.js"></script>
-    <script src="build/index.js"></script>
+    <script src="index.js"></script>
     <div id="app">
       <div id="header">
         <nav>
@@ -26,7 +26,7 @@
           </a>
         </nav>
       </div>
-      <div id="map" tabindex="1"></div>
+      <div id="map" tabindex="0"></div>
       <div id="promo">
         <a href="http://geops.de/karriere" target="_blank">
           <div id="promo-text">Join the team!</div>
@@ -36,7 +36,6 @@
         © OpenStreetMap contributors © Mapbox
       </div>
     </div>
-    <div id="map"></div>
     <script type="text/javascript">
 
       var editLayer = new ol.layer.Vector({
@@ -125,6 +124,13 @@
 
       var modify = new ole.control.Modify({
         source: editLayer.getSource(),
+        // useAppendSelectStyle:true,
+        // selectMoveOptions: {
+        //   condition: ol.events.condition.never,
+        // },
+        // selectModifyOptions: {
+        //   condition: ol.events.condition.singleClick,
+        // }
       });
 
       var buffer = new ole.control.Buffer({
