@@ -86,7 +86,7 @@
       "post-checkout": "npm install --frozen-lockfile",
       "post-merge": "npm install --frozen-lockfile",
       "post-rebase": "npm install --frozen-lockfile",
-      "pre-commit": "(if git grep -n -E \"[a-f0-9]{56}\"; then exit \"REMOVE API KEYS !!!!\";  fi;) && CI=true lint-staged   "
+      "pre-commit": "(if git grep -n -E \"5cc87b12d7c5370001c1d65(5)\"; then exit \"Remove private geOps API keys !!!!\";  fi;) && CI=true lint-staged   "
     }
   },
   "keywords": [
