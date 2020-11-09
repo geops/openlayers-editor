@@ -65,12 +65,22 @@ class ModifyControl extends Control {
         return true;
       });
 
+    /**
+     *
+     * Return features elligible for selection on specific pixel.
+     * @type {function(ol.events.MapBrowserEvent)}
+     * @private
+     */
+    this.getFeatureAtPixel = this.getFeatureAtPixel.bind(this);
+
     /* Cursor management */
     this.previousCursor = null;
     this.cursorTimeout = null;
     this.cursorFilter = options.cursorFilter || (() => true);
     this.cursorHandler = this.cursorHandler.bind(this);
-    this.getFeatureAtPixel = this.getFeatureAtPixel.bind(this);
+
+    /* onClickOutsideFeatures management */
+    this.onClickOutsideFeatures = this.onClickOutsideFeatures.bind(this);
 
     /* Interactions */
     this.createSelectMoveInteraction(options.selectMoveOptions);
@@ -103,7 +113,7 @@ class ModifyControl extends Control {
 
     this.selectMove.getFeatures().on('add', (evt) => {
       this.selectModify.getFeatures().clear();
-      this.map.addInteraction(this.moveInteraction);
+      this.moveInteraction.setActive(true);
       this.deleteInteraction.setFeatures(this.selectMove.getFeatures());
 
       if (useAppendSelectStyle) {
@@ -113,8 +123,11 @@ class ModifyControl extends Control {
     });
 
     this.selectMove.getFeatures().on('remove', (evt) => {
-      this.map.removeInteraction(this.moveInteraction);
-      this.deleteInteraction.setFeatures();
+      // Deactive interaction when the select array is empty
+      if (this.selectMove.getFeatures().getLength() === 0) {
+        this.moveInteraction.setActive(false);
+        this.deleteInteraction.setFeatures();
+      }
 
       if (useAppendSelectStyle) {
         // Remove the select style dynamically when the feature had its own style.
@@ -147,7 +160,7 @@ class ModifyControl extends Control {
 
     this.selectModify.getFeatures().on('add', (evt) => {
       this.selectMove.getFeatures().clear();
-      this.map.addInteraction(this.modifyInteraction);
+      this.modifyInteraction.setActive(true);
       this.deleteInteraction.setFeatures(this.selectModify.getFeatures());
 
       if (useAppendSelectStyle) {
@@ -157,7 +170,11 @@ class ModifyControl extends Control {
     });
 
     this.selectModify.getFeatures().on('remove', (evt) => {
-      this.map.removeInteraction(this.modifyInteraction);
+      // Deactive interaction when the select array is empty
+      if (this.selectModify.getFeatures().getLength() === 0) {
+        this.modifyInteraction.setActive(false);
+        this.deleteInteraction.setFeatures();
+      }
 
       if (useAppendSelectStyle) {
         // Remove the select style dynamically when the feature had its own style.
@@ -189,6 +206,7 @@ class ModifyControl extends Control {
       this.editor.setEditFeature(null);
       this.isMoving = false;
     });
+    this.moveInteraction.setActive(false);
   }
 
   /**
@@ -215,6 +233,7 @@ class ModifyControl extends Control {
       this.editor.setEditFeature(null);
       this.isModifying = false;
     });
+    this.modifyInteraction.setActive(false);
   }
 
   /**
@@ -316,30 +335,6 @@ class ModifyControl extends Control {
     }, 50);
   }
 
-  // /**
-  //  * Deselect features when editing geometries on a single click on map.
-  //  * @param {ol.MapBrowserEvent} evt Event.
-  //  * @private
-  //  */
-  // unselectInteraction(evt, interaction) {
-  // Override unselect when a node is deleted with a click
-  // if (this.deleteNode) {
-  //   this.deleteNode = false;
-  //   return;
-  // }
-  // if (!this.map.hasFeatureAtPixel(evt.pixel)) {
-  //   // Apply onMapClick from options if defined
-  //   if (this.onMapClick) {
-  //     evt.stopPropagation();
-  //     evt.preventDefault();
-  //     this.onMapClick(evt, this);
-  //     return;
-  //   }
-  //   // Default: Clear selection
-  //   interaction.getFeatures().clear();
-  // }
-  // }
-
   /**
    * Change cursor style.
    * @param {string} cursor New cursor name.
@@ -356,17 +351,33 @@ class ModifyControl extends Control {
   }
 
   /**
+   * Clear selection on map's singleclick event.
+   * @param {*} evt
+   * @private
+   */
+  onClickOutsideFeatures(evt) {
+    if (!this.getFeatureAtPixel(evt.pixel)) {
+      // Default: Clear selection on click outside features.
+      this.selectMove.getFeatures().clear();
+      this.selectModify.getFeatures().clear();
+    }
+  }
+
+  /**
    * @inheritdoc
    */
   activate() {
     super.activate();
     clearTimeout(this.cursorTimeout);
+    this.map.on('singleclick', this.onClickOutsideFeatures);
     this.map.on('pointermove', this.cursorHandler);
     this.map.addInteraction(this.deleteInteraction);
     this.map.addInteraction(this.selectModify);
     // For the default behvior it's very important to add selectMove after selectModify.
     // It will avoid single/dbleclick mess.
     this.map.addInteraction(this.selectMove);
+    this.map.addInteraction(this.moveInteraction);
+    this.map.addInteraction(this.modifyInteraction);
   }
 
   /**
@@ -374,13 +385,16 @@ class ModifyControl extends Control {
    */
   deactivate(silent) {
     clearTimeout(this.cursorTimeout);
+    this.map.un('singleclick', this.onClickOutsideFeatures);
     this.map.un('pointermove', this.cursorHandler);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
 
-    this.map.removeInteraction(this.deleteInteraction);
+    this.map.removeInteraction(this.modifyInteraction);
+    this.map.removeInteraction(this.moveInteraction);
     this.map.removeInteraction(this.selectMove);
     this.map.removeInteraction(this.selectModify);
+    this.map.removeInteraction(this.deleteInteraction);
     super.deactivate(silent);
   }
 }

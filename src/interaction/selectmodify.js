@@ -5,6 +5,11 @@ import { selectModifyStyle } from '../helper/styles';
 
 /**
  * Select features for modification by a Modify interaction.
+ *
+ * Default behavior:
+ *  - Double click on the feature to select one feature.
+ *  - Double click on a selected feature to deselect one feature.
+ *  - Double click on the map to deselect all features.
  */
 class SelectModify extends Select {
   /**
@@ -20,43 +25,37 @@ class SelectModify extends Select {
     });
   }
 
-  // We have to manage the cases:
-  // -  where we click outside a features we unselect the feature.
-  // -  selection on double click stop event propagation.
+  // We redefine the handle method to avoid propagation of double click to the map.
   handleEvent(mapBrowserEvent) {
-    // if (!this.condition_(mapBrowserEvent)) {
-    //   return true;
-    // }
-    // const add = this.addCondition_(mapBrowserEvent);
-    // const remove = this.removeCondition_(mapBrowserEvent);
-    // const toggle = this.toggleCondition_(mapBrowserEvent);
-    // const { map } = mapBrowserEvent;
-    // const set = !add && !remove && !toggle;
-    // if (set) {
-    //   let isEvtOnOverlay = false;
-    //   let isEvtOnSelectableFeature = false;
-    //   map.forEachFeatureAtPixel(
-    //     mapBrowserEvent.pixel,
-    //     (feature, layer) => {
-    //       if (this.filter_(feature, layer)) {
-    //         isEvtOnSelectableFeature = true;
-    //       }
-    //       if (layer === null) {
-    //         isEvtOnOverlay = true;
-    //       }
-    //     },
-    //     {
-    //       layerFilter: this.layerFilter_,
-    //       hitTolerance: this.hitTolerance_,
-    //     },
-    //   );
+    if (!this.condition_(mapBrowserEvent)) {
+      return true;
+    }
+    const add = this.addCondition_(mapBrowserEvent);
+    const remove = this.removeCondition_(mapBrowserEvent);
+    const toggle = this.toggleCondition_(mapBrowserEvent);
+    const { map } = mapBrowserEvent;
+    const set = !add && !remove && !toggle;
+    if (set) {
+      let isEvtOnSelectableFeature = false;
+      map.forEachFeatureAtPixel(
+        mapBrowserEvent.pixel,
+        (feature, layer) => {
+          if (this.filter_(feature, layer)) {
+            isEvtOnSelectableFeature = true;
+          }
+        },
+        {
+          layerFilter: this.layerFilter_,
+          hitTolerance: this.hitTolerance_,
+        },
+      );
 
-    //   if (isEvtOnSelectableFeature) {
-    //     // if a feature is about to be selected or unselected we stop event propagation.
-    //     super.handleEvent(mapBrowserEvent);
-    //     return false;
-    //   }
-    // }
+      if (isEvtOnSelectableFeature) {
+        // if a feature is about to be selected or unselected we stop event propagation.
+        super.handleEvent(mapBrowserEvent);
+        return false;
+      }
+    }
 
     return super.handleEvent(mapBrowserEvent);
   }
