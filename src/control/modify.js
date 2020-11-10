@@ -5,11 +5,6 @@ import image from '../../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
 import SelectModify from '../interaction/selectmodify';
 import Move from '../interaction/move';
-import {
-  onSelectFeature,
-  onDeselectFeature,
-  selectModifyStyle,
-} from '../helper/styles';
 import Delete from '../interaction/delete';
 
 /**
@@ -23,7 +18,6 @@ class ModifyControl extends Control {
    * @param {number} [options.hitTolerance=5] Select tolerance in pixels.
    * @param {ol.Collection<ol.Feature>} [options.features] Destination for drawing.
    * @param {ol.source.Vector} [options.source] Destination for drawing.
-   * @param {boolean} [options.useAppendSelectStyle=false] useAppendSelectStyle Append the select style to the feature instead of replacing it.
    * @param {Object} [options.selectMoveOptions] Options for the select interaction used to move features.
    * @param {Object} [options.selectModifyOptions] Options for the select interaction used to modify features.
    * @param {Object} [options.moveInteractionOptions] Options for the move interaction.
@@ -46,14 +40,6 @@ class ModifyControl extends Control {
      */
     this.hitTolerance =
       options.hitTolerance === undefined ? 5 : options.hitTolerance;
-
-    /**
-     * By default select interactions replace the current feature's style by the select style.
-     * If true, the select style is append to the feature's style.
-     * @type {boolean}
-     * @private
-     */
-    this.useAppendSelectStyle = !!options.useAppendSelectStyle || false;
 
     /**
      * Filter function to determine which features are elligible for selection.
@@ -101,10 +87,6 @@ class ModifyControl extends Control {
    * @private
    */
   createSelectMoveInteraction(options = {}) {
-    const ON_CHANGE_KEY = 'selectMoveOnChangeKey';
-    const useAppendSelectStyle =
-      this.useAppendSelectStyle && options && options.style;
-
     /**
      * Select interaction to move features.
      * @type {ol.interaction.Select}
@@ -120,31 +102,19 @@ class ModifyControl extends Control {
       },
       hitTolerance: this.hitTolerance,
       ...options,
-      style: useAppendSelectStyle ? null : options.style,
     });
 
-    this.selectMove.getFeatures().on('add', (evt) => {
+    this.selectMove.getFeatures().on('add', () => {
       this.selectModify.getFeatures().clear();
-
       this.moveInteraction.setActive(true);
       this.deleteInteraction.setFeatures(this.selectMove.getFeatures());
-
-      if (useAppendSelectStyle) {
-        // Append the select style dynamically when the feature has its own style.
-        onSelectFeature(evt.element, options.style, ON_CHANGE_KEY);
-      }
     });
 
-    this.selectMove.getFeatures().on('remove', (evt) => {
+    this.selectMove.getFeatures().on('remove', () => {
       // Deactive interaction when the select array is empty
       if (this.selectMove.getFeatures().getLength() === 0) {
         this.moveInteraction.setActive(false);
         this.deleteInteraction.setFeatures();
-      }
-
-      if (useAppendSelectStyle) {
-        // Remove the select style dynamically when the feature had its own style.
-        onDeselectFeature(evt.element, options.style, ON_CHANGE_KEY);
       }
     });
   }
@@ -156,10 +126,6 @@ class ModifyControl extends Control {
    */
 
   createSelectModifyInteraction(options = {}) {
-    const ON_CHANGE_KEY = 'selectModifyOnChangeKey';
-    const useAppendSelectStyle =
-      this.useAppendSelectStyle && options && options.style;
-
     /**
      * Select interaction to modify features.
      * @type {ol.interaction.Select}
@@ -169,30 +135,19 @@ class ModifyControl extends Control {
       filter: this.selectFilter,
       hitTolerance: this.hitTolerance,
       ...options,
-      style: useAppendSelectStyle ? null : options.style || selectModifyStyle,
     });
 
-    this.selectModify.getFeatures().on('add', (evt) => {
+    this.selectModify.getFeatures().on('add', () => {
       this.selectMove.getFeatures().clear();
       this.modifyInteraction.setActive(true);
       this.deleteInteraction.setFeatures(this.selectModify.getFeatures());
-
-      if (useAppendSelectStyle) {
-        // Apply the select style dynamically when the feature has its own style.
-        onSelectFeature(evt.element, options.style, ON_CHANGE_KEY);
-      }
     });
 
-    this.selectModify.getFeatures().on('remove', (evt) => {
+    this.selectModify.getFeatures().on('remove', () => {
       // Deactive interaction when the select array is empty
       if (this.selectModify.getFeatures().getLength() === 0) {
         this.modifyInteraction.setActive(false);
         this.deleteInteraction.setFeatures();
-      }
-
-      if (useAppendSelectStyle) {
-        // Remove the select style dynamically when the feature had its own style.
-        onDeselectFeature(evt.element, options.style, ON_CHANGE_KEY);
       }
     });
   }
