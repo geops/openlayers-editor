@@ -40,8 +40,8 @@ class ModifyControl extends Control {
     });
 
     /**
-     * Buffer around the coordintate clicked.
-     * @type {number=5} Buffer's size in piyels.
+     * Buffer around the coordintate clicked in pixels.
+     * @type {number}
      * @private
      */
     this.hitTolerance =
@@ -50,7 +50,7 @@ class ModifyControl extends Control {
     /**
      * By default select interactions replace the current feature's style by the select style.
      * If true, the select style is append to the feature's style.
-     * @type {boolean=false}
+     * @type {boolean}
      * @private
      */
     this.useAppendSelectStyle = !!options.useAppendSelectStyle || false;
