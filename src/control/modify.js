@@ -155,8 +155,8 @@ class ModifyControl extends Control {
     this.selectModify = new SelectModify({
       filter: this.selectFilter,
       hitTolerance: this.hitTolerance,
-      style: (useAppendSelectStyle && null) || undefined,
       ...options,
+      style: useAppendSelectStyle ? null : options.style,
     });
 
     this.selectModify.getFeatures().on('add', (evt) => {
