@@ -125,6 +125,7 @@ class ModifyControl extends Control {
 
     this.selectMove.getFeatures().on('add', (evt) => {
       this.selectModify.getFeatures().clear();
+
       this.moveInteraction.setActive(true);
       this.deleteInteraction.setFeatures(this.selectMove.getFeatures());
 
@@ -290,9 +291,7 @@ class ModifyControl extends Control {
     this.map.forEachFeatureAtPixel(
       pixel,
       (feat, layer) => {
-        console.log(layer);
         if (!layer) {
-          console.log(layer);
           isHoverVertex = true;
           return true;
         }
@@ -347,7 +346,7 @@ class ModifyControl extends Control {
         // Feature available for selection.
         this.changeCursor('pointer');
       }
-    }, 50);
+    }, 100);
   }
 
   /**
@@ -356,6 +355,9 @@ class ModifyControl extends Control {
    * @private
    */
   changeCursor(cursor) {
+    if (!this.getActive()) {
+      return;
+    }
     const element = this.map.getTargetElement();
     if ((element.style.cursor || cursor) && element.style.cursor !== cursor) {
       if (this.previousCursor === null) {
@@ -371,6 +373,9 @@ class ModifyControl extends Control {
    * @private
    */
   onClickOutsideFeatures(evt) {
+    if (!this.getActive()) {
+      return;
+    }
     const onFeature = this.getFeatureAtPixel(evt.pixel);
     const onVertex = this.isHoverVertexFeatureAtPixel(evt.pixel);
 
@@ -381,14 +386,17 @@ class ModifyControl extends Control {
     }
   }
 
-  /**
-   * @inheritdoc
-   */
-  activate() {
-    super.activate();
-    clearTimeout(this.cursorTimeout);
-    this.map.on('singleclick', this.onClickOutsideFeatures);
-    this.map.on('pointermove', this.cursorHandler);
+  setMap(map) {
+    if (this.map) {
+      this.map.removeInteraction(this.modifyInteraction);
+      this.map.removeInteraction(this.moveInteraction);
+      this.map.removeInteraction(this.selectMove);
+      this.map.removeInteraction(this.selectModify);
+      this.map.removeInteraction(this.deleteInteraction);
+      this.removeListeners();
+    }
+    super.setMap(map);
+    this.addListeners();
     this.map.addInteraction(this.deleteInteraction);
     this.map.addInteraction(this.selectModify);
     // For the default behvior it's very important to add selectMove after selectModify.
@@ -398,21 +406,40 @@ class ModifyControl extends Control {
     this.map.addInteraction(this.modifyInteraction);
   }
 
+  addListeners() {
+    this.removeListeners();
+    this.map.on('singleclick', this.onClickOutsideFeatures);
+    this.map.on('pointermove', this.cursorHandler);
+  }
+
+  removeListeners() {
+    clearTimeout(this.cursorTimeout);
+    this.map.un('singleclick', this.onClickOutsideFeatures);
+    this.map.un('pointermove', this.cursorHandler);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  activate() {
+    super.activate();
+    this.deleteInteraction.setActive(true);
+    this.selectModify.setActive(true);
+    // For the default behavior it's very important to add selectMove after selectModify.
+    // It will avoid single/dbleclick mess.
+    this.selectMove.setActive(true);
+  }
+
   /**
    * @inheritdoc
    */
   deactivate(silent) {
     clearTimeout(this.cursorTimeout);
-    this.map.un('singleclick', this.onClickOutsideFeatures);
-    this.map.un('pointermove', this.cursorHandler);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
-
-    this.map.removeInteraction(this.modifyInteraction);
-    this.map.removeInteraction(this.moveInteraction);
-    this.map.removeInteraction(this.selectMove);
-    this.map.removeInteraction(this.selectModify);
-    this.map.removeInteraction(this.deleteInteraction);
+    this.deleteInteraction.setActive(false);
+    this.selectModify.setActive(false);
+    this.selectMove.setActive(false);
     super.deactivate(silent);
   }
 }
