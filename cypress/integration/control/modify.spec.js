@@ -1,7 +1,7 @@
 const FORCE = { force: true };
 
-describe('ModifyControl', function () {
-  beforeEach(function () {
+describe('ModifyControl', () => {
+  beforeEach(() => {
     cy.visit('/');
 
     // Draw polygon (click on map container, double click to finish drawing)
@@ -18,7 +18,7 @@ describe('ModifyControl', function () {
     cy.get('.ol-overlaycontainer').dblclick(200, 450, FORCE);
   });
 
-  it('should correctly handle node deletion', function () {
+  it('should correctly handle node deletion', () => {
     cy.window().then((win) => {
       // Spy on selectModify.addFeatureLayerAssociation_, called when a feature is selected
       const omitFeatureSelectSpy = cy.spy(

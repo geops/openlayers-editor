@@ -7,8 +7,8 @@ const coordToFixed = (coordArray, decimals) => {
   ];
 };
 
-describe('CAD control', function () {
-  beforeEach(function () {
+describe('CAD control', () => {
+  beforeEach(() => {
     cy.visit('/');
 
     // Draw point (click on map canvas container at x: 500 and y: 500)
@@ -16,7 +16,7 @@ describe('CAD control', function () {
     cy.get('.ol-overlaycontainer').click(500, 500, FORCE);
   });
 
-  it('should not snap new points when CAD deactivated', function () {
+  it('should not snap new points when CAD deactivated', () => {
     cy.window().then((win) => {
       // Draw new point (click on map canvas container at x: 507 and y: 500)
       cy.get('.ol-overlaycontainer')
@@ -33,7 +33,7 @@ describe('CAD control', function () {
     });
   });
 
-  it('should snap new points to CAD point with CAD active', function () {
+  it('should snap new points to CAD point with CAD active', () => {
     cy.window().then((win) => {
       // Activate CAD control (click on toolbar)
       cy.get('.ole-control-cad').click();

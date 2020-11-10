@@ -1,7 +1,7 @@
 const FORCE = { force: true };
 
-describe('Difference control', function () {
-  beforeEach(function () {
+describe('Difference control', () => {
+  beforeEach(() => {
     cy.visit('/');
 
     // Draw polygon (click on map container, double click to finish drawing)
@@ -16,7 +16,7 @@ describe('Difference control', function () {
     cy.get('.ol-overlaycontainer').dblclick(400, 300, FORCE);
   });
 
-  it('should subtract overlapping polygons and result in the correct multipolygon', function () {
+  it('should subtract overlapping polygons and result in the correct multipolygon', () => {
     cy.window().then((win) => {
       // Activate union tool (click on toolbar)
       cy.get('.ole-control-difference')

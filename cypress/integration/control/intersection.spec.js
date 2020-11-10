@@ -1,7 +1,7 @@
 const FORCE = { force: true };
 
-describe('Intersect control', function () {
-  beforeEach(function () {
+describe('Intersect control', () => {
+  beforeEach(() => {
     cy.visit('/');
 
     // Draw polygon (click on map container, double click to finish drawing)
@@ -16,7 +16,7 @@ describe('Intersect control', function () {
     cy.get('.ol-overlaycontainer').dblclick(400, 300, FORCE);
   });
 
-  it('should intersect two overlapping polygons resulting in one with correct nodes', function () {
+  it('should intersect two overlapping polygons resulting in one with correct nodes', () => {
     cy.window().then((win) => {
       // Activate union tool (click on toolbar)
       cy.get('.ole-control-intersection')

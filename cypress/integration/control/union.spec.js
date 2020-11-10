@@ -1,7 +1,7 @@
 const FORCE = { force: true };
 
-describe('Union control', function () {
-  beforeEach(function () {
+describe('Union control', () => {
+  beforeEach(() => {
     cy.visit('/');
 
     // Draw polygon (click on map container, double click to finish drawing)
@@ -16,7 +16,7 @@ describe('Union control', function () {
     cy.get('.ol-overlaycontainer').dblclick(400, 300, FORCE);
   });
 
-  it('should unite two overlapping polygons to one polygon with correct nodes', function () {
+  it('should unite two overlapping polygons to one polygon with correct nodes', () => {
     cy.window().then((win) => {
       // Activate union tool (click on toolbar)
       cy.get('.ole-control-union')
