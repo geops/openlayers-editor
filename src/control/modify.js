@@ -1,5 +1,5 @@
 import { Modify } from 'ol/interaction';
-import { singleClick } from 'ol/events/condition';
+import { click } from 'ol/events/condition';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
@@ -189,7 +189,7 @@ class ModifyControl extends Control {
      */
     this.modifyInteraction = new Modify({
       features: this.selectModify.getFeatures(),
-      deleteCondition: singleClick,
+      deleteCondition: click,
       ...options,
     });
 

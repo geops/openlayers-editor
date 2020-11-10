@@ -1,5 +1,5 @@
 import Select from 'ol/interaction/Select';
-import { singleClick, shiftKeyOnly } from 'ol/events/condition';
+import { click, shiftKeyOnly } from 'ol/events/condition';
 
 /**
  * Select features for modification by a Move interaction.
@@ -15,7 +15,7 @@ class SelectMove extends Select {
    */
   constructor(options) {
     super({
-      condition: singleClick,
+      condition: click,
       toggleCondition: shiftKeyOnly,
       wrapX: false,
       ...options,
