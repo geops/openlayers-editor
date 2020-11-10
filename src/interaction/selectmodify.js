@@ -1,15 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import Select from 'ol/interaction/Select';
 import { doubleClick } from 'ol/events/condition';
-import { selectModifyStyle } from '../helper/styles';
 
 /**
  * Select features for modification by a Modify interaction.
  *
  * Default behavior:
  *  - Double click on the feature to select one feature.
- *  - Double click on a selected feature to deselect one feature.
- *  - Double click on the map to deselect all features.
+ *  - Click on the map to deselect all features.
  */
 class SelectModify extends Select {
   /**
@@ -18,9 +16,8 @@ class SelectModify extends Select {
    */
   constructor(options) {
     super({
-      condition: (evt) => doubleClick(evt),
+      condition: doubleClick,
       wrapX: false,
-      style: selectModifyStyle,
       ...options,
     });
   }

@@ -29,7 +29,7 @@ describe('ModifyControl', function () {
       // Select Modify Control (click on toolbar)
       cy.get('.ole-control-modify').click();
       // Select polygon (double click polygon in map canvas container to start modifying)
-      cy.get('.ol-overlaycontainer')
+      cy.get('.ol-viewport')
         .dblclick(100, 100, FORCE)
         .then(() => {
           selectedFeaturesArray = win.modify.selectModify
@@ -43,36 +43,48 @@ describe('ModifyControl', function () {
           ).to.equal(5);
         });
       // Click & delete a node (click on map canvas at node pixel)
-      cy.get('.ol-overlaycontainer').click(102, 152, FORCE);
+      // Click & delete a node (click on map canvas at node pixel)
+      cy.get('.ol-viewport')
+        .click(102, 152)
+        .then(() => {
+          // singleclick event needs a timeout period.
+          cy.wait(400).then(() => {
+            selectedFeaturesArray = win.modify.selectModify
+              .getFeatures()
+              .getArray();
+            // Verify one polygon node was deleted on click (3 nodes, 4 coordinates)
+            expect(
+              win.modify.selectModify
+                .getFeatures()
+                .getArray()[0]
+                .getGeometry()
+                .getCoordinates()[0].length,
+            ).to.equal(4);
+          });
+        });
 
-      cy.wait(1000);
-      // Verify one polygon node was deleted on click (3 nodes, 4 coordinates)
-      expect(
-        win.modify.selectModify
-          .getFeatures()
-          .getArray()[0]
-          .getGeometry()
-          .getCoordinates()[0].length,
-      ).to.equal(4);
       // Click another node (click on map canvas at node pixel)
-      cy.get('.ol-overlaycontainer')
+      cy.get('.ol-viewport')
         .click(100, 100, FORCE)
         .then(() => {
-          // Verify no further node was deleted on click (because polygon minimum number nodes is 3)
-          expect(
-            selectedFeaturesArray[0].getGeometry().getCoordinates()[0].length,
-          ).to.equal(4);
-          // Check that no features from the overlay are mistakenly selected
-          const toTest = omitFeatureSelectSpy.withArgs(
-            omitFeatureSelectSpy.args[0][0],
-            null,
-          );
-          // eslint-disable-next-line no-unused-expressions
-          expect(toTest).to.not.be.called;
+          // singleclick event needs a timeout period.
+          cy.wait(400).then(() => {
+            // Verify no further node was deleted on click (because polygon minimum number nodes is 3)
+            expect(
+              selectedFeaturesArray[0].getGeometry().getCoordinates()[0].length,
+            ).to.equal(4);
+            // Check that no features from the overlay are mistakenly selected
+            const toTest = omitFeatureSelectSpy.withArgs(
+              omitFeatureSelectSpy.args[0][0],
+              null,
+            );
+            // eslint-disable-next-line no-unused-expressions
+            expect(toTest).to.not.be.called;
+          });
         });
 
       // Select line (double click line in map canvas container to start modifying)
-      cy.get('.ol-overlaycontainer')
+      cy.get('.ol-viewport')
         .dblclick(270, 344, FORCE)
         .then(() => {
           selectedFeaturesArray = win.modify.selectModify
@@ -85,17 +97,22 @@ describe('ModifyControl', function () {
             selectedFeaturesArray[0].getGeometry().getCoordinates().length,
           ).to.equal(3);
         });
+
       // Click & delete a node (click on map canvas at node pixel)
-      cy.get('.ol-overlaycontainer')
+      cy.get('.ol-viewport')
         .click(270, 344, FORCE)
         .then(() => {
-          // Verify one line node was deleted on click (2 nodes, 2 coordinates)
-          expect(
-            selectedFeaturesArray[0].getGeometry().getCoordinates().length,
-          ).to.equal(2);
+          // singleclick event needs a timeout period.
+          cy.wait(400).then(() => {
+            // Verify one line node was deleted on click (2 nodes, 2 coordinates)
+            expect(
+              selectedFeaturesArray[0].getGeometry().getCoordinates().length,
+            ).to.equal(2);
+          });
         });
+
       // Click another node (click on map canvas at node pixel)
-      cy.get('.ol-overlaycontainer')
+      cy.get('.ol-viewport')
         .click(400, 350, FORCE)
         .then(() => {
           // Verify no further node was deleted on click (because polygon minimum number nodes is 2)

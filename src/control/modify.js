@@ -5,7 +5,11 @@ import image from '../../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
 import SelectModify from '../interaction/selectmodify';
 import Move from '../interaction/move';
-import { onSelectFeature, onDeselectFeature } from '../helper/styles';
+import {
+  onSelectFeature,
+  onDeselectFeature,
+  selectModifyStyle,
+} from '../helper/styles';
 import Delete from '../interaction/delete';
 
 /**
@@ -53,6 +57,7 @@ class ModifyControl extends Control {
 
     /**
      * Filter function to determine which features are elligible for selection.
+     * We exclude features on unmanaged layer(for ex: nodes to delete).
      * @type {function(ol.Feature, ol.layer.Layer)}
      * @private
      */
@@ -62,7 +67,7 @@ class ModifyControl extends Control {
         if (layer && this.layerFilter) {
           return this.layerFilter(layer);
         }
-        return true;
+        return !!layer;
       });
 
     /**
@@ -106,7 +111,13 @@ class ModifyControl extends Control {
      * @private
      */
     this.selectMove = new SelectMove({
-      filter: this.selectFilter,
+      filter: (feature, layer) => {
+        // If the feature is already selected by modify interaction ignore the selection.
+        if (this.isSelectedByModify(feature)) {
+          return false;
+        }
+        return this.selectFilter(feature, layer);
+      },
       hitTolerance: this.hitTolerance,
       ...options,
     });
@@ -156,7 +167,7 @@ class ModifyControl extends Control {
       filter: this.selectFilter,
       hitTolerance: this.hitTolerance,
       ...options,
-      style: useAppendSelectStyle ? null : options.style,
+      style: useAppendSelectStyle ? null : options.style || selectModifyStyle,
     });
 
     this.selectModify.getFeatures().on('add', (evt) => {
@@ -278,7 +289,9 @@ class ModifyControl extends Control {
     this.map.forEachFeatureAtPixel(
       pixel,
       (feat, layer) => {
+        console.log(layer);
         if (!layer) {
+          console.log(layer);
           isHoverVertex = true;
           return true;
         }
@@ -357,7 +370,10 @@ class ModifyControl extends Control {
    * @private
    */
   onClickOutsideFeatures(evt) {
-    if (!this.getFeatureAtPixel(evt.pixel)) {
+    const onFeature = this.getFeatureAtPixel(evt.pixel);
+    const onVertex = this.isHoverVertexFeatureAtPixel(evt.pixel);
+
+    if (!onVertex && !onFeature) {
       // Default: Clear selection on click outside features.
       this.selectMove.getFeatures().clear();
       this.selectModify.getFeatures().clear();
@@ -371,7 +387,7 @@ class ModifyControl extends Control {
     super.activate();
     clearTimeout(this.cursorTimeout);
     this.map.on('singleclick', this.onClickOutsideFeatures);
-    this.map.on('pointermove', this.cursorHandler);
+    // this.map.on('pointermove', this.cursorHandler);
     this.map.addInteraction(this.deleteInteraction);
     this.map.addInteraction(this.selectModify);
     // For the default behvior it's very important to add selectMove after selectModify.
@@ -387,7 +403,7 @@ class ModifyControl extends Control {
   deactivate(silent) {
     clearTimeout(this.cursorTimeout);
     this.map.un('singleclick', this.onClickOutsideFeatures);
-    this.map.un('pointermove', this.cursorHandler);
+    // this.map.un('pointermove', this.cursorHandler);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
 
