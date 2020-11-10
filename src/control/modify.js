@@ -120,6 +120,7 @@ class ModifyControl extends Control {
       },
       hitTolerance: this.hitTolerance,
       ...options,
+      style: useAppendSelectStyle ? null : options.style,
     });
 
     this.selectMove.getFeatures().on('add', (evt) => {
@@ -387,7 +388,7 @@ class ModifyControl extends Control {
     super.activate();
     clearTimeout(this.cursorTimeout);
     this.map.on('singleclick', this.onClickOutsideFeatures);
-    // this.map.on('pointermove', this.cursorHandler);
+    this.map.on('pointermove', this.cursorHandler);
     this.map.addInteraction(this.deleteInteraction);
     this.map.addInteraction(this.selectModify);
     // For the default behvior it's very important to add selectMove after selectModify.
@@ -403,7 +404,7 @@ class ModifyControl extends Control {
   deactivate(silent) {
     clearTimeout(this.cursorTimeout);
     this.map.un('singleclick', this.onClickOutsideFeatures);
-    // this.map.un('pointermove', this.cursorHandler);
+    this.map.un('pointermove', this.cursorHandler);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
 
