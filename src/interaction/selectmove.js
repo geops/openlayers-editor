@@ -1,6 +1,6 @@
 import Select from 'ol/interaction/Select';
 import { Circle, Style, Fill, Stroke } from 'ol/style';
-import { click } from 'ol/events/condition';
+import { singleClick } from 'ol/events/condition';
 
 // Default style on moving geometries
 const selectMoveStyle = new Style({
@@ -34,7 +34,7 @@ class SelectMove extends Select {
    */
   constructor(options) {
     super({
-      condition: click,
+      condition: singleClick,
       style: selectMoveStyle,
       ...options,
     });

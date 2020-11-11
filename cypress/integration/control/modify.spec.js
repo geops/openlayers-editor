@@ -48,14 +48,15 @@ describe('ModifyControl', () => {
         .click(102, 152)
         .then(() => {
           // singleclick event needs a timeout period.
-          // cy.wait(400).then(() => {
-          selectedFeaturesArray = win.modify.selectModify
-            .getFeatures()
-            .getArray();
-          // Verify one polygon node was deleted on click (3 nodes, 4 coordinates)
-          expect(
-            selectedFeaturesArray[0].getGeometry().getCoordinates()[0].length,
-          ).to.equal(4);
+          cy.wait(400).then(() => {
+            selectedFeaturesArray = win.modify.selectModify
+              .getFeatures()
+              .getArray();
+            // Verify one polygon node was deleted on click (3 nodes, 4 coordinates)
+            expect(
+              selectedFeaturesArray[0].getGeometry().getCoordinates()[0].length,
+            ).to.equal(4);
+          });
         });
 
       // Click another node (click on map canvas at node pixel)
@@ -63,18 +64,19 @@ describe('ModifyControl', () => {
         .click(100, 100, FORCE)
         .then(() => {
           // singleclick event needs a timeout period.
-          // cy.wait(400).then(() => {
-          // Verify no further node was deleted on click (because polygon minimum number nodes is 3)
-          expect(
-            selectedFeaturesArray[0].getGeometry().getCoordinates()[0].length,
-          ).to.equal(4);
-          // Check that no features from the overlay are mistakenly selected
-          const toTest = omitFeatureSelectSpy.withArgs(
-            omitFeatureSelectSpy.args[0][0],
-            null,
-          );
-          // eslint-disable-next-line no-unused-expressions
-          expect(toTest).to.not.be.called;
+          cy.wait(400).then(() => {
+            // Verify no further node was deleted on click (because polygon minimum number nodes is 3)
+            expect(
+              selectedFeaturesArray[0].getGeometry().getCoordinates()[0].length,
+            ).to.equal(4);
+            // Check that no features from the overlay are mistakenly selected
+            const toTest = omitFeatureSelectSpy.withArgs(
+              omitFeatureSelectSpy.args[0][0],
+              null,
+            );
+            // eslint-disable-next-line no-unused-expressions
+            expect(toTest).to.not.be.called;
+          });
         });
 
       // Select line (double click line in map canvas container to start modifying)
@@ -97,11 +99,12 @@ describe('ModifyControl', () => {
         .click(270, 344, FORCE)
         .then(() => {
           // singleclick event needs a timeout period.
-          // cy.wait(400).then(() => {
-          // Verify one line node was deleted on click (2 nodes, 2 coordinates)
-          expect(
-            selectedFeaturesArray[0].getGeometry().getCoordinates().length,
-          ).to.equal(2);
+          cy.wait(400).then(() => {
+            // Verify one line node was deleted on click (2 nodes, 2 coordinates)
+            expect(
+              selectedFeaturesArray[0].getGeometry().getCoordinates().length,
+            ).to.equal(2);
+          });
         });
 
       // Click another node (click on map canvas at node pixel)

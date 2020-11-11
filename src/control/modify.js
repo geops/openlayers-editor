@@ -1,5 +1,5 @@
-import { Modify } from 'ol/interaction';
-import { click } from 'ol/events/condition';
+import { Modify, Interaction } from 'ol/interaction';
+import { singleClick } from 'ol/events/condition';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
@@ -23,7 +23,7 @@ class ModifyControl extends Control {
    * @param {Object} [options.moveInteractionOptions] Options for the move interaction.
    * @param {Object} [options.modifyInteractionOptions] Options for the modify interaction.
    * @param {Object} [options.deleteInteractionOptions] Options for the delete interaction.
-   *
+   * @param {Object} [options.deselectInteractionOptions] Options for the deselect interaction. Default: features are deselected on click on map.
    */
   constructor(options) {
     super({
@@ -70,15 +70,13 @@ class ModifyControl extends Control {
     this.cursorFilter = options.cursorFilter || (() => true);
     this.cursorHandler = this.cursorHandler.bind(this);
 
-    /* onClickOutsideFeatures management */
-    this.onClickOutsideFeatures = this.onClickOutsideFeatures.bind(this);
-
     /* Interactions */
     this.createSelectMoveInteraction(options.selectMoveOptions);
     this.createSelectModifyInteraction(options.selectModifyOptions);
     this.createModifyInteraction(options.modifyInteractionOptions);
     this.createMoveInteraction(options.moveInteractionOptions);
     this.createDeleteInteraction(options.deleteInteractionOptions);
+    this.createDeselectInteraction(options.deselectInteractionOptions);
   }
 
   /**
@@ -156,6 +154,7 @@ class ModifyControl extends Control {
   /**
    * Create the interaction used to move feature.
    * @param {*} options
+   * @private
    */
   createMoveInteraction(options = {}) {
     /**
@@ -182,6 +181,7 @@ class ModifyControl extends Control {
   /**
    * Create the interaction used to modify vertexes of features.
    * @param {*} options
+   * @private
    */
   createModifyInteraction(options = {}) {
     /**
@@ -190,7 +190,7 @@ class ModifyControl extends Control {
      */
     this.modifyInteraction = new Modify({
       features: this.selectModify.getFeatures(),
-      deleteCondition: click,
+      deleteCondition: singleClick,
       ...options,
     });
 
@@ -209,6 +209,7 @@ class ModifyControl extends Control {
   /**
    * Create the interaction used to delete selected features.
    * @param {*} options
+   * @private
    */
   createDeleteInteraction(options = {}) {
     /**
@@ -221,6 +222,42 @@ class ModifyControl extends Control {
       this.changeCursor(null);
     });
     this.deleteInteraction.setActive(false);
+  }
+
+  /**
+   * Create the interaction used to deselected features when we click on the map.
+   * @param {*} options
+   * @private
+   */
+  createDeselectInteraction(options = {}) {
+    // it's important that this condition was the same as the selectModify's
+    // deleteCondition to avoid the selection of the feature under the node to delete.
+    const condition = options.condition || singleClick;
+
+    /**
+     * @type {ol.interaction.Interaction}
+     * @private
+     */
+    this.deselectInteraction = new Interaction({
+      handleEvent: (mapBrowserEvent) => {
+        if (!condition(mapBrowserEvent)) {
+          return true;
+        }
+        const onFeature = this.getFeatureAtPixel(mapBrowserEvent.pixel);
+        const onVertex = this.isHoverVertexFeatureAtPixel(
+          mapBrowserEvent.pixel,
+        );
+
+        if (!onVertex && !onFeature) {
+          // Default: Clear selection on click outside features.
+          this.selectMove.getFeatures().clear();
+          this.selectModify.getFeatures().clear();
+          return false;
+        }
+        return true;
+      },
+    });
+    this.deselectInteraction.setActive(false);
   }
 
   /**
@@ -324,25 +361,6 @@ class ModifyControl extends Control {
     }
   }
 
-  /**
-   * Clear selection on map's singleclick event.
-   * @param {*} evt
-   * @private
-   */
-  onClickOutsideFeatures(evt) {
-    if (!this.getActive()) {
-      return;
-    }
-    const onFeature = this.getFeatureAtPixel(evt.pixel);
-    const onVertex = this.isHoverVertexFeatureAtPixel(evt.pixel);
-
-    if (!onVertex && !onFeature) {
-      // Default: Clear selection on click outside features.
-      this.selectMove.getFeatures().clear();
-      this.selectModify.getFeatures().clear();
-    }
-  }
-
   setMap(map) {
     if (this.map) {
       this.map.removeInteraction(this.modifyInteraction);
@@ -350,10 +368,12 @@ class ModifyControl extends Control {
       this.map.removeInteraction(this.selectMove);
       this.map.removeInteraction(this.selectModify);
       this.map.removeInteraction(this.deleteInteraction);
+      this.map.removeInteraction(this.deselectInteraction);
       this.removeListeners();
     }
     super.setMap(map);
     this.addListeners();
+    this.map.addInteraction(this.deselectInteraction);
     this.map.addInteraction(this.deleteInteraction);
     this.map.addInteraction(this.selectModify);
     // For the default behvior it's very important to add selectMove after selectModify.
@@ -363,16 +383,23 @@ class ModifyControl extends Control {
     this.map.addInteraction(this.modifyInteraction);
   }
 
+  /**
+   * Add others listeners on the map than interactions.
+   * @param {*} evt
+   * @private
+   */
   addListeners() {
     this.removeListeners();
-    // To avoid bug, it's important that this event is the same as for modify's deleteCondition.
-    this.map.on('click', this.onClickOutsideFeatures);
     this.map.on('pointermove', this.cursorHandler);
   }
 
+  /**
+   * Remove others listeners on the map than interactions.
+   * @param {*} evt
+   * @private
+   */
   removeListeners() {
     clearTimeout(this.cursorTimeout);
-    this.map.un('click', this.onClickOutsideFeatures);
     this.map.un('pointermove', this.cursorHandler);
   }
 
@@ -381,6 +408,7 @@ class ModifyControl extends Control {
    */
   activate() {
     super.activate();
+    this.deselectInteraction.setActive(true);
     this.deleteInteraction.setActive(true);
     this.selectModify.setActive(true);
     // For the default behavior it's very important to add selectMove after selectModify.
@@ -395,6 +423,7 @@ class ModifyControl extends Control {
     clearTimeout(this.cursorTimeout);
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
+    this.deselectInteraction.setActive(false);
     this.deleteInteraction.setActive(false);
     this.selectModify.setActive(false);
     this.selectMove.setActive(false);
