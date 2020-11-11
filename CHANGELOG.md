@@ -1,16 +1,18 @@
 # Changelog
-All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased]
-### Changed
-- Move and Delete control implemented within the Modify tool.
-- Fix bug duplicate creation of dialog.
+### [1.1.8-beta.6](https://github.com/geops/openlayers-editor/compare/v1.1.8-beta.2...v1.1.8-beta.6) (2020-11-09)
 
-### Removed
-- ol.control.Move and ol.control.Delete tools have been removed.
+
+### Features
+
+* **version:** Installed standard-version to improve changelog ([00466c5](https://github.com/geops/openlayers-editor/commit/00466c56f0695bb62115159c1918704668d6266d))
+
+
+### Bug Fixes
+
+* **version:** added yarn release script ([a62a548](https://github.com/geops/openlayers-editor/commit/a62a548b3e22b6008c5df69e0531b8759528b1db))
 
 ## 0.0.3 - 2019-03-11
 ### Added
