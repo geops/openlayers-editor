@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0-beta.1](https://github.com/geops/openlayers-editor/compare/v1.2.0-beta.0...v1.2.0-beta.1) (2020-11-11)
+
+
+### Bug Fixes
+
+* **index:** fix demo page ([7cfab51](https://github.com/geops/openlayers-editor/commit/7cfab511f62de9bafb1945ac4b18a5fc7a495b38))
+* remove unecessary properties ([24b2357](https://github.com/geops/openlayers-editor/commit/24b23571ecc2d2342fe53d840df10f3da8ba029e))
+* use singleclick instead of click to avoid bugs ([37e1d9d](https://github.com/geops/openlayers-editor/commit/37e1d9d6b5889071184fb1dc996c300cefdf629a))
+* **index:** fix demo page ([ea49c0a](https://github.com/geops/openlayers-editor/commit/ea49c0ad4dfaa8d230d742bd63a54a6f9b860677))
+* **modify:** add a high zIndex to default modify style ([f3584b1](https://github.com/geops/openlayers-editor/commit/f3584b17ef915e2362f1fdca7563ee492af1234a))
+* **modify:** use click instead of singleclick ([ecea48c](https://github.com/geops/openlayers-editor/commit/ecea48c4b94f64625289d4966bc1bcc9bfe5bf39))
+* **selectmove:** add a default style with a high zIndex to selectmove interaction ([2222aaa](https://github.com/geops/openlayers-editor/commit/2222aaac49c93163077d4a0914118755a5b742d4))
+
 ## [1.2.0-beta.0](https://github.com/geops/openlayers-editor/compare/v1.1.6...v1.2.0-beta.0) (2020-11-11)
 
 
