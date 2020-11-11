@@ -9,6 +9,7 @@ Additionally, the build process is currently very basic and could be optimized.
 Translations would be nice, too.
 
 ## Features
+
 - CAD tool for geometry alignment
 - Drawing line, point and polygon features
 - Moving and rotating geometries
@@ -18,18 +19,22 @@ Translations would be nice, too.
 - Toolbar for activating and deactivating controls
 
 ## Demo
+
 For a demo, visit [https://openlayers-editor.geops.de](https://openlayers-editor.geops.de).
 
 ## Dependencies
+
 - node & npm
 
 ## Getting started
+
 - Clone this repository
 - Install: `npm install`
 - Run: `npm start`
 - Open your browser and visit [http://localhost:5000](http://localhost:5000)
 
 ## Usage
+
 ```js
 var editor = new ole.Editor(map);
 
@@ -46,13 +51,16 @@ editor.addControls([draw, cad]);
 ```
 
 ## Development
+
 - Build: `npm run build`
 - Create doc: `npm run-script doc`
 
 ### Versions and Changelog
+
 This repo uses [standard-version](https://github.com/conventional-changelog/standard-version/) for release versioning and changelog management. Therefore updates should be committed using [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) messages:
 
-```
+```text
+
 <type>[optional scope]: <description>
 
 [optional body]
