@@ -1,6 +1,6 @@
 import Select from 'ol/interaction/Select';
 import { Circle, Style, Fill, Stroke } from 'ol/style';
-import { click, shiftKeyOnly } from 'ol/events/condition';
+import { click } from 'ol/events/condition';
 
 // Default style on moving geometries
 const selectMoveStyle = new Style({
@@ -26,7 +26,6 @@ const selectMoveStyle = new Style({
  *
  * Default behavior:
  *  - Single click on the feature to select one feature.
- *  - Single click on the map to deselect all features.
  */
 class SelectMove extends Select {
   /**
@@ -36,8 +35,6 @@ class SelectMove extends Select {
   constructor(options) {
     super({
       condition: click,
-      toggleCondition: shiftKeyOnly,
-      wrapX: false,
       style: selectMoveStyle,
       ...options,
     });

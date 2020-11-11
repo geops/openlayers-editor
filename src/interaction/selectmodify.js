@@ -76,7 +76,6 @@ class SelectModify extends Select {
   constructor(options) {
     super({
       condition: doubleClick,
-      wrapX: false,
       style: selectModifyStyle,
       ...options,
     });
