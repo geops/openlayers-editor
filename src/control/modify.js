@@ -363,13 +363,13 @@ class ModifyControl extends Control {
 
   addListeners() {
     this.removeListeners();
-    this.map.on('singleclick', this.onClickOutsideFeatures);
+    this.map.on('click', this.onClickOutsideFeatures);
     this.map.on('pointermove', this.cursorHandler);
   }
 
   removeListeners() {
     clearTimeout(this.cursorTimeout);
-    this.map.un('singleclick', this.onClickOutsideFeatures);
+    this.map.un('click', this.onClickOutsideFeatures);
     this.map.un('pointermove', this.cursorHandler);
   }
 
