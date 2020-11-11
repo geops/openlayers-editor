@@ -8,6 +8,7 @@ import GeometryType from 'ol/geom/GeometryType';
 
 // Default style on modifying geometries
 const selectModifyStyle = new Style({
+  zIndex: 10000, // Always on top
   image: new Circle({
     radius: 5,
     fill: new Fill({

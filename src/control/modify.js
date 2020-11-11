@@ -43,7 +43,7 @@ class ModifyControl extends Control {
 
     /**
      * Filter function to determine which features are elligible for selection.
-     * We exclude features on unmanaged layer(for ex: nodes to delete).
+     * By default we exclude features on unmanaged layers(for ex: nodes to delete).
      * @type {function(ol.Feature, ol.layer.Layer)}
      * @private
      */
@@ -117,6 +117,7 @@ class ModifyControl extends Control {
         this.deleteInteraction.setFeatures();
       }
     });
+    this.selectMove.setActive(false);
   }
 
   /**
@@ -124,7 +125,6 @@ class ModifyControl extends Control {
    * @param {*} options
    * @private
    */
-
   createSelectModifyInteraction(options = {}) {
     /**
      * Select interaction to modify features.
@@ -150,6 +150,7 @@ class ModifyControl extends Control {
         this.deleteInteraction.setFeatures();
       }
     });
+    this.selectModify.setActive(false);
   }
 
   /**
@@ -219,6 +220,7 @@ class ModifyControl extends Control {
     this.deleteInteraction.on('delete', () => {
       this.changeCursor(null);
     });
+    this.deleteInteraction.setActive(false);
   }
 
   /**
@@ -363,6 +365,7 @@ class ModifyControl extends Control {
 
   addListeners() {
     this.removeListeners();
+    // To avoid bug, it's important that this event is the same as for modify's deleteCondition.
     this.map.on('click', this.onClickOutsideFeatures);
     this.map.on('pointermove', this.cursorHandler);
   }
