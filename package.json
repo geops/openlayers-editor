@@ -41,12 +41,12 @@
     "neutrino": "9.4.0",
     "ol": "6.4.3",
     "prettier": "2.1.2",
-    "standard-version": "^9.0.0",
+    "standard-version": "9.0.0",
     "start-server-and-test": "1.11.5",
     "stylelint": "13.7.2",
     "stylelint-config-standard": "20.0.0",
-    "webpack": "4",
-    "webpack-cli": "3",
+    "webpack": "4.44.2",
+    "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0"
   },
   "scripts": {
