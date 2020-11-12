@@ -7,7 +7,7 @@ import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
-import SnapEvent, { SnapEventType } from '../helper/snap-event';
+import SnapEvent, { SnapEventType } from '../event/snap-event';
 
 /**
  * Control with snapping functionality for geometry alignment.

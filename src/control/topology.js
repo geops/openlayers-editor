@@ -1,4 +1,4 @@
-import { Select } from '../interaction';
+import Select from 'ol/interaction/Select';
 import Control from './control';
 import Util from '../helper/util';
 import delSVG from '../../img/buffer.svg';
