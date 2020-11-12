@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.3.0](https://github.com/geops/openlayers-editor/compare/v1.1.6...v1.3.0) (2020-11-12)
 
+### ⚠ BREAKING CHANGES
+
+* the ole.control.modify is completely refactored. Checkout the doc how to specify the new options. It keeps the same features as before. (#201)
 
 ### Features
 
