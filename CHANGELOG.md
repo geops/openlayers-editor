@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/geops/openlayers-editor/compare/v1.1.6...v1.3.0) (2020-11-12)
+
+
+### Features
+
+* **version:** Installed standard-version to improve changelog ([00466c5](https://github.com/geops/openlayers-editor/commit/00466c56f0695bb62115159c1918704668d6266d))
+* **version:** using standard-version and conventional-commits for version and release management, switched to yarn package manager ([ef321f9](https://github.com/geops/openlayers-editor/commit/ef321f9434501c398d6269c695c8aa4a3ff0cb7d))
+
 ## [1.2.0](https://github.com/geops/openlayers-editor/compare/v1.1.6...v1.2.0) (2020-11-12)
 
 
