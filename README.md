@@ -1,6 +1,9 @@
 # Openlayers Editor
-
-[![Travis badge](https://api.travis-ci.org/geops/openlayers-editor.svg?branch=master)](https://travis-ci.org/geops/openlayers-editor)
+![npm](https://img.shields.io/npm/v/ole)
+![Build](https://github.com/geops/openlayers-editor/workflows/Build/badge.svg)
+![e2e tests](https://github.com/geops/openlayers-editor/workflows/Cypress/badge.svg)
+![code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
+![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)
 
 OpenLayers Editor (OLE) is based on [OpenLayers](https://openlayers.org/) and provides a set of controls for extended editing of spatial data.
 
