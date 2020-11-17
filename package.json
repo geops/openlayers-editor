@@ -57,7 +57,7 @@
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "format": "prettier --write 'cypress/integration/*.js' 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
     "lint": "eslint 'cypress/integration/**/*.js' 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
-    "publish:beta": "yarn release -- --prerelease beta && yarn build && git push origin HEAD && yarn publish --tag beta",
+    "publish:beta": "yarn release -- --prerelease beta --skip.changelog && yarn build && git push origin HEAD && yarn publish --tag beta",
     "publish:public": "yarn release && yarn build && git push origin HEAD && yarn publish",
     "release": "standard-version",
     "start": "webpack-dev-server --mode development --open",
