@@ -67,7 +67,6 @@ class ModifyControl extends Control {
     /* Cursor management */
     this.previousCursor = null;
     this.cursorTimeout = null;
-    this.cursorFilter = options.cursorFilter || (() => true);
     this.cursorHandler = this.cursorHandler.bind(this);
 
     /* Interactions */
@@ -265,15 +264,20 @@ class ModifyControl extends Control {
    * @param {*} pixel
    */
   getFeatureAtPixel(pixel) {
-    const feature = (this.map.getFeaturesAtPixel(pixel, {
-      hitTolerance: this.hitTolerance,
-      layerFilter: this.layerFilter,
-    }) || [])[0];
-
-    if (this.cursorFilter(feature)) {
-      return feature;
-    }
-    return null;
+    const features = [];
+    this.map.forEachFeatureAtPixel(
+      pixel,
+      (feature, layer) => {
+        if (this.selectFilter(feature, layer)) {
+          features.push(feature);
+        }
+      },
+      {
+        hitTolerance: this.hitTolerance,
+        layerFilter: this.layerFilter,
+      },
+    );
+    return features.length && features[0];
   }
 
   /**
@@ -337,6 +341,9 @@ class ModifyControl extends Control {
           this.changeCursor(this.previousCursor);
         }
       } else {
+        // if (this.isSelectable(evt.pixel)) {
+        //   this.changeCursor('pointer');
+        // }
         // Feature available for selection.
         this.changeCursor('pointer');
       }
