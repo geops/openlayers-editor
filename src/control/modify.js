@@ -341,9 +341,6 @@ class ModifyControl extends Control {
           this.changeCursor(this.previousCursor);
         }
       } else {
-        // if (this.isSelectable(evt.pixel)) {
-        //   this.changeCursor('pointer');
-        // }
         // Feature available for selection.
         this.changeCursor('pointer');
       }
