@@ -67,7 +67,6 @@ class ModifyControl extends Control {
     /* Cursor management */
     this.previousCursor = null;
     this.cursorTimeout = null;
-    this.cursorFilter = options.cursorFilter || (() => true);
     this.cursorHandler = this.cursorHandler.bind(this);
 
     /* Interactions */
@@ -265,15 +264,20 @@ class ModifyControl extends Control {
    * @param {*} pixel
    */
   getFeatureAtPixel(pixel) {
-    const feature = (this.map.getFeaturesAtPixel(pixel, {
-      hitTolerance: this.hitTolerance,
-      layerFilter: this.layerFilter,
-    }) || [])[0];
-
-    if (this.cursorFilter(feature)) {
-      return feature;
-    }
-    return null;
+    const feature = this.map.forEachFeatureAtPixel(
+      pixel,
+      (feat, layer) => {
+        if (this.selectFilter(feat, layer)) {
+          return feat;
+        }
+        return null;
+      },
+      {
+        hitTolerance: this.hitTolerance,
+        layerFilter: this.layerFilter,
+      },
+    );
+    return feature;
   }
 
   /**
