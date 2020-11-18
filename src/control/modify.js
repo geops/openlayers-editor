@@ -264,20 +264,20 @@ class ModifyControl extends Control {
    * @param {*} pixel
    */
   getFeatureAtPixel(pixel) {
-    const features = [];
-    this.map.forEachFeatureAtPixel(
+    const feature = this.map.forEachFeatureAtPixel(
       pixel,
-      (feature, layer) => {
-        if (this.selectFilter(feature, layer)) {
-          features.push(feature);
+      (feat, layer) => {
+        if (this.selectFilter(feat, layer)) {
+          return feat;
         }
+        return null;
       },
       {
         hitTolerance: this.hitTolerance,
         layerFilter: this.layerFilter,
       },
     );
-    return features.length && features[0];
+    return feature;
   }
 
   /**
