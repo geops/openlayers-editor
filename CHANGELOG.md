@@ -2,10 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### Features
+## [2.0.0](https://github.com/geops/openlayers-editor/compare/v1.4.0-beta.1...v2.0.0) (2020-11-18)
 
-* **version:** Installed standard-version to improve changelog ([00466c5](https://github.com/geops/openlayers-editor/commit/00466c56f0695bb62115159c1918704668d6266d))
-* **version:** using standard-version and conventional-commits for version and release management, switched to yarn package manager ([ef321f9](https://github.com/geops/openlayers-editor/commit/ef321f9434501c398d6269c695c8aa4a3ff0cb7d))
+
+### ⚠ BREAKING CHANGES
+
+* **modify:** the ole.control.modify is completely refactored (check
+docs)
+
+* **modify:** added selectFilter to getFeatureAtPixel() ([007ad16](https://github.com/geops/openlayers-editor/commit/007ad162872444c7b8e2eb8e39a5f52009caa317))
 
 ## [1.2.0](https://github.com/geops/openlayers-editor/compare/v1.1.6...v1.2.0) (2020-11-12)
 
