@@ -39,7 +39,7 @@
     "jsts": "2.6.1",
     "lint-staged": "10.5.1",
     "neutrino": "9.4.0",
-    "ol": "6.4.3",
+    "ol": "6.5.0",
     "prettier": "2.1.2",
     "standard-version": "9.0.0",
     "start-server-and-test": "1.11.5",
