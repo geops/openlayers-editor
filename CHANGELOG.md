@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/geops/openlayers-editor/compare/v2.0.0...v2.0.1) (2021-01-26)
+
+
+### Bug Fixes
+
+* **cad:** allow a snap distance of 0 ([#220](https://github.com/geops/openlayers-editor/issues/220)) ([8eebfaf](https://github.com/geops/openlayers-editor/commit/8eebfafc8eadbdb3d1d4686b75b6c7075d3ff15c))
+
 ## [2.0.0](https://github.com/geops/openlayers-editor/compare/v1.4.0-beta.1...v2.0.0) (2020-11-18)
 
 
