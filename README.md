@@ -33,8 +33,9 @@ For a demo, visit [https://openlayers-editor.geops.de](https://openlayers-editor
 
 - Clone this repository
 - Install: `npm install`
+- Build: `npm run build`
 - Run: `npm start`
-- Open your browser and visit [http://localhost:5000](http://localhost:5000)
+- Open your browser and visit [http://localhost:8080](http://localhost:8080)
 
 ## Usage
 

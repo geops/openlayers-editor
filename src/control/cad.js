@@ -417,7 +417,7 @@ class CadControl extends Control {
 
     document.getElementById('width-input').addEventListener('keyup', (evt) => {
       const snapPointDist = parseFloat(evt.target.value);
-      if (snapPointDist) {
+      if (!Number.isNaN(snapPointDist)) {
         this.setProperties({ snapPointDist });
       }
     });
