@@ -53,7 +53,7 @@
       });
       
       // Get the public api key
-      fetch('https://developer.geops.io/publickey')
+      fetch('https://backend.developer.geops.io/publickey')
         .then((response) => response.json())
         .then(function(data = {}) {
           mbMap.setStyle('https://maps.geops.io/styles/travic_v2/style.json?key=' + data.key)
