@@ -1,0 +1,10 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+if git grep -n -E \"5cc87b12d7c5370001c1d656\(5\)\";
+then
+     echo \"Remove private geOps API keys !!!!\";
+     exit 1;
+else
+    CI=true npx lint-staged  
+fi;
