@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/geops/openlayers-editor/compare/v2.0.1...v2.1.0) (2022-06-20)
+
+
+### Features
+
+* use conventional-pr-title for PR title validation ([#227](https://github.com/geops/openlayers-editor/issues/227)) ([607e5ec](https://github.com/geops/openlayers-editor/commit/607e5ec3d4aa4849f4b6b7e7acc827728f70a36c))
+
+
+### Bug Fixes
+
+* **demo:** Update style URL ([#222](https://github.com/geops/openlayers-editor/issues/222)) ([63da714](https://github.com/geops/openlayers-editor/commit/63da714cce7ad7660b99218be153644e1f193d01))
+
 ### [2.0.1](https://github.com/geops/openlayers-editor/compare/v2.0.0...v2.0.1) (2021-01-26)
 
 
