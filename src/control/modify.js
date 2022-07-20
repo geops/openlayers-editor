@@ -1,5 +1,6 @@
 import { Modify, Interaction } from 'ol/interaction';
 import { singleClick } from 'ol/events/condition';
+import { unByKey } from 'ol/Observable';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
@@ -196,11 +197,16 @@ class ModifyControl extends Control {
     this.modifyInteraction.on('modifystart', (evt) => {
       this.editor.setEditFeature(evt.features.item(0));
       this.isModifying = true;
+      this.onModifyStartListener = this.map.on('pointermove', (event) => {
+        this.editor.modifyStartCoordinate = event.coordinate;
+      });
     });
 
     this.modifyInteraction.on('modifyend', () => {
       this.editor.setEditFeature(null);
       this.isModifying = false;
+      unByKey(this.onModifyStartListener);
+      this.editor.modifyStartCoordinate = null;
     });
     this.modifyInteraction.setActive(false);
   }

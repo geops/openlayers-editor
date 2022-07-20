@@ -194,12 +194,6 @@ class CadControl extends Control {
   onMove(evt) {
     const features = this.getClosestFeatures(evt.coordinate, 5);
 
-    // Don't snap on the edit feature
-    const editFeature = this.editor.getEditFeature();
-    if (editFeature && features.indexOf(editFeature) > -1) {
-      features.splice(features.indexOf(editFeature), 1);
-    }
-
     this.linesLayer.getSource().clear();
     this.snapLayer.getSource().clear();
 
@@ -244,13 +238,54 @@ class CadControl extends Control {
     });
 
     const dists = Object.keys(featureDict);
-    const features = [];
+    let features = [];
     const count = Math.min(dists.length, num);
 
     dists.sort((a, b) => a - b);
 
     for (let i = 0; i < count; i += 1) {
       features.push(featureDict[dists[i]]);
+    }
+
+    const drawFeature = this.editor.getDrawFeature();
+    if (drawFeature) {
+      // Include all but the last vertex (at mouse position) to prevent snapping on mouse cursor node
+      const currentDrawFeature = drawFeature.clone();
+      currentDrawFeature
+        .getGeometry()
+        .setCoordinates(
+          drawFeature.getGeometry().getCoordinates().slice(0, -1),
+        );
+      features = [currentDrawFeature, ...features];
+    }
+
+    const editFeature = this.editor.getEditFeature();
+    if (editFeature && this.editor.modifyStartCoordinate) {
+      /* Include all nodes of the edit feature except the node being modified */
+      // First exclude the edit feature from snap detection
+      if (features.indexOf(editFeature) > -1) {
+        features.splice(features.indexOf(editFeature), 1);
+      }
+
+      // Convert to MultiPoint and get the node coordinate closest to mouse cursor
+      const snapGeom = new MultiPoint(
+        editFeature.getGeometry().getCoordinates(),
+      );
+      const editNodeCoordinate = snapGeom.getClosestPoint(
+        this.editor.modifyStartCoordinate,
+      );
+
+      // Exclude the node being modified
+      snapGeom.setCoordinates(
+        snapGeom.getCoordinates().filter((coord) => {
+          return coord.toString() !== editNodeCoordinate.toString();
+        }),
+      );
+
+      // Clone editFeature and apply adjusted snap geometry
+      const snapEditFeature = editFeature.clone();
+      snapEditFeature.getGeometry().setCoordinates(snapGeom.getCoordinates());
+      features = [snapEditFeature, ...features];
     }
 
     return features;
@@ -270,23 +305,25 @@ class CadControl extends Control {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
 
-      if (geom instanceof Point) {
-        auxCoords.push(featureCoord);
-      } else {
-        // filling snapLayer with features vertex
-        if (geom instanceof LineString) {
-          for (let j = 0; j < featureCoord.length; j += 1) {
-            auxCoords.push(featureCoord[j]);
+      if (featureCoord.length) {
+        if (geom instanceof Point) {
+          auxCoords.push(featureCoord);
+        } else {
+          // filling snapLayer with features vertex
+          if (geom instanceof LineString) {
+            for (let j = 0; j < featureCoord.length; j += 1) {
+              auxCoords.push(featureCoord[j]);
+            }
+          } else if (geom instanceof Polygon) {
+            for (let j = 0; j < featureCoord[0].length; j += 1) {
+              auxCoords.push(featureCoord[0][j]);
+            }
           }
-        } else if (geom instanceof Polygon) {
-          for (let j = 0; j < featureCoord[0].length; j += 1) {
-            auxCoords.push(featureCoord[0][j]);
-          }
-        }
 
-        // filling auxCoords
-        const coords = fromExtent(geom.getExtent()).getCoordinates()[0];
-        auxCoords = auxCoords.concat(coords);
+          // filling auxCoords
+          const coords = fromExtent(geom.getExtent()).getCoordinates()[0];
+          auxCoords = auxCoords.concat(coords);
+        }
       }
     }
 

@@ -94,8 +94,7 @@
   "lint-staged": {
     "(src|__mocks__)/**/*.js": [
       "eslint --fix",
-      "prettier --write",
-      "yarn test --bail --findRelatedTests"
+      "prettier --write"
     ],
     "package.json": [
       "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
