@@ -360,8 +360,12 @@ class CadControl extends Control {
       }
 
       if (lineCoords) {
-        const g = new LineString(lineCoords);
-        this.snapLayer.getSource().addFeature(new Feature(g));
+        const geom = new LineString(lineCoords);
+        const mapRotation = this.map.getView().getRotation();
+        if (mapRotation !== 0) {
+          geom.rotate(mapRotation, lineCoords[1]);
+        }
+        this.snapLayer.getSource().addFeature(new Feature(geom));
       }
     }
 
@@ -372,6 +376,7 @@ class CadControl extends Control {
     if (snapFeatures.length) {
       snapFeatures.forEach((feature) => {
         const featureCoord = feature.getGeometry().getCoordinates();
+        console.log(featureCoord);
         const x0 = featureCoord[0][0];
         const x1 = featureCoord[1][0];
         const y0 = featureCoord[0][1];
