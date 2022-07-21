@@ -1,13 +1,18 @@
-import { RegularShape, Style, Fill, Stroke } from 'ol/style';
+import { RegularShape, Style, Fill, Stroke, Circle } from 'ol/style';
 import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
 import { fromExtent } from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 import Vector from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
+import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
+import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
 import SnapEvent, { SnapEventType } from '../event/snap-event';
+
+const parser = new OL3Parser();
+parser.inject(Point, LineString, Polygon, MultiPoint);
 
 /**
  * Control with snapping functionality for geometry alignment.
@@ -93,6 +98,16 @@ class CadControl extends Control {
       source: new VectorSource(),
       style: options.linesStyle || [
         new Style({
+          image: new Circle({
+            fill: new Fill({
+              color: '#E8841F',
+            }),
+            stroke: new Stroke({
+              width: 1,
+              color: '#618496',
+            }),
+            radius: 5,
+          }),
           stroke: new Stroke({
             width: 1,
             lineDash: [5, 10],
@@ -298,6 +313,124 @@ class CadControl extends Control {
     return features;
   }
 
+  getRotatedExtent(geometry) {
+    const coordinates =
+      geometry instanceof Polygon
+        ? geometry.getCoordinates()[0]
+        : geometry.getCoordinates();
+    const xMin = coordinates.reduce((finalMin, coord) => {
+      const pixelCurrent = this.map.getPixelFromCoordinate(coord);
+      const pixelFinal = this.map.getPixelFromCoordinate(
+        finalMin || coordinates[0],
+      );
+      return pixelCurrent[0] <= pixelFinal[0] ? coord : finalMin;
+    });
+    const xMax = coordinates.reduce((finalMax, coord) => {
+      const pixelCurrent = this.map.getPixelFromCoordinate(coord);
+      const pixelFinal = this.map.getPixelFromCoordinate(
+        finalMax || coordinates[0],
+      );
+      return pixelCurrent[0] >= pixelFinal[0] ? coord : finalMax;
+    });
+    const yMin = coordinates.reduce((finalMin, coord) => {
+      const pixelCurrent = this.map.getPixelFromCoordinate(coord);
+      const pixelFinal = this.map.getPixelFromCoordinate(
+        finalMin || coordinates[0],
+      );
+      return pixelCurrent[1] <= pixelFinal[1] ? coord : finalMin;
+    });
+    const yMax = coordinates.reduce((finalMax, coord) => {
+      const pixelCurrent = this.map.getPixelFromCoordinate(coord);
+      const pixelFinal = this.map.getPixelFromCoordinate(
+        finalMax || coordinates[0],
+      );
+      return pixelCurrent[1] >= pixelFinal[1] ? coord : finalMax;
+    });
+    const minVertLine = new LineString([
+      [xMin[0], -20037508.342789],
+      [xMin[0], 20037508.342789],
+    ]);
+    minVertLine.rotate(this.map.getView().getRotation(), xMin);
+    const maxVertLine = new LineString([
+      [xMax[0], -20037508.342789],
+      [xMax[0], 20037508.342789],
+    ]);
+    maxVertLine.rotate(this.map.getView().getRotation(), xMax);
+    const minHoriLine = new LineString([
+      [-20037508.342789, yMin[1]],
+      [20037508.342789, yMin[1]],
+    ]);
+    minHoriLine.rotate(this.map.getView().getRotation(), yMin);
+    const maxHoriLine = new LineString([
+      [-20037508.342789, yMax[1]],
+      [20037508.342789, yMax[1]],
+    ]);
+    maxHoriLine.rotate(this.map.getView().getRotation(), yMax);
+    const intersectTopLeft = OverlayOp.intersection(
+      parser.read(minVertLine),
+      parser.read(minHoriLine),
+    );
+    const intersectBottomLeft = OverlayOp.intersection(
+      parser.read(minVertLine),
+      parser.read(maxHoriLine),
+    );
+    const intersectTopRight = OverlayOp.intersection(
+      parser.read(maxVertLine),
+      parser.read(minHoriLine),
+    );
+    const intersectBottomRight = OverlayOp.intersection(
+      parser.read(maxVertLine),
+      parser.read(maxHoriLine),
+    );
+    // this.linesLayer
+    //   .getSource()
+    //   .addFeatures([
+    //     new Feature(
+    //       new Point([
+    //         intersectTopLeft.getCoordinate().x,
+    //         intersectTopLeft.getCoordinate().y,
+    //       ]),
+    //     ),
+    //     new Feature(
+    //       new Point([
+    //         intersectBottomLeft.getCoordinate().x,
+    //         intersectBottomLeft.getCoordinate().y,
+    //       ]),
+    //     ),
+    //     new Feature(
+    //       new Point([
+    //         intersectTopRight.getCoordinate().x,
+    //         intersectTopRight.getCoordinate().y,
+    //       ]),
+    //     ),
+    //     new Feature(
+    //       new Point([
+    //         intersectBottomRight.getCoordinate().x,
+    //         intersectBottomRight.getCoordinate().y,
+    //       ]),
+    //     ),
+    //     new Feature(minVertLine),
+    //     new Feature(maxVertLine),
+    //     new Feature(minHoriLine),
+    //     new Feature(maxHoriLine),
+    //   ]);
+    return [
+      [intersectTopLeft.getCoordinate().x, intersectTopLeft.getCoordinate().y],
+      [
+        intersectBottomLeft.getCoordinate().x,
+        intersectBottomLeft.getCoordinate().y,
+      ],
+      [
+        intersectTopRight.getCoordinate().x,
+        intersectTopRight.getCoordinate().y,
+      ],
+      [
+        intersectBottomRight.getCoordinate().x,
+        intersectBottomRight.getCoordinate().y,
+      ],
+    ];
+  }
+
   /**
    * Draws snap lines by building the extent for
    * a pair of features.
@@ -329,6 +462,14 @@ class CadControl extends Control {
 
           // filling auxCoords
           const coords = fromExtent(geom.getExtent()).getCoordinates()[0];
+          // const coords = this.getRotatedExtent(geom);
+          console.log(this.getRotatedExtent(geom));
+          console.log(coords);
+          this.getRotatedExtent(geom).forEach((coord) =>
+            this.linesLayer
+              .getSource()
+              .addFeature(new Feature(new Point(coord))),
+          );
           auxCoords = auxCoords.concat(coords);
         }
       }
@@ -366,6 +507,12 @@ class CadControl extends Control {
           geom.rotate(mapRotation, lineCoords[1]);
         }
         this.snapLayer.getSource().addFeature(new Feature(geom));
+        // this.linesLayer
+        // .getSource()
+        // .addFeature(new Feature(new Point(lineCoords[0])));
+        // this.linesLayer
+        // .getSource()
+        // .addFeature(new Feature(new Point(lineCoords[1])));
       }
     }
 
@@ -376,7 +523,6 @@ class CadControl extends Control {
     if (snapFeatures.length) {
       snapFeatures.forEach((feature) => {
         const featureCoord = feature.getGeometry().getCoordinates();
-        console.log(featureCoord);
         const x0 = featureCoord[0][0];
         const x1 = featureCoord[1][0];
         const y0 = featureCoord[0][1];
