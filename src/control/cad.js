@@ -268,8 +268,11 @@ class CadControl extends Control {
       }
 
       // Convert to MultiPoint and get the node coordinate closest to mouse cursor
+      const isPolygon = editFeature.getGeometry() instanceof Polygon;
       const snapGeom = new MultiPoint(
-        editFeature.getGeometry().getCoordinates(),
+        isPolygon
+          ? editFeature.getGeometry().getCoordinates()[0]
+          : editFeature.getGeometry().getCoordinates(),
       );
       const editNodeCoordinate = snapGeom.getClosestPoint(
         this.editor.modifyStartCoordinate,
@@ -284,7 +287,11 @@ class CadControl extends Control {
 
       // Clone editFeature and apply adjusted snap geometry
       const snapEditFeature = editFeature.clone();
-      snapEditFeature.getGeometry().setCoordinates(snapGeom.getCoordinates());
+      snapEditFeature
+        .getGeometry()
+        .setCoordinates(
+          isPolygon ? [snapGeom.getCoordinates()] : snapGeom.getCoordinates(),
+        );
       features = [snapEditFeature, ...features];
     }
 
