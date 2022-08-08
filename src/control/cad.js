@@ -1,6 +1,5 @@
 import { RegularShape, Style, Fill, Stroke, Circle } from 'ol/style';
 import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
-import { fromExtent } from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 import Vector from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -217,7 +216,7 @@ class CadControl extends Control {
     );
 
     if (this.properties.showSnapLines) {
-      this.drawSnapLines(features, evt.coordinate);
+      this.drawSnapLines(features, evt.coordinate, evt.pixel);
     }
 
     if (this.properties.showSnapPoints && features.length) {
@@ -313,11 +312,19 @@ class CadControl extends Control {
     return features;
   }
 
+  /**
+   * Returns an extent array, considers the map rotation.
+   * @private
+   * @param {ol.Geometry} geometry An OL geometry.
+   * @returns {Array.<number>} extent array.
+   */
   getRotatedExtent(geometry) {
     const coordinates =
       geometry instanceof Polygon
         ? geometry.getCoordinates()[0]
         : geometry.getCoordinates();
+
+    // Get the extreme X and Y using pixel values so the rotation is considered
     const xMin = coordinates.reduce((finalMin, coord) => {
       const pixelCurrent = this.map.getPixelFromCoordinate(coord);
       const pixelFinal = this.map.getPixelFromCoordinate(
@@ -346,6 +353,8 @@ class CadControl extends Control {
       );
       return pixelCurrent[1] >= pixelFinal[1] ? coord : finalMax;
     });
+
+    // Create four infinite lines through the extremes X and Y and rotate them
     const minVertLine = new LineString([
       [xMin[0], -20037508.342789],
       [xMin[0], 20037508.342789],
@@ -366,6 +375,8 @@ class CadControl extends Control {
       [20037508.342789, yMax[1]],
     ]);
     maxHoriLine.rotate(this.map.getView().getRotation(), yMax);
+
+    // Use intersection points of the four lines to get the extent
     const intersectTopLeft = OverlayOp.intersection(
       parser.read(minVertLine),
       parser.read(minHoriLine),
@@ -382,38 +393,7 @@ class CadControl extends Control {
       parser.read(maxVertLine),
       parser.read(maxHoriLine),
     );
-    // this.linesLayer
-    //   .getSource()
-    //   .addFeatures([
-    //     new Feature(
-    //       new Point([
-    //         intersectTopLeft.getCoordinate().x,
-    //         intersectTopLeft.getCoordinate().y,
-    //       ]),
-    //     ),
-    //     new Feature(
-    //       new Point([
-    //         intersectBottomLeft.getCoordinate().x,
-    //         intersectBottomLeft.getCoordinate().y,
-    //       ]),
-    //     ),
-    //     new Feature(
-    //       new Point([
-    //         intersectTopRight.getCoordinate().x,
-    //         intersectTopRight.getCoordinate().y,
-    //       ]),
-    //     ),
-    //     new Feature(
-    //       new Point([
-    //         intersectBottomRight.getCoordinate().x,
-    //         intersectBottomRight.getCoordinate().y,
-    //       ]),
-    //     ),
-    //     new Feature(minVertLine),
-    //     new Feature(maxVertLine),
-    //     new Feature(minHoriLine),
-    //     new Feature(maxHoriLine),
-    //   ]);
+
     return [
       [intersectTopLeft.getCoordinate().x, intersectTopLeft.getCoordinate().y],
       [
@@ -437,19 +417,20 @@ class CadControl extends Control {
    * @private
    * @param {Array.<ol.Feature>} features List of features.
    * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
+   * @param {Array.<number>} pixel Mouse pointer pixel array.
    */
-  drawSnapLines(features, coordinate) {
+  drawSnapLines(features, coordinate, pixel) {
     let auxCoords = [];
 
+    // First get all snap points: neighbouring feature vertices and extent corners
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
-
       if (featureCoord.length) {
         if (geom instanceof Point) {
           auxCoords.push(featureCoord);
         } else {
-          // filling snapLayer with features vertex
+          // Add feature vertices
           if (geom instanceof LineString) {
             for (let j = 0; j < featureCoord.length; j += 1) {
               auxCoords.push(featureCoord[j]);
@@ -460,91 +441,85 @@ class CadControl extends Control {
             }
           }
 
-          // filling auxCoords
-          const coords = fromExtent(geom.getExtent()).getCoordinates()[0];
-          // const coords = this.getRotatedExtent(geom);
-          console.log(this.getRotatedExtent(geom));
-          console.log(coords);
-          this.getRotatedExtent(geom).forEach((coord) =>
-            this.linesLayer
-              .getSource()
-              .addFeature(new Feature(new Point(coord))),
-          );
+          // Add extent corner coordinates
+          const coords = this.getRotatedExtent(geom);
           auxCoords = auxCoords.concat(coords);
         }
       }
     }
 
-    const px = this.map.getPixelFromCoordinate(coordinate);
+    // Draw snaplines when cursor vertically or horizontally aligns with a feature
     let lineCoords = null;
-
     for (let i = 0; i < auxCoords.length; i += 1) {
       const tol = this.snapTolerance;
       const auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
       const drawVLine =
-        px[0] > auxPx[0] - this.snapTolerance / 2 &&
-        px[0] < auxPx[0] + this.snapTolerance / 2;
+        pixel[0] > auxPx[0] - this.snapTolerance / 2 &&
+        pixel[0] < auxPx[0] + this.snapTolerance / 2;
       const drawHLine =
-        px[1] > auxPx[1] - this.snapTolerance / 2 &&
-        px[1] < auxPx[1] + this.snapTolerance / 2;
+        pixel[1] > auxPx[1] - this.snapTolerance / 2 &&
+        pixel[1] < auxPx[1] + this.snapTolerance / 2;
 
       if (drawVLine) {
-        let newY = px[1];
-        newY += px[1] < auxPx[1] ? -tol * 2 : tol * 2;
+        let newY = pixel[1];
+        newY += pixel[1] < auxPx[1] ? -tol * 2 : tol * 2;
         const newPt = this.map.getCoordinateFromPixel([auxPx[0], newY]);
-        lineCoords = [[auxCoords[i][0], newPt[1]], auxCoords[i]];
+        lineCoords = [newPt, auxCoords[i]];
       } else if (drawHLine) {
-        let newX = px[0];
-        newX += px[0] < auxPx[0] ? -tol * 2 : tol * 2;
+        let newX = pixel[0];
+        newX += pixel[0] < auxPx[0] ? -tol * 2 : tol * 2;
         const newPt = this.map.getCoordinateFromPixel([newX, auxPx[1]]);
-        lineCoords = [[newPt[0], auxCoords[i][1]], auxCoords[i]];
+        lineCoords = [newPt, auxCoords[i]];
       }
 
       if (lineCoords) {
         const geom = new LineString(lineCoords);
-        const mapRotation = this.map.getView().getRotation();
-        if (mapRotation !== 0) {
-          geom.rotate(mapRotation, lineCoords[1]);
-        }
         this.snapLayer.getSource().addFeature(new Feature(geom));
-        // this.linesLayer
-        // .getSource()
-        // .addFeature(new Feature(new Point(lineCoords[0])));
-        // this.linesLayer
-        // .getSource()
-        // .addFeature(new Feature(new Point(lineCoords[1])));
       }
     }
 
-    let vertArray = null;
-    let horiArray = null;
+    // Snap to snap line intersection points
+    let vertLine = null;
+    let horiLine = null;
     const snapFeatures = this.snapLayer.getSource().getFeatures();
-
     if (snapFeatures.length) {
       snapFeatures.forEach((feature) => {
+        // The calculated pixels are used to get the vertical and horizontal lines
+        // because using the coordinate doesn't work with a rotated map
         const featureCoord = feature.getGeometry().getCoordinates();
-        const x0 = featureCoord[0][0];
-        const x1 = featureCoord[1][0];
-        const y0 = featureCoord[0][1];
-        const y1 = featureCoord[1][1];
+        const pixelA = this.map.getPixelFromCoordinate(featureCoord[0]);
+        const pixelB = this.map.getPixelFromCoordinate(featureCoord[1]);
+        const x0 = pixelA[0];
+        const x1 = pixelB[0];
+        const y0 = pixelA[1];
+        const y1 = pixelB[1];
 
-        if (x0 === x1) {
-          vertArray = x0;
+        // The pixels are rounded to avoid micro differences in the decimals
+        if (x0.toFixed(4) === x1.toFixed(4)) {
+          vertLine = feature;
         }
-        if (y0 === y1) {
-          horiArray = y0;
+        if (y0.toFixed(4) === y1.toFixed(4)) {
+          horiLine = feature;
         }
       });
 
-      const snapPt = [];
+      // We check if horizontal and vertical snap lines intersect and calculate the intersection coordinate
+      const snapLinesIntersectCoords =
+        vertLine &&
+        horiLine &&
+        OverlayOp.intersection(
+          parser.read(vertLine.getGeometry()),
+          parser.read(horiLine.getGeometry()),
+        )?.getCoordinates()[0];
 
-      if (vertArray && horiArray) {
-        snapPt.push(vertArray);
-        snapPt.push(horiArray);
+      if (snapLinesIntersectCoords) {
         this.linesLayer.getSource().addFeatures(snapFeatures);
 
         this.snapLayer.getSource().clear();
-        const snapGeom = new Point(snapPt);
+        const snapGeom = new Point([
+          snapLinesIntersectCoords.x,
+          snapLinesIntersectCoords.y,
+        ]);
         this.snapLayer.getSource().addFeature(new Feature(snapGeom));
       }
     }
