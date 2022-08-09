@@ -265,13 +265,28 @@ class CadControl extends Control {
     const drawFeature = this.editor.getDrawFeature();
     if (drawFeature) {
       // Include all but the last vertex (at mouse position) to prevent snapping on mouse cursor node
-      const currentDrawFeature = drawFeature.clone();
-      currentDrawFeature
+      const isPolygon = drawFeature.getGeometry() instanceof Polygon;
+      const snapGeom = new MultiPoint(
+        isPolygon
+          ? drawFeature.getGeometry().getCoordinates()[0]
+          : drawFeature.getGeometry().getCoordinates(),
+      );
+
+      const drawNodeCoordinate = snapGeom.getClosestPoint(coordinate);
+
+      // Exclude the node being modified
+      snapGeom.setCoordinates(
+        snapGeom.getCoordinates().filter((coord) => {
+          return coord.toString() !== drawNodeCoordinate.toString();
+        }),
+      );
+      const snapDrawFeature = drawFeature.clone();
+      snapDrawFeature
         .getGeometry()
         .setCoordinates(
-          drawFeature.getGeometry().getCoordinates().slice(0, -1),
+          isPolygon ? [snapGeom.getCoordinates()] : snapGeom.getCoordinates(),
         );
-      features = [currentDrawFeature, ...features];
+      features = [snapDrawFeature, ...features];
     }
 
     if (editFeature) {
@@ -311,11 +326,16 @@ class CadControl extends Control {
    * @param {ol.Geometry} geometry An OL geometry.
    * @returns {Array.<number>} extent array.
    */
-  getRotatedExtent(geometry) {
+  getRotatedExtent(geometry, coordinate) {
     const coordinates =
       geometry instanceof Polygon
         ? geometry.getCoordinates()[0]
         : geometry.getCoordinates();
+
+    if (!coordinates.length) {
+      // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
+      return [coordinate];
+    }
 
     // Get the extreme X and Y using pixel values so the rotation is considered
     const xMin = coordinates.reduce((finalMin, coord) => {
@@ -417,6 +437,7 @@ class CadControl extends Control {
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
+      // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
       if (featureCoord.length) {
         if (geom instanceof Point) {
           auxCoords.push(featureCoord);
@@ -433,7 +454,7 @@ class CadControl extends Control {
           }
 
           // Add extent vertices
-          const coords = this.getRotatedExtent(geom);
+          const coords = this.getRotatedExtent(geom, coordinate);
           auxCoords = auxCoords.concat(coords);
         }
       }

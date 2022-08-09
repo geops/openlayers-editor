@@ -1,5 +1,4 @@
 import { Draw } from 'ol/interaction';
-import { unByKey } from 'ol/Observable';
 import Control from './control';
 import drawPointSVG from '../../img/draw_point.svg';
 import drawPolygonSVG from '../../img/draw_polygon.svg';
@@ -51,28 +50,12 @@ class DrawControl extends Control {
       stopClick: true,
     });
 
-    this.drawInteraction.on('drawstart', () => {
-      this.onDrawStartListener = this.map.on('pointermove', () => {
-        // Sets drawFeature while drawing
-        const drawFeature = this.drawInteraction
-          .getOverlay()
-          .get('source')
-          .getFeatures()
-          .find((feat) => {
-            return (
-              !Array.isArray(feat.getGeometry()) &&
-              feat.getGeometry().getFlatCoordinates().length > 2
-            );
-          });
-        if (drawFeature) {
-          this.editor.setDrawFeature(drawFeature);
-        }
-      });
+    this.drawInteraction.on('drawstart', (evt) => {
+      this.editor.setDrawFeature(evt.feature);
     });
 
     this.drawInteraction.on('drawend', () => {
       this.editor.setDrawFeature(null);
-      unByKey(this.onDrawStartListener);
     });
   }
 
