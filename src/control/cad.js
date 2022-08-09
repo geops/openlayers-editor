@@ -1,4 +1,4 @@
-import { RegularShape, Style, Fill, Stroke, Circle } from 'ol/style';
+import { RegularShape, Style, Fill, Stroke } from 'ol/style';
 import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
 import Feature from 'ol/Feature';
 import Vector from 'ol/layer/Vector';
@@ -97,16 +97,6 @@ class CadControl extends Control {
       source: new VectorSource(),
       style: options.linesStyle || [
         new Style({
-          image: new Circle({
-            fill: new Fill({
-              color: '#E8841F',
-            }),
-            stroke: new Stroke({
-              width: 1,
-              color: '#618496',
-            }),
-            radius: 5,
-          }),
           stroke: new Stroke({
             width: 1,
             lineDash: [5, 10],
@@ -216,7 +206,7 @@ class CadControl extends Control {
     );
 
     if (this.properties.showSnapLines) {
-      this.drawSnapLines(features, evt.coordinate, evt.pixel);
+      this.drawSnapLines(features, evt.coordinate);
     }
 
     if (this.properties.showSnapPoints && features.length) {
@@ -261,6 +251,17 @@ class CadControl extends Control {
       features.push(featureDict[dists[i]]);
     }
 
+    const editFeature = this.editor.getEditFeature();
+    // Initially exclude the edit feature from the snapping
+    if (editFeature && features.indexOf(editFeature) > -1) {
+      features.splice(features.indexOf(editFeature), 1);
+    }
+
+    // When using showSnapPoints return all features except edit/draw features
+    if (this.properties.showSnapPoints) {
+      return features;
+    }
+
     const drawFeature = this.editor.getDrawFeature();
     if (drawFeature) {
       // Include all but the last vertex (at mouse position) to prevent snapping on mouse cursor node
@@ -273,14 +274,8 @@ class CadControl extends Control {
       features = [currentDrawFeature, ...features];
     }
 
-    const editFeature = this.editor.getEditFeature();
-    if (editFeature && this.editor.modifyStartCoordinate) {
+    if (editFeature) {
       /* Include all nodes of the edit feature except the node being modified */
-      // First exclude the edit feature from snap detection
-      if (features.indexOf(editFeature) > -1) {
-        features.splice(features.indexOf(editFeature), 1);
-      }
-
       // Convert to MultiPoint and get the node coordinate closest to mouse cursor
       const isPolygon = editFeature.getGeometry() instanceof Polygon;
       const snapGeom = new MultiPoint(
@@ -288,9 +283,7 @@ class CadControl extends Control {
           ? editFeature.getGeometry().getCoordinates()[0]
           : editFeature.getGeometry().getCoordinates(),
       );
-      const editNodeCoordinate = snapGeom.getClosestPoint(
-        this.editor.modifyStartCoordinate,
-      );
+      const editNodeCoordinate = snapGeom.getClosestPoint(coordinate);
 
       // Exclude the node being modified
       snapGeom.setCoordinates(
@@ -417,57 +410,54 @@ class CadControl extends Control {
    * @private
    * @param {Array.<ol.Feature>} features List of features.
    * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
-   * @param {Array.<number>} pixel Mouse pointer pixel array.
    */
-  drawSnapLines(features, coordinate, pixel) {
-    let auxCoords = [];
-
+  drawSnapLines(features, coordinate) {
     // First get all snap points: neighbouring feature vertices and extent corners
+    let auxCoords = [];
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
       if (featureCoord.length) {
+        // Add feature vertices
         if (geom instanceof Point) {
           auxCoords.push(featureCoord);
-        } else {
-          // Add feature vertices
-          if (geom instanceof LineString) {
-            for (let j = 0; j < featureCoord.length; j += 1) {
-              auxCoords.push(featureCoord[j]);
-            }
-          } else if (geom instanceof Polygon) {
-            for (let j = 0; j < featureCoord[0].length; j += 1) {
-              auxCoords.push(featureCoord[0][j]);
-            }
+        } else if (geom instanceof LineString) {
+          for (let j = 0; j < featureCoord.length; j += 1) {
+            auxCoords.push(featureCoord[j]);
           }
-
-          // Add extent corner coordinates
-          const coords = this.getRotatedExtent(geom);
-          auxCoords = auxCoords.concat(coords);
+        } else {
+          for (let j = 0; j < featureCoord[0].length; j += 1) {
+            auxCoords.push(featureCoord[0][j]);
+          }
         }
+
+        // Add extent corner coordinates
+        const coords = this.getRotatedExtent(geom);
+        auxCoords = auxCoords.concat(coords);
       }
     }
 
-    // Draw snaplines when cursor vertically or horizontally aligns with a feature
+    // Draw snaplines when cursor vertically or horizontally aligns with a snap feature
     let lineCoords = null;
+    const px = this.map.getPixelFromCoordinate(coordinate);
     for (let i = 0; i < auxCoords.length; i += 1) {
       const tol = this.snapTolerance;
       const auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
       const drawVLine =
-        pixel[0] > auxPx[0] - this.snapTolerance / 2 &&
-        pixel[0] < auxPx[0] + this.snapTolerance / 2;
+        px[0] > auxPx[0] - this.snapTolerance / 2 &&
+        px[0] < auxPx[0] + this.snapTolerance / 2;
       const drawHLine =
-        pixel[1] > auxPx[1] - this.snapTolerance / 2 &&
-        pixel[1] < auxPx[1] + this.snapTolerance / 2;
+        px[1] > auxPx[1] - this.snapTolerance / 2 &&
+        px[1] < auxPx[1] + this.snapTolerance / 2;
 
       if (drawVLine) {
-        let newY = pixel[1];
-        newY += pixel[1] < auxPx[1] ? -tol * 2 : tol * 2;
+        let newY = px[1];
+        newY += px[1] < auxPx[1] ? -tol * 2 : tol * 2;
         const newPt = this.map.getCoordinateFromPixel([auxPx[0], newY]);
         lineCoords = [newPt, auxCoords[i]];
       } else if (drawHLine) {
-        let newX = pixel[0];
-        newX += pixel[0] < auxPx[0] ? -tol * 2 : tol * 2;
+        let newX = px[0];
+        newX += px[0] < auxPx[0] ? -tol * 2 : tol * 2;
         const newPt = this.map.getCoordinateFromPixel([newX, auxPx[1]]);
         lineCoords = [newPt, auxCoords[i]];
       }
