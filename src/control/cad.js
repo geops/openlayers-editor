@@ -135,6 +135,33 @@ class CadControl extends Control {
   }
 
   /**
+   * Removes the closest node to a given coordinate from a given geometry.
+   * @private
+   * @param {ol.Geometry} geometry An openlayers geometry.
+   * @param {ol.Coordinate} coordinate Coordinate.
+   * @returns {ol.Geometry.MultiPoint} An openlayers MultiPoint geometry.
+   */
+  static getShiftedMultipoint(geometry, coordinate) {
+    // Include all but the closest vertex to the coordinate (e.g. at mouse position)
+    // to prevent snapping on mouse cursor node
+    const isPolygon = geometry instanceof Polygon;
+    const shiftedMultipoint = new MultiPoint(
+      isPolygon ? geometry.getCoordinates()[0] : geometry.getCoordinates(),
+    );
+
+    const drawNodeCoordinate = shiftedMultipoint.getClosestPoint(coordinate);
+
+    // Exclude the node being modified
+    shiftedMultipoint.setCoordinates(
+      shiftedMultipoint.getCoordinates().filter((coord) => {
+        return coord.toString() !== drawNodeCoordinate.toString();
+      }),
+    );
+
+    return shiftedMultipoint;
+  }
+
+  /**
    * @inheritdoc
    */
   getDialogTemplate() {
@@ -264,22 +291,11 @@ class CadControl extends Control {
 
     const drawFeature = this.editor.getDrawFeature();
     if (drawFeature) {
-      // Include all but the last vertex (at mouse position) to prevent snapping on mouse cursor node
-      const isPolygon = drawFeature.getGeometry() instanceof Polygon;
-      const snapGeom = new MultiPoint(
-        isPolygon
-          ? drawFeature.getGeometry().getCoordinates()[0]
-          : drawFeature.getGeometry().getCoordinates(),
-      );
-
-      const drawNodeCoordinate = snapGeom.getClosestPoint(coordinate);
-
-      // Exclude the node being modified
-      snapGeom.setCoordinates(
-        snapGeom.getCoordinates().filter((coord) => {
-          return coord.toString() !== drawNodeCoordinate.toString();
-        }),
-      );
+      const geom = drawFeature.getGeometry();
+      /* Include all nodes of the edit feature except the node at the mouse position */
+      // Clone drawFeature and apply adjusted snap geometry
+      const snapGeom = CadControl.getShiftedMultipoint(geom, coordinate);
+      const isPolygon = geom instanceof Polygon;
       const snapDrawFeature = drawFeature.clone();
       snapDrawFeature
         .getGeometry()
@@ -290,24 +306,11 @@ class CadControl extends Control {
     }
 
     if (editFeature) {
-      /* Include all nodes of the edit feature except the node being modified */
-      // Convert to MultiPoint and get the node coordinate closest to mouse cursor
-      const isPolygon = editFeature.getGeometry() instanceof Polygon;
-      const snapGeom = new MultiPoint(
-        isPolygon
-          ? editFeature.getGeometry().getCoordinates()[0]
-          : editFeature.getGeometry().getCoordinates(),
-      );
-      const editNodeCoordinate = snapGeom.getClosestPoint(coordinate);
-
-      // Exclude the node being modified
-      snapGeom.setCoordinates(
-        snapGeom.getCoordinates().filter((coord) => {
-          return coord.toString() !== editNodeCoordinate.toString();
-        }),
-      );
-
+      const geom = editFeature.getGeometry();
+      /* Include all nodes of the edit feature except the node at the mouse position */
       // Clone editFeature and apply adjusted snap geometry
+      const snapGeom = CadControl.getShiftedMultipoint(geom, coordinate);
+      const isPolygon = geom instanceof Polygon;
       const snapEditFeature = editFeature.clone();
       snapEditFeature
         .getGeometry()
