@@ -418,22 +418,24 @@ class CadControl extends Control {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
       if (featureCoord.length) {
-        // Add feature vertices
         if (geom instanceof Point) {
           auxCoords.push(featureCoord);
-        } else if (geom instanceof LineString) {
-          for (let j = 0; j < featureCoord.length; j += 1) {
-            auxCoords.push(featureCoord[j]);
-          }
         } else {
-          for (let j = 0; j < featureCoord[0].length; j += 1) {
-            auxCoords.push(featureCoord[0][j]);
+          // Add feature vertices
+          if (geom instanceof LineString) {
+            for (let j = 0; j < featureCoord.length; j += 1) {
+              auxCoords.push(featureCoord[j]);
+            }
+          } else if (geom instanceof Polygon) {
+            for (let j = 0; j < featureCoord[0].length; j += 1) {
+              auxCoords.push(featureCoord[0][j]);
+            }
           }
-        }
 
-        // Add extent corner coordinates
-        const coords = this.getRotatedExtent(geom);
-        auxCoords = auxCoords.concat(coords);
+          // Add extent vertices
+          const coords = this.getRotatedExtent(geom);
+          auxCoords = auxCoords.concat(coords);
+        }
       }
     }
 
