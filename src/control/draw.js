@@ -48,6 +48,7 @@ class DrawControl extends Control {
       source: options.source,
       style: options.style,
       stopClick: true,
+      ...options,
     });
   }
 
