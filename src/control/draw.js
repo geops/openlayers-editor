@@ -50,6 +50,14 @@ class DrawControl extends Control {
       stopClick: true,
       ...options,
     });
+
+    this.drawInteraction.on('drawstart', (evt) => {
+      this.editor.setDrawFeature(evt.feature);
+    });
+
+    this.drawInteraction.on('drawend', () => {
+      this.editor.setDrawFeature(null);
+    });
   }
 
   /**
