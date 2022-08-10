@@ -2,7 +2,7 @@
   "name": "ole",
   "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
-  "version": "2.1.0",
+  "version": "2.1.1-beta.6",
   "main": "build/index.js",
   "peerDependencies": {
     "jsts": "^2",
@@ -94,8 +94,7 @@
   "lint-staged": {
     "(src|__mocks__)/**/*.js": [
       "eslint --fix",
-      "prettier --write",
-      "yarn test --bail --findRelatedTests"
+      "prettier --write"
     ],
     "package.json": [
       "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
