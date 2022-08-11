@@ -21,7 +21,7 @@ class DrawControl extends Control {
   constructor(options) {
     let image = null;
 
-    switch (options.type) {
+    switch (options?.type) {
       case 'Polygon':
         image = drawPolygonSVG;
         break;
@@ -33,7 +33,7 @@ class DrawControl extends Control {
     }
 
     super({
-      title: `Draw ${options.type || 'Point'}`,
+      title: `Draw ${options?.type || 'Point'}`,
       className: 'ole-control-draw',
       image,
       ...options,
@@ -44,12 +44,12 @@ class DrawControl extends Control {
      * @private
      */
     this.drawInteraction = new Draw({
-      type: options.type || 'Point',
-      features: options.features,
-      source: options.source,
-      style: options.style,
+      type: options?.type || 'Point',
+      features: options?.features,
+      source: options?.source,
+      style: options?.style,
       stopClick: true,
-      ...options.drawInteractionOptions,
+      ...(options?.drawInteractionOptions || {}),
     });
 
     this.drawInteraction.on('drawstart', (evt) => {
