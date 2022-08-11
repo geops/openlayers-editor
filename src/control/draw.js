@@ -15,6 +15,7 @@ class DrawControl extends Control {
    * @param {string} [options.type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
+   * @param {Object} [options.drawInteractionOptions] Options for the Draw interaction (ol/interaction/Draw).
    * @param {ol.style.Style.StyleLike} [options.style] Style used for the draw interaction.
    */
   constructor(options) {
