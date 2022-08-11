@@ -36,7 +36,7 @@ class DrawControl extends Control {
       title: `Draw ${options?.type || 'Point'}`,
       className: 'ole-control-draw',
       image,
-      ...options,
+      ...(options || {}),
     });
 
     /**
