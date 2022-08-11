@@ -15,12 +15,13 @@ class DrawControl extends Control {
    * @param {string} [options.type] Geometry type ('Point', 'LineString', 'Polygon',
    *   'MultiPoint', 'MultiLineString', 'MultiPolygon' or 'Circle').
    *   Default is 'Point'.
+   * @param {Object} [options.drawInteractionOptions] Options for the Draw interaction (ol/interaction/Draw).
    * @param {ol.style.Style.StyleLike} [options.style] Style used for the draw interaction.
    */
   constructor(options) {
     let image = null;
 
-    switch (options.type) {
+    switch (options?.type) {
       case 'Polygon':
         image = drawPolygonSVG;
         break;
@@ -32,10 +33,10 @@ class DrawControl extends Control {
     }
 
     super({
-      title: `Draw ${options.type || 'Point'}`,
+      title: `Draw ${options?.type || 'Point'}`,
       className: 'ole-control-draw',
       image,
-      ...options,
+      ...(options || {}),
     });
 
     /**
@@ -43,11 +44,12 @@ class DrawControl extends Control {
      * @private
      */
     this.drawInteraction = new Draw({
-      type: options.type || 'Point',
-      features: options.features,
-      source: options.source,
-      style: options.style,
+      type: options?.type || 'Point',
+      features: options?.features,
+      source: options?.source,
+      style: options?.style,
       stopClick: true,
+      ...(options?.drawInteractionOptions || {}),
     });
 
     this.drawInteraction.on('drawstart', (evt) => {
