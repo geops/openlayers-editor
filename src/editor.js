@@ -147,6 +147,25 @@ class Editor {
   }
 
   /**
+   * Sets an instance of the feature that is being drawn.
+   * Some controls need information about the feature
+   * that is currently being drawn (e.g. for not snapping on them).
+   * @param {ol.Feature|null} feature The drawFeature (or null if none).
+   * @protected
+   */
+  setDrawFeature(feature) {
+    this.drawFeature = feature;
+  }
+
+  /**
+   * Returns the feature that is currently being drawn.
+   * @returns {ol.Feature|null} The drawFeature.
+   */
+  getDrawFeature() {
+    return this.drawFeature;
+  }
+
+  /**
    * Controls use this function for triggering activity state changes.
    * @param {ol.control.Control} control Control.
    * @private
