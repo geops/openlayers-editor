@@ -162,7 +162,6 @@ class Editor {
    * @returns {ol.Feature|null} The drawFeature.
    */
   getDrawFeature() {
-    const test;
     return this.drawFeature;
   }
 
