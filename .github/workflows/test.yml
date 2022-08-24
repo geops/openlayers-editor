@@ -1,4 +1,4 @@
-name: Build
+name: Test
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -23,10 +23,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Run linting and tests
-        run: |
-          npm install --frozen-lockfile
-          npm run lint
-          npm run test
-          npm run build
+      - run: npm install -g yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint
+      - run: yarn test
         env:
           CI: true
