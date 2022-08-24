@@ -2,7 +2,7 @@
   "name": "ole",
   "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
-  "version": "2.0.1",
+  "version": "2.1.2",
   "main": "build/index.js",
   "peerDependencies": {
     "jsts": "^2",
@@ -24,7 +24,7 @@
     "babel-core": "6.26.3",
     "babel-eslint": "10.1.0",
     "babel-loader": "8.2.1",
-    "cypress": "5.6.0",
+    "cypress": "9.2.0",
     "eslint": "7.13.0",
     "eslint-config-airbnb-base": "14.2.1",
     "eslint-config-prettier": "6.15.0",
@@ -39,7 +39,7 @@
     "jsts": "2.6.1",
     "lint-staged": "10.5.1",
     "neutrino": "9.4.0",
-    "ol": "6.4.3",
+    "ol": "6.5.0",
     "prettier": "2.1.2",
     "standard-version": "9.5.0",
     "start-server-and-test": "1.11.5",
@@ -94,8 +94,7 @@
   "lint-staged": {
     "(src|__mocks__)/**/*.js": [
       "eslint --fix",
-      "prettier --write",
-      "yarn test --bail --findRelatedTests"
+      "prettier --write"
     ],
     "package.json": [
       "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
