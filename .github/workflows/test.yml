@@ -7,12 +7,12 @@ on:
       - master
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [14.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -23,9 +23,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Run linting and tests
-      - run: npm install -g yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn lint
-      - run: yarn test
+        run: |
+          npm install -g yarn
+          yarn install --frozen-lockfile
+          yarn lint
+          yarn test
         env:
           CI: true
