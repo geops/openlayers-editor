@@ -24,8 +24,8 @@ jobs:
 
       - name: Run linting and tests
       - run: npm install -g yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn lint
-      - run: yarn test
+          yarn install --frozen-lockfile
+          yarn lint
+          yarn test
         env:
           CI: true
