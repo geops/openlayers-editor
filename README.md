@@ -23,7 +23,7 @@ Translations would be nice, too.
 
 ## Demo
 
-For a demo, visit [https://openlayers-editor.geops.de](https://openlayers-editor.geops.de).
+For a demo, visit [https://openlayers-editor.geops.com](https://openlayers-editor.geops.com).
 
 ## Dependencies
 
