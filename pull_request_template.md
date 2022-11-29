@@ -10,7 +10,6 @@
 - [ ] The images added are optimized.
 - [ ] Everything in ticket description has been fixed.
 - [ ] The author of the MR has made its own review before assigning the reviewer.
-- [ ] IE11 tested.
 - [ ] The title is formatted as a [conventional-commit](https://www.conventionalcommits.org/) message.
 - [ ] The title contains `WIP:` if it's necessary.
 - [ ] Labels applied. if it's a release? a hotfix?

@@ -13,18 +13,27 @@ module.exports = {
       name: 'ole',
       babel: {
         presets: [
-          ['@babel/preset-env', {
-            targets: {
-              browsers: ["last 2 versions", "ie >= 10"]
-            }
-          }]
+          [
+            '@babel/preset-env',
+            {
+              targets: {
+                browsers: [
+                  '>0.2%',
+                  'not dead',
+                  'not op_mini all',
+                  'not ie <= 11',
+                  'not android < 5',
+                ],
+              },
+            },
+          ],
         ],
         plugins: [
           '@babel/plugin-transform-destructuring',
           '@babel/plugin-transform-object-assign',
           '@babel/plugin-proposal-object-rest-spread',
-        ]
-      }
+        ],
+      },
     }),
     imageLoader(),
     styleLoader({ extract: false }),
