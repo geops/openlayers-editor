@@ -6,7 +6,7 @@
   "main": "build/index.js",
   "peerDependencies": {
     "jsts": "^2",
-    "ol": "^6"
+    "ol": "^7"
   },
   "devDependencies": {
     "@babel/core": "7.12.3",
