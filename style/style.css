@@ -93,11 +93,11 @@ a.visited {
 #copyrightDiv {
   font-family: Arial, sans-serif;
   font-size: 12px;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255);
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.7);
   position: absolute;
   display: flex;
-  gap: 10px;
+  gap: 5px;
   padding: 5px;
   bottom: 0;
   left: 0;
