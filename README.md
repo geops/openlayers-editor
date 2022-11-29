@@ -39,6 +39,11 @@ For a demo, visit [https://openlayers-editor.geops.com](https://openlayers-edito
 
 ## Usage
 
+```html
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/ole@latest/style/ole.css" />
+<script src="https://cdn.jsdelivr.net/npm/ole@2.1.2/build/index.js"></script>
+```
+
 ```js
 var editor = new ole.Editor(map);
 
@@ -56,6 +61,7 @@ editor.addControls([draw, cad]);
 
 ## Development
 
+- Install: `npm install`
 - Build: `npm run build`
 - Create doc: `npm run-script doc`
 

@@ -1,5 +1,4 @@
 import Control from 'ol/control/Control';
-import '../style/ole.css';
 
 /**
  * The editor's toolbar.
