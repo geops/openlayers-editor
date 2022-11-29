@@ -22,11 +22,16 @@
       <div id="header">
         <nav>
           <div id="brand">OpenLayers Editor</div>
-          <a href="#" class="active">Demo</a>
-          <a href="api.html">API</a>
-          <a target="_blank" href="https://github.com/geops/openlayers-editor">
-            Code
-          </a>
+          <div id="headerLinks">
+            <a href="#" class="active">Demo</a>
+            <a href="api.html">API</a>
+            <a
+              target="_blank"
+              href="https://github.com/geops/openlayers-editor"
+            >
+              Code
+            </a>
+          </div>
         </nav>
       </div>
       <div id="map"></div>
@@ -35,7 +40,36 @@
           <div id="promo-text">Join the team!</div>
         </a>
       </div>
-      <div id="copyrightDiv">© OpenStreetMap contributors © Mapbox</div>
+      <div id="copyrightDiv">
+        © OpenStreetMap contributors © Mapbox
+        <span>
+          <a
+            href="https://geops.com/en/imprint"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Imprint
+          </a>
+        </span>
+        <span>
+          <a
+            href="https://geops.com/en/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy
+          </a>
+        </span>
+        <span>
+          <a
+            href="https://geops.com/en"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            About geOps
+          </a>
+        </span>
+      </div>
     </div>
     <script type="text/javascript">
       var editLayer = new ol.layer.Vector({
