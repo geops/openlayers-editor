@@ -12,14 +12,17 @@ body {
 
 a {
   text-decoration: none;
+  color: #61849c;
 }
 
 a:hover {
   text-decoration: underline;
 }
 
-a.active {
+a.active,
+a.visited {
   font-weight: bold;
+  color: #61849c;
 }
 
 #header {
@@ -30,13 +33,16 @@ a.active {
   text-align: right;
 }
 
-#header a {
-  color: #61849c;
-  margin-right: 10px;
+#header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#header a:last-child {
-  margin-right: 0;
+#headerLinks {
+  display: flex;
+  gap: 40px;
+  padding: 0 40px;
 }
 
 #map {
@@ -57,13 +63,8 @@ a.active {
 }
 
 #brand {
-  font-size: 20px;
+  font-size: 1.5em;
   font-weight: bold;
-  height: 60px;
-  line-height: 60px;
-  left: 10px;
-  position: absolute;
-  top: 0;
 }
 
 #promo {
@@ -92,9 +93,11 @@ a.active {
 #copyrightDiv {
   font-family: Arial, sans-serif;
   font-size: 12px;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255);
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.7);
   position: absolute;
+  display: flex;
+  gap: 5px;
   padding: 5px;
   bottom: 0;
   left: 0;
