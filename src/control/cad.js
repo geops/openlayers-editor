@@ -587,21 +587,21 @@ class CadControl extends Control {
     this.map.addInteraction(this.pointerInteraction);
     this.map.addInteraction(this.snapInteraction);
 
-    document.getElementById('aux-cb').addEventListener('change', (evt) => {
+    document.getElementById('aux-cb')?.addEventListener('change', (evt) => {
       this.setProperties({
         showSnapLines: evt.target.checked,
         showSnapPoints: !evt.target.checked,
       });
     });
 
-    document.getElementById('dist-cb').addEventListener('change', (evt) => {
+    document.getElementById('dist-cb')?.addEventListener('change', (evt) => {
       this.setProperties({
         showSnapPoints: evt.target.checked,
         showSnapLines: !evt.target.checked,
       });
     });
 
-    document.getElementById('width-input').addEventListener('keyup', (evt) => {
+    document.getElementById('width-input')?.addEventListener('keyup', (evt) => {
       const snapPointDist = parseFloat(evt.target.value);
       if (!Number.isNaN(snapPointDist)) {
         this.setProperties({ snapPointDist });

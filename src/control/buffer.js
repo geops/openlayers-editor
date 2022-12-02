@@ -96,11 +96,11 @@ class BufferControl extends Control {
     this.map.addInteraction(this.selectInteraction);
     super.activate();
 
-    document.getElementById('buffer-width').addEventListener('change', (e) => {
+    document.getElementById('buffer-width')?.addEventListener('change', (e) => {
       this.setProperties({ buffer: e.target.value });
     });
 
-    document.getElementById('buffer-btn').addEventListener('click', () => {
+    document.getElementById('buffer-btn')?.addEventListener('click', () => {
       const input = document.getElementById('buffer-width');
       const width = parseInt(input.value, 10);
 
