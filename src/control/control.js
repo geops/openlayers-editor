@@ -23,13 +23,16 @@ class Control extends OLControl {
    */
   constructor(options) {
     let button = null;
-    if (!options.element) {
+    if (options.element !== null && !options.element) {
       button = document.createElement('button');
       button.className = `ole-control ${options.className}`;
     }
 
     super({
-      element: options.element === null ? null : options.element || button,
+      element:
+        options.element === null
+          ? document.createElement('div') // An element must be define otherwise ol complains, when we add control
+          : options.element || button,
     });
 
     /**
@@ -61,7 +64,7 @@ class Control extends OLControl {
      */
     this.title = options.title;
 
-    if (this.element === button) {
+    if (button) {
       const img = document.createElement('img');
       img.src = options.image;
 
