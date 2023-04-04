@@ -23,6 +23,7 @@ class CadControl extends Control {
    * @param {Object} [options] Tool options.
    * @param {Function} [options.filter] Returns an array containing the features
    *   to include for CAD (takes the source as a single argument).
+   * @param {Number} [options.nbClosestFeatures] Number of features to use for snapping (closest first). Default is 5.
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
    *   for snap lines. Default is 10.
    * @param {Boolean} [options.showSnapLines] Whether to show
@@ -41,6 +42,7 @@ class CadControl extends Control {
       title: 'CAD control',
       className: 'ole-control-cad',
       image: cadSVG,
+      nbClosestFeatures: 5,
       showSnapPoints: true,
       showSnapLines: false,
       snapPointDist: 10,
@@ -105,6 +107,14 @@ class CadControl extends Control {
         }),
       ],
     });
+
+    /**
+     * Number of features to use for snapping (closest first). Default is 5.
+     * @type {Number}
+     * @private
+     */
+    this.nbClosestFeatures =
+      options.nbClosestFeatures === undefined ? 5 : options.nbClosestFeatures;
 
     /**
      * Snap tolerance in pixel.
@@ -223,7 +233,10 @@ class CadControl extends Control {
    * @param {ol.MapBrowserEvent} evt Move event.
    */
   onMove(evt) {
-    const features = this.getClosestFeatures(evt.coordinate, 5);
+    const features = this.getClosestFeatures(
+      evt.coordinate,
+      this.nbClosestFeature,
+    );
 
     this.linesLayer.getSource().clear();
     this.snapLayer.getSource().clear();
