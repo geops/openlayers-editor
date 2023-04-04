@@ -2,7 +2,7 @@
   "name": "ole",
   "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
-  "version": "2.1.3-beta.0",
+  "version": "2.1.3-beta.1",
   "main": "build/index.js",
   "peerDependencies": {
     "jsts": "^2",
