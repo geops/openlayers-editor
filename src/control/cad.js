@@ -235,7 +235,7 @@ class CadControl extends Control {
   onMove(evt) {
     const features = this.getClosestFeatures(
       evt.coordinate,
-      this.nbClosestFeature,
+      this.nbClosestFeatures,
     );
 
     this.linesLayer.getSource().clear();
