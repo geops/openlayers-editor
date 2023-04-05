@@ -458,29 +458,41 @@ class CadControl extends Control {
    */
   drawSnapLines(features, coordinate) {
     // First get all snap points: neighbouring feature vertices and extent corners
-    let snapCoords = [];
+    const snapCoords = [];
+    const snapCoordsNext = []; // store the direct next point in the coordinate array
+    const snapCoordsBefore = []; // store the direct before point in the coordinate array
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
       // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
       if (featureCoord.length) {
         if (geom instanceof Point) {
+          snapCoordsBefore.push();
           snapCoords.push(featureCoord);
+          snapCoordsNext.push();
         } else {
           // Add feature vertices
           if (geom instanceof LineString) {
             for (let j = 0; j < featureCoord.length; j += 1) {
+              snapCoordsBefore.push(featureCoord[j - 1]);
               snapCoords.push(featureCoord[j]);
+              snapCoordsNext.push(featureCoord[j + 1]);
             }
           } else if (geom instanceof Polygon) {
             for (let j = 0; j < featureCoord[0].length; j += 1) {
+              snapCoordsBefore.push(featureCoord[0][j - 1]);
               snapCoords.push(featureCoord[0][j]);
+              snapCoordsNext.push(featureCoord[0][j + 1]);
             }
           }
 
           // Add extent vertices
           const coords = this.getRotatedExtent(geom, coordinate);
-          snapCoords = snapCoords.concat(coords);
+          for (let j = 0; j < coords.length; j += 1) {
+            snapCoordsBefore.push(coords[j - 1]);
+            snapCoords.push(coords[j]);
+            snapCoordsNext.push(coords[j + 1]);
+          }
         }
       }
     }
@@ -514,7 +526,12 @@ class CadControl extends Control {
 
     // Draw custom lines
     if (this.drawCustomSnapLines) {
-      this.drawCustomSnapLines(coordinate, snapCoords);
+      this.drawCustomSnapLines(
+        coordinate,
+        snapCoords,
+        snapCoordsBefore,
+        snapCoordsNext,
+      );
     }
 
     // Snap to snap line intersection points
