@@ -21,6 +21,7 @@ parser.inject(Point, LineString, Polygon, MultiPoint);
 class CadControl extends Control {
   /**
    * @param {Object} [options] Tool options.
+   * @param {Function} [options.drawCustomSnapLines] Allow to draw more snapping lines using selected corrdinaites.
    * @param {Function} [options.filter] Returns an array containing the features
    *   to include for CAD (takes the source as a single argument).
    * @param {Number} [options.nbClosestFeatures] Number of features to use for snapping (closest first). Default is 5.
@@ -36,6 +37,7 @@ class CadControl extends Control {
    *   as measurement for point snapping. Default is false (pixel are used).
    * @param {ol.style.Style.StyleLike} [options.snapStyle] Style used for the snap layer.
    * @param {ol.style.Style.StyleLike} [options.linesStyle] Style used for the lines layer.
+   *
    */
   constructor(options) {
     super({
@@ -107,6 +109,13 @@ class CadControl extends Control {
         }),
       ],
     });
+
+    /**
+     * Function to draw more snapping lines.
+     * @type {Function}
+     * @private
+     */
+    this.drawCustomSnapLines = options.drawCustomSnapLines;
 
     /**
      * Number of features to use for snapping (closest first). Default is 5.
@@ -501,6 +510,11 @@ class CadControl extends Control {
         const geom = new LineString(lineCoords);
         this.snapLayer.getSource().addFeature(new Feature(geom));
       }
+    }
+
+    // Draw custom lines
+    if (this.drawCustomSnapLines) {
+      this.drawCustomSnapLines(snapCoords);
     }
 
     // Snap to snap line intersection points
