@@ -449,59 +449,55 @@ class CadControl extends Control {
    */
   drawSnapLines(features, coordinate) {
     // First get all snap points: neighbouring feature vertices and extent corners
-    let auxCoords = [];
+    let snapCoords = [];
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
       // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
       if (featureCoord.length) {
         if (geom instanceof Point) {
-          auxCoords.push(featureCoord);
+          snapCoords.push(featureCoord);
         } else {
           // Add feature vertices
           if (geom instanceof LineString) {
             for (let j = 0; j < featureCoord.length; j += 1) {
-              auxCoords.push(featureCoord[j]);
+              snapCoords.push(featureCoord[j]);
             }
           } else if (geom instanceof Polygon) {
             for (let j = 0; j < featureCoord[0].length; j += 1) {
-              auxCoords.push(featureCoord[0][j]);
+              snapCoords.push(featureCoord[0][j]);
             }
           }
 
           // Add extent vertices
           const coords = this.getRotatedExtent(geom, coordinate);
-          auxCoords = auxCoords.concat(coords);
+          snapCoords = snapCoords.concat(coords);
         }
       }
     }
 
     // Draw snaplines when cursor vertically or horizontally aligns with a snap feature
-    let lineCoords = null;
-    const px = this.map.getPixelFromCoordinate(coordinate);
-    for (let i = 0; i < auxCoords.length; i += 1) {
-      const tol = this.snapTolerance;
-      const auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
-      const drawVLine =
-        px[0] > auxPx[0] - this.snapTolerance / 2 &&
-        px[0] < auxPx[0] + this.snapTolerance / 2;
-      const drawHLine =
-        px[1] > auxPx[1] - this.snapTolerance / 2 &&
-        px[1] < auxPx[1] + this.snapTolerance / 2;
+    const halfTol = this.snapTolerance / 2;
+    const doubleTol = this.snapTolerance * 2;
+    const [mouseX, mouseY] = this.map.getPixelFromCoordinate(coordinate);
+    for (let i = 0; i < snapCoords.length; i += 1) {
+      const snapCoord = snapCoords[i];
+      const [snapX, snapY] = this.map.getPixelFromCoordinate(snapCoords[i]);
 
+      const drawVLine = mouseX > snapX - halfTol && mouseX < snapX + halfTol;
+      const drawHLine = mouseY > snapY - halfTol && mouseY < snapY + halfTol;
+
+      let newPt;
       if (drawVLine) {
-        let newY = px[1];
-        newY += px[1] < auxPx[1] ? -tol * 2 : tol * 2;
-        const newPt = this.map.getCoordinateFromPixel([auxPx[0], newY]);
-        lineCoords = [newPt, auxCoords[i]];
+        const newY = mouseY + (mouseY < snapY ? -doubleTol : doubleTol);
+        newPt = this.map.getCoordinateFromPixel([snapX, newY]);
       } else if (drawHLine) {
-        let newX = px[0];
-        newX += px[0] < auxPx[0] ? -tol * 2 : tol * 2;
-        const newPt = this.map.getCoordinateFromPixel([newX, auxPx[1]]);
-        lineCoords = [newPt, auxCoords[i]];
+        const newX = mouseX + (mouseX < snapX ? -doubleTol : doubleTol);
+        newPt = this.map.getCoordinateFromPixel([newX, snapY]);
       }
 
-      if (lineCoords) {
+      if (newPt) {
+        const lineCoords = [newPt, snapCoord];
         const geom = new LineString(lineCoords);
         this.snapLayer.getSource().addFeature(new Feature(geom));
       }
