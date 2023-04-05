@@ -514,7 +514,7 @@ class CadControl extends Control {
 
     // Draw custom lines
     if (this.drawCustomSnapLines) {
-      this.drawCustomSnapLines(snapCoords);
+      this.drawCustomSnapLines(coordinate, snapCoords);
     }
 
     // Snap to snap line intersection points
