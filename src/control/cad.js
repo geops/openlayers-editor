@@ -554,7 +554,7 @@ class CadControl extends Control {
       }
 
       if (newPt) {
-        const lineCoords = [snapCoordBefore, newPt];
+        const lineCoords = [snapCoordBefore, snapCoord, newPt];
         const geom = new LineString(lineCoords);
         const feature = new Feature(geom);
         feature.setStyle(() => {
