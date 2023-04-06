@@ -450,58 +450,10 @@ class CadControl extends Control {
     ];
   }
 
-  /**
-   * Draws snap lines by building the extent for
-   * a pair of features.
-   * @private
-   * @param {Array.<ol.Feature>} features List of features.
-   * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
-   */
-  drawSnapLines(features, coordinate) {
-    // First get all snap points: neighbouring feature vertices and extent corners
-    const snapCoordsBefore = []; // store the direct before point in the coordinate array
-    const snapCoords = [];
-    const snapCoordsNext = []; // store the direct next point in the coordinate array
-
-    for (let i = 0; i < features.length; i += 1) {
-      const geom = features[i].getGeometry();
-      const featureCoord = geom.getCoordinates();
-      // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
-      if (featureCoord.length) {
-        if (geom instanceof Point) {
-          snapCoordsBefore.push();
-          snapCoords.push(featureCoord);
-          snapCoordsNext.push();
-        } else {
-          // Add feature vertices
-          // eslint-disable-next-line no-lonely-if
-          if (geom instanceof LineString) {
-            for (let j = 0; j < featureCoord.length; j += 1) {
-              snapCoordsBefore.push(featureCoord[j - 1]);
-              snapCoords.push(featureCoord[j]);
-              snapCoordsNext.push(featureCoord[j + 1]);
-            }
-          } else if (geom instanceof Polygon) {
-            for (let j = 0; j < featureCoord[0].length; j += 1) {
-              snapCoordsBefore.push(featureCoord[0][j - 1]);
-              snapCoords.push(featureCoord[0][j]);
-              snapCoordsNext.push(featureCoord[0][j + 1]);
-            }
-          }
-
-          // Add extent vertices
-          // const coords = this.getRotatedExtent(geom, coordinate);
-          // for (let j = 0; j < coords.length; j += 1) {
-          //   snapCoordsBefore.push();
-          //   snapCoords.push(coords[j]);
-          //   snapCoordsNext.push();
-          // }
-        }
-      }
-    }
-
+  // Calulcate lines that are vertical or horizontal to a coordinate.
+  getVerticalAndHorizontalLines(coordinate, snapCoords) {
     // Draw snaplines when cursor vertically or horizontally aligns with a snap feature.
-    // We draw only on verticla and one horizontal line.
+    // We draw only on vertical and one horizontal line to avoid crowded lines when polygons or lines have a lot of coordinates.
     const halfTol = this.snapTolerance / 2;
     const doubleTol = this.snapTolerance * 2;
     const mousePx = this.map.getPixelFromCoordinate(coordinate);
@@ -555,24 +507,26 @@ class CadControl extends Control {
       }
     }
 
+    const lines = [];
+
     if (hLine) {
-      this.snapLayer.getSource().addFeature(hLine);
+      lines.push(hLine);
     }
+
     if (vLine && vLine !== hLine) {
-      this.snapLayer.getSource().addFeature(vLine);
+      lines.push(vLine);
     }
 
-    // Draw custom lines
-    if (this.drawCustomSnapLines) {
-      this.drawCustomSnapLines(
-        coordinate,
-        snapCoords,
-        snapCoordsBefore,
-        snapCoordsNext,
-      );
-    }
+    return lines;
+  }
 
-    const cad = this;
+  // Calculate lines that extend an existing segment.
+  getSegmentLines(coordinate, snapCoords, snapCoordsBefore) {
+    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+    const doubleTol = this.snapTolerance * 2;
+    const [mouseX, mouseY] = mousePx;
+    const lines = [];
+
     for (let i = 0; i < snapCoords.length; i += 1) {
       if (!snapCoordsBefore[i]) {
         // eslint-disable-next-line no-continue
@@ -580,12 +534,12 @@ class CadControl extends Control {
       }
       const snapCoordBefore = snapCoordsBefore[i];
       const snapCoord = snapCoords[i];
-      const snapPxBefore = cad.map.getPixelFromCoordinate(snapCoordBefore);
-      const snapPx = cad.map.getPixelFromCoordinate(snapCoord);
+      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
+      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
 
       const [snapX] = snapPx;
 
-      // Calulate projected point
+      // Calculate projected point
       const projMousePx = getProjectedPoint(mousePx, snapPxBefore, snapPx);
       const [projMouseX, projMouseY] = projMousePx;
       const distance = Math.sqrt(
@@ -600,7 +554,7 @@ class CadControl extends Control {
       }
 
       if (newPt) {
-        const lineCoords = [snapCoordBefore, snapCoord, newPt];
+        const lineCoords = [snapCoordBefore, newPt];
         const geom = new LineString(lineCoords);
         const feature = new Feature(geom);
         feature.setStyle(() => {
@@ -612,39 +566,188 @@ class CadControl extends Control {
             }),
           });
         });
-
-        cad.snapLayer.getSource().addFeature(feature);
+        lines.push(feature);
       }
     }
+    return lines;
+  }
 
-    // Snap to snap line intersection points
-    let intersectedLineFeatures = [];
-    const snapFeatures = this.snapLayer.getSource().getFeatures() || [];
-    let snapLinesIntersectCoords;
-    snapFeatures.forEach((feature) => {
-      snapFeatures.forEach((feature2) => {
-        // We check if horizontal and vertical snap lines intersect and calculate the intersection coordinate
-        const intersectCoords = OverlayOp.intersection(
-          parser.read(feature.getGeometry()),
-          parser.read(feature2.getGeometry()),
+  getOrthoLines(coordinate, snapCoords, snapCoordsBefore) {
+    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+    const doubleTol = this.snapTolerance * 2;
+    const [mouseX, mouseY] = mousePx;
+    const lines = [];
+
+    for (let i = 0; i < snapCoords.length; i += 1) {
+      if (!snapCoordsBefore[i]) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      const snapCoordBefore = snapCoordsBefore[i];
+      const snapCoord = snapCoords[i];
+      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
+      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
+
+      const orthoLine1 = new LineString([snapPxBefore, snapPx]);
+      orthoLine1.rotate((90 * Math.PI) / 180, snapPxBefore);
+
+      const orthoLine2 = new LineString([snapPx, snapPxBefore]);
+      orthoLine2.rotate((90 * Math.PI) / 180, snapPx);
+
+      // lines = lines.concat(
+      //   this.getSegmentLines(
+      //     coordinate,
+      //     [
+      //       this.map.getCoordinateFromPixel(orthoLine1.getLastCoordinate()),
+      //       this.map.getCoordinateFromPixel(orthoLine2.getLastCoordinate()),
+      //     ],
+      //     [
+      //       this.map.getCoordinateFromPixel(orthoLine1.getFirstCoordinate()),
+      //       this.map.getCoordinateFromPixel(orthoLine2.getFirstCoordinate()),
+      //     ],
+      //   ),
+      // );
+      // lines.forEach((line) => {
+      //   // Remove the first coordinate, we want a line only from the snpping point
+      //   const coords = line.getGeometry().getCoordinates();
+      //   // coords.splice(1, 1);
+      //   line.getGeometry().setCoordinates(coords);
+      //   line.setStyle(() => {
+      //     return new Style({
+      //       stroke: new Stroke({
+      //         width: 2,
+      //         color: 'purple',
+      //         lineDash: [5, 10],
+      //       }),
+      //     });
+      //   });
+      // });
+      // return lines;
+      [orthoLine1, orthoLine2].forEach((line) => {
+        const [anchorPx, last] = line.getCoordinates();
+        const projMousePx = getProjectedPoint(mousePx, anchorPx, last);
+        const [projMouseX, projMouseY] = projMousePx;
+        const distance = Math.sqrt(
+          (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
+        );
+
+        let newPt;
+        if (distance <= this.snapTolerance) {
+          const lineFunc = getEquationOfLine(anchorPx, projMousePx);
+          const newX =
+            projMouseX + (projMouseX < anchorPx[0] ? -doubleTol : doubleTol);
+          newPt = this.map.getCoordinateFromPixel([newX, lineFunc(newX)]);
+        }
+
+        if (newPt) {
+          const geom = new LineString([
+            this.map.getCoordinateFromPixel(anchorPx),
+            newPt,
+          ]);
+          const feature = new Feature(geom);
+          feature.setStyle(() => {
+            return new Style({
+              stroke: new Stroke({
+                width: 2,
+                color: 'purple',
+                lineDash: [5, 10],
+              }),
+            });
+          });
+          lines.push(feature);
+        }
+      });
+    }
+    return lines;
+  }
+
+  // Find lines that intersects qand calculate the intersection point
+  // eslint-disable-next-line class-methods-use-this
+  getIntersectedLinesAndPoint(lines) {
+    let features = [];
+    lines.forEach((lineA) => {
+      lines.forEach((lineB) => {
+        const coord = OverlayOp.intersection(
+          parser.read(lineA.getGeometry()),
+          parser.read(lineB.getGeometry()),
         )?.getCoordinates()[0];
-        if (intersectCoords && feature !== feature2) {
-          snapLinesIntersectCoords = intersectCoords;
-          intersectedLineFeatures = [feature, feature2];
+        if (coord && lineA !== lineB) {
+          features = [lineA, lineB, new Feature(new Point([coord.x, coord.y]))];
         }
       });
     });
 
-    if (snapLinesIntersectCoords && intersectedLineFeatures.length) {
-      this.linesLayer.getSource().clear();
-      this.linesLayer.getSource().addFeatures(intersectedLineFeatures);
+    return features;
+  }
 
-      this.snapLayer.getSource().clear();
-      const snapGeom = new Point([
-        snapLinesIntersectCoords.x,
-        snapLinesIntersectCoords.y,
-      ]);
-      this.snapLayer.getSource().addFeature(new Feature(snapGeom));
+  /**
+   * Draws snap lines by building the extent for
+   * a pair of features.
+   * @private
+   * @param {Array.<ol.Feature>} features List of features.
+   * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
+   */
+  drawSnapLines(features, coordinate) {
+    // First get all snap points: neighbouring feature vertices and extent corners
+    const snapCoordsBefore = []; // store the direct before point in the coordinate array
+    const snapCoords = [];
+    const snapCoordsNext = []; // store the direct next point in the coordinate array
+
+    for (let i = 0; i < features.length; i += 1) {
+      const geom = features[i].getGeometry();
+      const featureCoord = geom.getCoordinates();
+      // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
+      if (featureCoord.length) {
+        if (geom instanceof Point) {
+          snapCoordsBefore.push();
+          snapCoords.push(featureCoord);
+          snapCoordsNext.push();
+        } else {
+          // Add feature vertices
+          // eslint-disable-next-line no-lonely-if
+          if (geom instanceof LineString) {
+            for (let j = 0; j < featureCoord.length; j += 1) {
+              snapCoordsBefore.push(featureCoord[j - 1]);
+              snapCoords.push(featureCoord[j]);
+              snapCoordsNext.push(featureCoord[j + 1]);
+            }
+          } else if (geom instanceof Polygon) {
+            for (let j = 0; j < featureCoord[0].length; j += 1) {
+              snapCoordsBefore.push(featureCoord[0][j - 1]);
+              snapCoords.push(featureCoord[0][j]);
+              snapCoordsNext.push(featureCoord[0][j + 1]);
+            }
+          }
+
+          // Add extent vertices
+          // const coords = this.getRotatedExtent(geom, coordinate);
+          // for (let j = 0; j < coords.length; j += 1) {
+          //   snapCoordsBefore.push();
+          //   snapCoords.push(coords[j]);
+          //   snapCoordsNext.push();
+          // }
+        }
+      }
+    }
+    const lines = [
+      ...this.getVerticalAndHorizontalLines(coordinate, snapCoords),
+      ...this.getSegmentLines(coordinate, snapCoords, snapCoordsBefore),
+      ...this.getOrthoLines(coordinate, snapCoords, snapCoordsBefore),
+    ];
+
+    const intersectFeatures = this.getIntersectedLinesAndPoint(lines);
+
+    // We draw only lines that intersects or the all the lines.
+    if (intersectFeatures.length) {
+      intersectFeatures.forEach((feature) => {
+        if (feature.getGeometry().getType() === 'Point') {
+          this.snapLayer.getSource().addFeature(feature);
+        } else {
+          this.linesLayer.getSource().addFeature(feature);
+        }
+      });
+    } else {
+      this.snapLayer.getSource().addFeatures(lines);
     }
   }
 

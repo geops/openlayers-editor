@@ -44,7 +44,7 @@
     "prettier": "2.1.2",
     "standard-version": "9.5.0",
     "start-server-and-test": "1.11.5",
-    "stylelint": "13.7.2",
+    "stylelint": "14",
     "stylelint-config-standard": "20.0.0",
     "webpack": "4.44.2",
     "webpack-cli": "3.3.12",
