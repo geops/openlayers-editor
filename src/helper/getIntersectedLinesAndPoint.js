@@ -38,7 +38,6 @@ const getIntersectedLinesAndPoint = (lines, map) => {
       }
     });
   });
-  console.log('feature intersected', liness.length);
   return [...liness, ...points];
 };
 

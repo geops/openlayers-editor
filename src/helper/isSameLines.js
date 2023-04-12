@@ -22,13 +22,11 @@ const isSameLines = (lineA, lineB, map) => {
     lineFuncA(-350).toFixed(2) === lineFuncB(-350).toFixed(2) &&
     lineFuncA(7800).toFixed(2) === lineFuncB(7800).toFixed(2)
   ) {
-    console.log('isSAMELIne');
     return true;
   }
 
   // 2 are vertical lines
   if (!lineFuncA && !lineFuncB && firstPxA[0] && firstPxB[0]) {
-    console.log('isSAMEVerticalLIne');
     return true;
   }
 
