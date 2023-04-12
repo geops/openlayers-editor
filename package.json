@@ -80,7 +80,7 @@
       "prettier"
     ],
     "parserOptions": {
-      "ecmaVersion": "latest"
+      "ecmaVersion": 2022
     },
     "plugins": [
       "cypress",

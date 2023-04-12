@@ -1,6 +1,5 @@
 import Select from 'ol/interaction/Select';
 import Control from './control';
-import Util from '../helper/util';
 import delSVG from '../../img/buffer.svg';
 
 /**
@@ -43,7 +42,8 @@ class TopologyControl extends Control {
       try {
         this.applyTopologyOperation(feats.getArray());
       } catch (ex) {
-        Util.logError('Unable to process features.');
+        // eslint-disable-next-line no-console
+        console.error('Unable to process features.');
         feats.clear();
       }
     });

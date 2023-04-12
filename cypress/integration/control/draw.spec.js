@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default */
 import DrawControl from '../../../src/control/draw';
 
 describe('Draw control', () => {
