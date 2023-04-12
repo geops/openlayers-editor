@@ -1,6 +1,7 @@
 import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
+import { SNAP_FEATURE_TYPE_PROPERTY, SNAP_POINT_KEY } from './constants';
 import getDistance from './getDistance';
 import isSameLines from './isSameLines';
 import parser from './parser';
@@ -40,7 +41,9 @@ const getIntersectedLinesAndPoint = (coordinate, lines, map, snapTolerance) => {
 
             if (!isPointAlreadyExist[`${x}${y}`]) {
               isPointAlreadyExist[`${x}${y}`] = true;
-              points.push(new Feature(new Point([x, y])));
+              const feature = new Feature(new Point([x, y]));
+              feature.set(SNAP_FEATURE_TYPE_PROPERTY, SNAP_POINT_KEY);
+              points.push(feature);
             }
           }
         });

@@ -5,7 +5,7 @@ export const SEGMENT_LINE_KEY = 'segment';
 export const VH_LINE_KEY = 'vh';
 export const CUSTOM_LINE_KEY = 'custom';
 export const SNAP_POINT_KEY = 'point';
-export const SNAP_LINE_TYPE_PROPERTY = 'snapLineType';
+export const SNAP_FEATURE_TYPE_PROPERTY = 'ole.snap.feature.type';
 
 export const defaultSnapStyles = {
   [ORTHO_LINE_KEY]: new Style({

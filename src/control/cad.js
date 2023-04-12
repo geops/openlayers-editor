@@ -18,7 +18,7 @@ import {
   defaultSnapStyles,
   VH_LINE_KEY,
   SNAP_POINT_KEY,
-  SNAP_LINE_TYPE_PROPERTY,
+  SNAP_FEATURE_TYPE_PROPERTY,
   SEGMENT_LINE_KEY,
   ORTHO_LINE_KEY,
   CUSTOM_LINE_KEY,
@@ -464,7 +464,7 @@ class CadControl extends Control {
         const geom = new LineString(lineCoords);
         const feature = new Feature(geom);
 
-        feature.set(SNAP_LINE_TYPE_PROPERTY, VH_LINE_KEY);
+        feature.set(SNAP_FEATURE_TYPE_PROPERTY, VH_LINE_KEY);
 
         if (drawVLine) {
           vLine = feature;
@@ -534,7 +534,7 @@ class CadControl extends Control {
         const lineCoords = [snapCoordBefore, snapCoord, newPt];
         const geom = new LineString(lineCoords);
         const feature = new Feature(geom);
-        feature.set(SNAP_LINE_TYPE_PROPERTY, SEGMENT_LINE_KEY);
+        feature.set(SNAP_FEATURE_TYPE_PROPERTY, SEGMENT_LINE_KEY);
         lines.push(feature);
       }
     }
@@ -592,7 +592,7 @@ class CadControl extends Control {
           const coords = [this.map.getCoordinateFromPixel(anchorPx), newPt];
           const geom = new LineString(coords);
           const feature = new Feature(geom);
-          feature.set(SNAP_LINE_TYPE_PROPERTY, ORTHO_LINE_KEY);
+          feature.set(SNAP_FEATURE_TYPE_PROPERTY, ORTHO_LINE_KEY);
           lines.push(feature);
         }
       });
