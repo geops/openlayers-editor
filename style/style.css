@@ -39,7 +39,7 @@ a.visited {
   align-items: center;
 }
 
-#headerLinks {
+#links {
   display: flex;
   gap: 40px;
   padding: 0 40px;
@@ -51,7 +51,7 @@ a.visited {
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -90,11 +90,11 @@ a.visited {
   text-decoration: none;
 }
 
-#copyrightDiv {
+#copyright {
   font-family: Arial, sans-serif;
   font-size: 12px;
-  background-color: rgba(255, 255, 255);
-  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.7);
+  background-color: rgb(255 255 255);
+  box-shadow: 1px 2px 4px rgb(0 0 0 / 70%);
   position: absolute;
   display: flex;
   gap: 5px;

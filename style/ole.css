@@ -7,7 +7,7 @@
 /* shadow */
 #ole-toolbar button.ole-control,
 .ole-dialog {
-  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 3px 0 rgb(0 0 0 / 20%);
 }
 
 /* buttons */
@@ -40,7 +40,7 @@
 }
 
 #ole-toolbar button.ole-control.active {
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 4px 0 rgb(0 0 0 / 30%);
   color: #5c5c5c;
   filter: brightness(90%);
 }
