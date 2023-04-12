@@ -1,6 +1,5 @@
-import Editor from './editor';
-import * as control from './control';
-import * as service from './service';
-import * as interaction from './interaction';
-
-export { control, service, interaction, Editor };
+export { default as Editor } from './editor';
+export * as control from './control';
+export * as service from './service';
+export * as interaction from './interaction';
+export * as helper from './helper';

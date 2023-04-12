@@ -1,7 +1,7 @@
 // We consider 2 lines identical when 2 lines have the same equation when the use their pixel values not coordinate.
 // Using the coordinate the calculation is falsy because of some rounding.
 
-import getEquationOfLine from './getEquatioinOfLine';
+import getEquationOfLine from './getEquationOfLine';
 
 // This function compares only 2 lines of 2 coordinates.
 const isSameLines = (lineA, lineB, map) => {

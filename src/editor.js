@@ -1,5 +1,5 @@
 import Collection from 'ol/Collection';
-import Toolbar from './toolbar';
+import Toolbar from './control/toolbar';
 
 /**
  * Core component of OLE.

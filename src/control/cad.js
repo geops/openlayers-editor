@@ -1,4 +1,4 @@
-import { RegularShape, Style, Fill, Stroke } from 'ol/style';
+import { Style, Stroke } from 'ol/style';
 import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
 import Feature from 'ol/Feature';
 import Vector from 'ol/layer/Vector';
@@ -7,59 +7,22 @@ import { Pointer, Snap } from 'ol/interaction';
 import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
-import SnapEvent, { SnapEventType } from '../event/snap-event';
-import getProjectedPoint from '../helper/getProjectedPoint';
-import getEquationOfLine from '../helper/getEquatioinOfLine';
-import getShiftedMultipoint from '../helper/getShiftedMultiPoint';
-import parser from '../helper/parser';
-import getIntersectedLinesAndPoint from '../helper/getIntersectedLinesAndPoint';
-import isSameLines from '../helper/isSameLines';
-
-export const ORTHO_LINE_KEY = 'ortho';
-export const SEGMENT_LINE_KEY = 'segment';
-export const VH_LINE_KEY = 'vh';
-export const CUSTOM_LINE_KEY = 'custom';
-export const SNAP_POINT_KEY = 'point';
-export const SNAP_LINE_TYPE_PROPERTY = 'snapLineType';
-
-export const defaultSnapStyles = {
-  [ORTHO_LINE_KEY]: new Style({
-    stroke: new Stroke({
-      width: 2,
-      color: 'purple',
-      lineDash: [5, 10],
-    }),
-  }),
-  [SEGMENT_LINE_KEY]: new Style({
-    stroke: new Stroke({
-      width: 2,
-      color: 'orange',
-      lineDash: [5, 10],
-    }),
-  }),
-  [VH_LINE_KEY]: new Style({
-    stroke: new Stroke({
-      width: 1,
-      lineDash: [5, 10],
-      color: '#618496',
-    }),
-  }),
-  [SNAP_POINT_KEY]: new Style({
-    image: new RegularShape({
-      fill: new Fill({
-        color: '#E8841F',
-      }),
-      stroke: new Stroke({
-        width: 1,
-        color: '#618496',
-      }),
-      points: 4,
-      radius: 5,
-      radius2: 0,
-      angle: Math.PI / 4,
-    }),
-  }),
-};
+import { SnapEvent, SnapEventType } from '../event';
+import {
+  parser,
+  getProjectedPoint,
+  getEquationOfLine,
+  getShiftedMultiPoint,
+  getIntersectedLinesAndPoint,
+  isSameLines,
+  defaultSnapStyles,
+  VH_LINE_KEY,
+  SNAP_POINT_KEY,
+  SNAP_LINE_TYPE_PROPERTY,
+  SEGMENT_LINE_KEY,
+  ORTHO_LINE_KEY,
+  CUSTOM_LINE_KEY,
+} from '../helper';
 
 /**
  * Control with snapping functionality for geometry alignment.
@@ -336,7 +299,7 @@ class CadControl extends Control {
       .filter((f) => f)
       .forEach((feature) => {
         const geom = feature.getGeometry();
-        const snapGeom = getShiftedMultipoint(geom, coordinate);
+        const snapGeom = getShiftedMultiPoint(geom, coordinate);
         const isPolygon = geom instanceof Polygon;
         const snapFeature = feature.clone();
         snapFeature
@@ -744,8 +707,13 @@ class CadControl extends Control {
       }
     });
 
-    // We snap on intersections of lines or on all the help lines.
-    const intersectFeatures = getIntersectedLinesAndPoint(lines, this.map);
+    // We snap on intersections of lines (distance < this.snapTolerance) or on all the help lines.
+    const intersectFeatures = getIntersectedLinesAndPoint(
+      coordinate,
+      lines,
+      this.map,
+      this.snapTolerance,
+    );
 
     if (intersectFeatures?.length) {
       intersectFeatures.forEach((feature) => {

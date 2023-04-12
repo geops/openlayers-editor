@@ -1,8 +1,7 @@
+// Get the equation  "y = mx + b" of line containing A and B
+// where m = (yB-yA)/(xB-xA)
+// an b = yB - mXB;
 const getEquationOfLine = (coordA, coordB) => {
-  // Get the equation of line containing A and B
-  // y = mx + b
-  // where m = (yB-yA)/(xB-xA)
-  // an b = yB - mXB;
   const [xA, yA] = coordA;
   const [xB, yB] = coordB;
   if (xB - xA === 0) {
