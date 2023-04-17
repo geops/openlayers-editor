@@ -38,7 +38,7 @@
     "typescript": "5.0.4"
   },
   "scripts": {
-    "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --outfile=build/bundle.js --loader:.svg=text",
+    "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --loader:.svg=dataurl --minify --outfile=build/bundle.js",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",
     "cy:test": "start-server-and-test start http://127.0.0.1:8000 cy:run",
