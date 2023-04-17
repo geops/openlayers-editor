@@ -12,11 +12,6 @@
   "devDependencies": {
     "@commitlint/cli": "17.5.1",
     "@commitlint/config-conventional": "17.4.4",
-    "@constgen/neutrino-svg-loader": "1.9.2",
-    "@cypress/webpack-preprocessor": "5.4.11",
-    "@neutrinojs/image-loader": "9.5.0",
-    "@neutrinojs/library": "9.5.0",
-    "@neutrinojs/style-loader": "9.5.0",
     "cypress": "9.2.0",
     "esbuild": "0.17.16",
     "eslint": "8.38.0",
@@ -33,7 +28,6 @@
     "jsdoc-export-default-interop": "0.3.1",
     "jsts": "2.6.1",
     "lint-staged": "13.2.1",
-    "neutrino": "9.5.0",
     "ol": "7.3.0",
     "prettier": "2.8.7",
     "shx": "0.3.4",
@@ -41,16 +35,13 @@
     "start-server-and-test": "1.11.5",
     "stylelint": "15.4.0",
     "stylelint-config-standard": "32.0.0",
-    "typescript": "5.0.4",
-    "webpack": "4.44.2",
-    "webpack-cli": "3.3.12",
-    "webpack-dev-server": "3.11.0"
+    "typescript": "5.0.4"
   },
   "scripts": {
     "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --outfile=build/bundle.js --loader:.svg=text",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",
-    "cy:test": "yarn build && start-server-and-test start http://localhost:8080 cy:run",
+    "cy:test": "start-server-and-test start http://127.0.0.1:8000 cy:run",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "format": "prettier --write 'cypress/integration/*.js' 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
     "lint": "eslint 'cypress/integration/**/*.js' 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
@@ -60,17 +51,10 @@
     "publish:public": "yarn release && yarn build && git push origin HEAD && git push --tags && yarn publish",
     "publish:public:dryrun": "yarn release --dry-run",
     "release": "standard-version",
-    "start": "webpack-dev-server --mode development --open",
+    "start": "esbuild src/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=index.js --serve --servedir=. --sourcemap --watch",
     "test": "jest \"src/.*\\.test\\.js\" --passWithNoTests --env=jsdom --transformIgnorePatterns \"/node_modules/(?!(ol|ol-mapbox-style)/).*/\"",
     "test:watch": "yarn test --watchAll"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not op_mini all",
-    "not ie <= 11",
-    "not android < 5"
-  ],
   "eslintConfig": {
     "env": {
       "cypress/globals": true,
