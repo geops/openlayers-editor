@@ -4,6 +4,7 @@
   "description": "OpenLayers Editor",
   "version": "2.2.0-beta.10",
   "main": "build/index.js",
+  "dependencies": {},
   "peerDependencies": {
     "jsts": "^2",
     "ol": "^7"
@@ -17,6 +18,7 @@
     "@neutrinojs/library": "9.5.0",
     "@neutrinojs/style-loader": "9.5.0",
     "cypress": "9.2.0",
+    "esbuild": "0.17.16",
     "eslint": "8.38.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "8.8.0",
@@ -34,16 +36,18 @@
     "neutrino": "9.5.0",
     "ol": "7.3.0",
     "prettier": "2.8.7",
+    "shx": "0.3.4",
     "standard-version": "9.5.0",
     "start-server-and-test": "1.11.5",
     "stylelint": "15.4.0",
     "stylelint-config-standard": "32.0.0",
+    "typescript": "5.0.4",
     "webpack": "4.44.2",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0"
   },
   "scripts": {
-    "build": "webpack --mode production ",
+    "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --outfile=build/bundle.js --loader:.svg=text",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",
     "cy:test": "yarn build && start-server-and-test start http://localhost:8080 cy:run",
