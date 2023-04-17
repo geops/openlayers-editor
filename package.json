@@ -51,7 +51,7 @@
     "publish:public": "yarn release && yarn build && git push origin HEAD && git push --tags && yarn publish",
     "publish:public:dryrun": "yarn release --dry-run",
     "release": "standard-version",
-    "start": "esbuild src/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=index.js --serve --servedir=. --sourcemap --watch",
+    "start": "esbuild src/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=index.js --serve --servedir=. --sourcemap --watch=forever",
     "test": "jest \"src/.*\\.test\\.js\" --passWithNoTests --env=jsdom --transformIgnorePatterns \"/node_modules/(?!(ol|ol-mapbox-style)/).*/\"",
     "test:watch": "yarn test --watchAll"
   },
