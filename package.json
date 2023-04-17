@@ -2,49 +2,42 @@
   "name": "ole",
   "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
-  "version": "2.1.2",
+  "version": "2.2.0-beta.10",
   "main": "build/index.js",
   "peerDependencies": {
     "jsts": "^2",
-    "ol": "^6"
+    "ol": "^7"
   },
   "devDependencies": {
-    "@babel/core": "7.12.3",
-    "@babel/plugin-proposal-object-rest-spread": "7.12.1",
-    "@babel/plugin-transform-destructuring": "7.12.1",
-    "@babel/plugin-transform-object-assign": "7.12.1",
-    "@babel/preset-env": "7.12.1",
-    "@commitlint/cli": "17.0.2",
-    "@commitlint/config-conventional": "17.0.2",
+    "@commitlint/cli": "17.5.1",
+    "@commitlint/config-conventional": "17.4.4",
     "@constgen/neutrino-svg-loader": "1.9.2",
     "@cypress/webpack-preprocessor": "5.4.11",
-    "@neutrinojs/image-loader": "9.4.0",
-    "@neutrinojs/library": "9.4.0",
-    "@neutrinojs/style-loader": "9.4.0",
-    "babel-core": "6.26.3",
-    "babel-eslint": "10.1.0",
-    "babel-loader": "8.2.1",
+    "@neutrinojs/image-loader": "9.5.0",
+    "@neutrinojs/library": "9.5.0",
+    "@neutrinojs/style-loader": "9.5.0",
     "cypress": "9.2.0",
-    "eslint": "7.13.0",
-    "eslint-config-airbnb-base": "14.2.1",
-    "eslint-config-prettier": "6.15.0",
-    "eslint-plugin-cypress": "2.11.2",
-    "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-prettier": "3.1.4",
+    "eslint": "8.38.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-cypress": "2.13.2",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-prettier": "4.2.1",
     "fixpack": "3.0.6",
-    "husky": "8.0.1",
+    "husky": "8.0.3",
+    "is-ci": "3.0.1",
     "jest": "26.6.3",
     "jsdoc": "3.6.6",
     "jsdoc-export-default-interop": "0.3.1",
     "jsts": "2.6.1",
-    "lint-staged": "10.5.1",
-    "neutrino": "9.4.0",
-    "ol": "6.5.0",
-    "prettier": "2.1.2",
+    "lint-staged": "13.2.1",
+    "neutrino": "9.5.0",
+    "ol": "7.3.0",
+    "prettier": "2.8.7",
     "standard-version": "9.5.0",
     "start-server-and-test": "1.11.5",
-    "stylelint": "13.7.2",
-    "stylelint-config-standard": "20.0.0",
+    "stylelint": "15.4.0",
+    "stylelint-config-standard": "32.0.0",
     "webpack": "4.44.2",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0"
@@ -57,6 +50,7 @@
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "format": "prettier --write 'cypress/integration/*.js' 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
     "lint": "eslint 'cypress/integration/**/*.js' 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
+    "prepare": "is-ci || husky install",
     "publish:beta": "yarn release -- --prerelease beta --skip.changelog && yarn build && git push origin HEAD && git push --tags && yarn publish --tag beta",
     "publish:beta:dryrun": "yarn release -- --prerelease beta --dry-run --skip.changelog",
     "publish:public": "yarn release && yarn build && git push origin HEAD && git push --tags && yarn publish",
@@ -66,6 +60,13 @@
     "test": "jest \"src/.*\\.test\\.js\" --passWithNoTests --env=jsdom --transformIgnorePatterns \"/node_modules/(?!(ol|ol-mapbox-style)/).*/\"",
     "test:watch": "yarn test --watchAll"
   },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all",
+    "not ie <= 11",
+    "not android < 5"
+  ],
   "eslintConfig": {
     "env": {
       "cypress/globals": true,
@@ -74,17 +75,22 @@
       "es6": true,
       "jest": true
     },
-    "parser": "babel-eslint",
     "extends": [
       "airbnb-base",
       "prettier"
     ],
+    "parserOptions": {
+      "ecmaVersion": 2022
+    },
     "plugins": [
       "cypress",
       "prettier"
     ],
     "rules": {
-      "prettier/prettier": "error"
+      "prettier/prettier": "error",
+      "arrow-body-style": "off",
+      "import/no-named-as-default": "off",
+      "import/no-named-as-default-member": "off"
     }
   },
   "keywords": [

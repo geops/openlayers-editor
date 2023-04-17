@@ -1,17 +1,28 @@
-import { RegularShape, Style, Fill, Stroke } from 'ol/style';
+import { Style, Stroke } from 'ol/style';
 import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
 import Feature from 'ol/Feature';
 import Vector from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
 import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
-import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
-import SnapEvent, { SnapEventType } from '../event/snap-event';
-
-const parser = new OL3Parser();
-parser.inject(Point, LineString, Polygon, MultiPoint);
+import { SnapEvent, SnapEventType } from '../event';
+import {
+  parser,
+  getProjectedPoint,
+  getEquationOfLine,
+  getShiftedMultiPoint,
+  getIntersectedLinesAndPoint,
+  isSameLines,
+  defaultSnapStyles,
+  VH_LINE_KEY,
+  SNAP_POINT_KEY,
+  SNAP_FEATURE_TYPE_PROPERTY,
+  SEGMENT_LINE_KEY,
+  ORTHO_LINE_KEY,
+  CUSTOM_LINE_KEY,
+} from '../helper';
 
 /**
  * Control with snapping functionality for geometry alignment.
@@ -21,20 +32,32 @@ parser.inject(Point, LineString, Polygon, MultiPoint);
 class CadControl extends Control {
   /**
    * @param {Object} [options] Tool options.
+   * @param {Function} [options.drawCustomSnapLines] Allow to draw more snapping lines using selected corrdinaites.
    * @param {Function} [options.filter] Returns an array containing the features
    *   to include for CAD (takes the source as a single argument).
+   * @param {Number} [options.nbClosestFeatures] Number of features to use for snapping (closest first). Default is 5.
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
    *   for snap lines. Default is 10.
    * @param {Boolean} [options.showSnapLines] Whether to show
    *   snap lines (default is true).
    * @param {Boolean} [options.showSnapPoints] Whether to show
    *  snap points around the closest feature.
+   * @param {Boolean} [options.showOrthoLines] Whether to show
+   *   snap lines that arae perpendicular to segment (default is true).
+   * @param {Boolean} [options.showSegmentLines] Whether to show
+   *   snap lines that extends a segment (default is true).
+   * @param {Boolean} [options.snapLinesOrder] Define order of display of snap lines,
+   *   must be an array containing the following values 'ortho', 'segment', 'vh'. Default is ['ortho', 'segment', 'vh', 'custom'].
    * @param {Number} [options.snapPointDist] Distance of the
    *   snap points (default is 30).
    * @param {Boolean} [options.useMapUnits] Whether to use map units
    *   as measurement for point snapping. Default is false (pixel are used).
    * @param {ol.style.Style.StyleLike} [options.snapStyle] Style used for the snap layer.
    * @param {ol.style.Style.StyleLike} [options.linesStyle] Style used for the lines layer.
+   * @param {ol.style.Style.StyleLike} [options.orthoLinesStyle] Style used for the lines layer.
+   * @param {ol.style.Style.StyleLike} [options.segmentLinesStyle] Style used for the lines layer.
+   * @param {ol.style.Style.StyleLike} [options.Style] Style used for the lines layer.
+   *
    */
   constructor(options) {
     super({
@@ -43,7 +66,11 @@ class CadControl extends Control {
       image: cadSVG,
       showSnapPoints: true,
       showSnapLines: false,
+      showOrthoLines: true,
+      showSegmentLines: true,
+      showVerticalAndHorizontalLines: true,
       snapPointDist: 10,
+      snapLinesOrder: ['ortho', 'segment', 'vh'],
       ...options,
     });
 
@@ -64,32 +91,14 @@ class CadControl extends Control {
     this.snapLayer = new Vector({
       source: new VectorSource(),
       style: options.snapStyle || [
-        new Style({
-          image: new RegularShape({
-            fill: new Fill({
-              color: '#E8841F',
-            }),
-            stroke: new Stroke({
-              width: 1,
-              color: '#618496',
-            }),
-            points: 4,
-            radius: 5,
-            radius2: 0,
-            angle: Math.PI / 4,
-          }),
-          stroke: new Stroke({
-            width: 1,
-            lineDash: [5, 10],
-            color: '#618496',
-          }),
-        }),
+        defaultSnapStyles[VH_LINE_KEY],
+        defaultSnapStyles[SNAP_POINT_KEY],
       ],
     });
 
     /**
      * Layer for colored lines indicating
-     * intesection point between snapping lines.
+     * intersection point between snapping lines.
      * @type {ol.layer.Vector}
      * @private
      */
@@ -105,6 +114,21 @@ class CadControl extends Control {
         }),
       ],
     });
+
+    /**
+     * Function to draw more snapping lines.
+     * @type {Function}
+     * @private
+     */
+    this.drawCustomSnapLines = options.drawCustomSnapLines;
+
+    /**
+     * Number of features to use for snapping (closest first). Default is 5.
+     * @type {Number}
+     * @private
+     */
+    this.nbClosestFeatures =
+      options.nbClosestFeatures === undefined ? 5 : options.nbClosestFeatures;
 
     /**
      * Snap tolerance in pixel.
@@ -132,33 +156,6 @@ class CadControl extends Control {
     });
 
     this.standalone = false;
-  }
-
-  /**
-   * Removes the closest node to a given coordinate from a given geometry.
-   * @private
-   * @param {ol.Geometry} geometry An openlayers geometry.
-   * @param {ol.Coordinate} coordinate Coordinate.
-   * @returns {ol.Geometry.MultiPoint} An openlayers MultiPoint geometry.
-   */
-  static getShiftedMultipoint(geometry, coordinate) {
-    // Include all but the closest vertex to the coordinate (e.g. at mouse position)
-    // to prevent snapping on mouse cursor node
-    const isPolygon = geometry instanceof Polygon;
-    const shiftedMultipoint = new MultiPoint(
-      isPolygon ? geometry.getCoordinates()[0] : geometry.getCoordinates(),
-    );
-
-    const drawNodeCoordinate = shiftedMultipoint.getClosestPoint(coordinate);
-
-    // Exclude the node being modified
-    shiftedMultipoint.setCoordinates(
-      shiftedMultipoint.getCoordinates().filter((coord) => {
-        return coord.toString() !== drawNodeCoordinate.toString();
-      }),
-    );
-
-    return shiftedMultipoint;
   }
 
   /**
@@ -223,7 +220,10 @@ class CadControl extends Control {
    * @param {ol.MapBrowserEvent} evt Move event.
    */
   onMove(evt) {
-    const features = this.getClosestFeatures(evt.coordinate, 5);
+    const features = this.getClosestFeatures(
+      evt.coordinate,
+      this.nbClosestFeatures,
+    );
 
     this.linesLayer.getSource().clear();
     this.snapLayer.getSource().clear();
@@ -233,7 +233,7 @@ class CadControl extends Control {
     );
 
     if (this.properties.showSnapLines) {
-      this.drawSnapLines(features, evt.coordinate);
+      this.drawSnapLines(evt.coordinate, features);
     }
 
     if (this.properties.showSnapPoints && features.length) {
@@ -278,47 +278,37 @@ class CadControl extends Control {
       features.push(featureDict[dists[i]]);
     }
 
+    // Remove edit and draw feature for snapping list.
     const editFeature = this.editor.getEditFeature();
-    // Initially exclude the edit feature from the snapping
-    if (editFeature && features.indexOf(editFeature) > -1) {
-      features.splice(features.indexOf(editFeature), 1);
-    }
+    const drawFeature = this.editor.getDrawFeature();
+    [editFeature, drawFeature].forEach((feature) => {
+      const index = features.indexOf(feature);
+      if (index > -1) {
+        features.splice(index, 1);
+      }
+    });
 
-    // When using showSnapPoints return all features except edit/draw features
+    // When using showSnapPoints, return all features except edit/draw features
     if (this.properties.showSnapPoints) {
       return features;
     }
 
-    const drawFeature = this.editor.getDrawFeature();
-    if (drawFeature) {
-      const geom = drawFeature.getGeometry();
-      /* Include all nodes of the edit feature except the node at the mouse position */
-      // Clone drawFeature and apply adjusted snap geometry
-      const snapGeom = CadControl.getShiftedMultipoint(geom, coordinate);
-      const isPolygon = geom instanceof Polygon;
-      const snapDrawFeature = drawFeature.clone();
-      snapDrawFeature
-        .getGeometry()
-        .setCoordinates(
-          isPolygon ? [snapGeom.getCoordinates()] : snapGeom.getCoordinates(),
-        );
-      features = [snapDrawFeature, ...features];
-    }
-
-    if (editFeature) {
-      const geom = editFeature.getGeometry();
-      /* Include all nodes of the edit feature except the node at the mouse position */
-      // Clone editFeature and apply adjusted snap geometry
-      const snapGeom = CadControl.getShiftedMultipoint(geom, coordinate);
-      const isPolygon = geom instanceof Polygon;
-      const snapEditFeature = editFeature.clone();
-      snapEditFeature
-        .getGeometry()
-        .setCoordinates(
-          isPolygon ? [snapGeom.getCoordinates()] : snapGeom.getCoordinates(),
-        );
-      features = [snapEditFeature, ...features];
-    }
+    // When using showSnapLines, return all features but edit/draw features are
+    // cloned to remove the node at the mouse position.
+    [editFeature, drawFeature]
+      .filter((f) => f)
+      .forEach((feature) => {
+        const geom = feature.getGeometry();
+        const snapGeom = getShiftedMultiPoint(geom, coordinate);
+        const isPolygon = geom instanceof Polygon;
+        const snapFeature = feature.clone();
+        snapFeature
+          .getGeometry()
+          .setCoordinates(
+            isPolygon ? [snapGeom.getCoordinates()] : snapGeom.getCoordinates(),
+          );
+        features = [snapFeature, ...features];
+      });
 
     return features;
   }
@@ -427,124 +417,321 @@ class CadControl extends Control {
     ];
   }
 
+  // Calculate lines that are vertical or horizontal to a coordinate.
+  getVerticalAndHorizontalLines(coordinate, snapCoords) {
+    // Draw snaplines when cursor vertically or horizontally aligns with a snap feature.
+    // We draw only on vertical and one horizontal line to avoid crowded lines when polygons or lines have a lot of coordinates.
+    const halfTol = this.snapTolerance / 2;
+    const doubleTol = this.snapTolerance * 2;
+    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+    const [mouseX, mouseY] = mousePx;
+    let vLine;
+    let hLine;
+    let closerDistanceWithVLine = Infinity;
+    let closerDistanceWithHLine = Infinity;
+    for (let i = 0; i < snapCoords.length; i += 1) {
+      const snapCoord = snapCoords[i];
+      const snapPx = this.map.getPixelFromCoordinate(snapCoords[i]);
+      const [snapX, snapY] = snapPx;
+      const drawVLine = mouseX > snapX - halfTol && mouseX < snapX + halfTol;
+      const drawHLine = mouseY > snapY - halfTol && mouseY < snapY + halfTol;
+
+      const distanceWithVLine = Math.abs(mouseX - snapX);
+      const distanceWithHLine = Math.abs(mouseY - snapY);
+
+      if (
+        (drawVLine && distanceWithVLine > closerDistanceWithVLine) ||
+        (drawHLine && distanceWithHLine > closerDistanceWithHLine)
+      ) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      let newPt;
+
+      if (drawVLine) {
+        closerDistanceWithVLine = distanceWithVLine;
+        const newY = mouseY + (mouseY < snapY ? -doubleTol : doubleTol);
+        newPt = this.map.getCoordinateFromPixel([snapX, newY]);
+      } else if (drawHLine) {
+        closerDistanceWithHLine = distanceWithHLine;
+        const newX = mouseX + (mouseX < snapX ? -doubleTol : doubleTol);
+        newPt = this.map.getCoordinateFromPixel([newX, snapY]);
+      }
+
+      if (newPt) {
+        const lineCoords = [newPt, snapCoord];
+        const geom = new LineString(lineCoords);
+        const feature = new Feature(geom);
+
+        feature.set(SNAP_FEATURE_TYPE_PROPERTY, VH_LINE_KEY);
+
+        if (drawVLine) {
+          vLine = feature;
+        }
+
+        if (drawHLine) {
+          hLine = feature;
+        }
+      }
+    }
+
+    const lines = [];
+
+    if (hLine) {
+      lines.push(hLine);
+    }
+
+    if (vLine && vLine !== hLine) {
+      lines.push(vLine);
+    }
+
+    return lines;
+  }
+
+  /**
+   * For each segment, we calculate lines that extends it.
+   */
+  getSegmentLines(coordinate, snapCoords, snapCoordsBefore) {
+    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+    const doubleTol = this.snapTolerance * 2;
+    const [mouseX, mouseY] = mousePx;
+    const lines = [];
+
+    for (let i = 0; i < snapCoords.length; i += 1) {
+      if (!snapCoordsBefore[i]) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      const snapCoordBefore = snapCoordsBefore[i];
+      const snapCoord = snapCoords[i];
+      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
+      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
+
+      const [snapX] = snapPx;
+
+      // Calculate projected point
+      const projMousePx = getProjectedPoint(mousePx, snapPxBefore, snapPx);
+      const [projMouseX, projMouseY] = projMousePx;
+      const distance = Math.sqrt(
+        (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
+      );
+      let newPt;
+
+      if (distance <= this.snapTolerance) {
+        // lineFunc is undefined when it's a vertical line
+        const lineFunc = getEquationOfLine(snapPxBefore, snapPx);
+        const newX = projMouseX + (projMouseX < snapX ? -doubleTol : doubleTol);
+        if (lineFunc) {
+          newPt = this.map.getCoordinateFromPixel([
+            newX,
+            lineFunc ? lineFunc(newX) : projMouseY,
+          ]);
+        }
+      }
+
+      if (newPt) {
+        const lineCoords = [snapCoordBefore, snapCoord, newPt];
+        const geom = new LineString(lineCoords);
+        const feature = new Feature(geom);
+        feature.set(SNAP_FEATURE_TYPE_PROPERTY, SEGMENT_LINE_KEY);
+        lines.push(feature);
+      }
+    }
+    return lines;
+  }
+
+  /**
+   * For each segment, we calculate lines that are perpendicular.
+   */
+  getOrthoLines(coordinate, snapCoords, snapCoordsBefore) {
+    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+    const doubleTol = this.snapTolerance * 2;
+    const [mouseX, mouseY] = mousePx;
+    const lines = [];
+
+    for (let i = 0; i < snapCoords.length; i += 1) {
+      if (!snapCoordsBefore[i]) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      const snapCoordBefore = snapCoordsBefore[i];
+      const snapCoord = snapCoords[i];
+      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
+      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
+
+      const orthoLine1 = new LineString([snapPxBefore, snapPx]);
+      orthoLine1.rotate((90 * Math.PI) / 180, snapPxBefore);
+
+      const orthoLine2 = new LineString([snapPx, snapPxBefore]);
+      orthoLine2.rotate((90 * Math.PI) / 180, snapPx);
+
+      [orthoLine1, orthoLine2].forEach((line) => {
+        const [anchorPx, last] = line.getCoordinates();
+        const projMousePx = getProjectedPoint(mousePx, anchorPx, last);
+        const [projMouseX, projMouseY] = projMousePx;
+        const distance = Math.sqrt(
+          (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
+        );
+
+        let newPt;
+        if (distance <= this.snapTolerance) {
+          // lineFunc is undefined when it's a vertical line
+          const lineFunc = getEquationOfLine(anchorPx, projMousePx);
+          const newX =
+            projMouseX + (projMouseX < anchorPx[0] ? -doubleTol : doubleTol);
+          if (lineFunc) {
+            newPt = this.map.getCoordinateFromPixel([
+              newX,
+              lineFunc ? lineFunc(newX) : projMouseY,
+            ]);
+          }
+        }
+
+        if (newPt) {
+          const coords = [this.map.getCoordinateFromPixel(anchorPx), newPt];
+          const geom = new LineString(coords);
+          const feature = new Feature(geom);
+          feature.set(SNAP_FEATURE_TYPE_PROPERTY, ORTHO_LINE_KEY);
+          lines.push(feature);
+        }
+      });
+    }
+    return lines;
+  }
+
   /**
    * Draws snap lines by building the extent for
    * a pair of features.
    * @private
-   * @param {Array.<ol.Feature>} features List of features.
    * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
+   * @param {Array.<ol.Feature>} features List of features.
    */
-  drawSnapLines(features, coordinate) {
+  drawSnapLines(coordinate, features) {
     // First get all snap points: neighbouring feature vertices and extent corners
-    let auxCoords = [];
+    const snapCoordsBefore = []; // store the direct before point in the coordinate array
+    const snapCoords = [];
+    const snapCoordsAfter = []; // store the direct next point in the coordinate array
+
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
       const featureCoord = geom.getCoordinates();
       // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
       if (featureCoord.length) {
         if (geom instanceof Point) {
-          auxCoords.push(featureCoord);
+          snapCoordsBefore.push();
+          snapCoords.push(featureCoord);
+          snapCoordsAfter.push();
         } else {
           // Add feature vertices
+          // eslint-disable-next-line no-lonely-if
           if (geom instanceof LineString) {
             for (let j = 0; j < featureCoord.length; j += 1) {
-              auxCoords.push(featureCoord[j]);
+              snapCoordsBefore.push(featureCoord[j - 1]);
+              snapCoords.push(featureCoord[j]);
+              snapCoordsAfter.push(featureCoord[j + 1]);
             }
           } else if (geom instanceof Polygon) {
             for (let j = 0; j < featureCoord[0].length; j += 1) {
-              auxCoords.push(featureCoord[0][j]);
+              snapCoordsBefore.push(featureCoord[0][j - 1]);
+              snapCoords.push(featureCoord[0][j]);
+              snapCoordsAfter.push(featureCoord[0][j + 1]);
             }
           }
 
           // Add extent vertices
-          const coords = this.getRotatedExtent(geom, coordinate);
-          auxCoords = auxCoords.concat(coords);
+          // const coords = this.getRotatedExtent(geom, coordinate);
+          // for (let j = 0; j < coords.length; j += 1) {
+          //   snapCoordsBefore.push();
+          //   snapCoords.push(coords[j]);
+          //   snapCoordsNext.push();
+          // }
         }
       }
     }
 
-    // Draw snaplines when cursor vertically or horizontally aligns with a snap feature
-    let lineCoords = null;
-    const px = this.map.getPixelFromCoordinate(coordinate);
-    for (let i = 0; i < auxCoords.length; i += 1) {
-      const tol = this.snapTolerance;
-      const auxPx = this.map.getPixelFromCoordinate(auxCoords[i]);
-      const drawVLine =
-        px[0] > auxPx[0] - this.snapTolerance / 2 &&
-        px[0] < auxPx[0] + this.snapTolerance / 2;
-      const drawHLine =
-        px[1] > auxPx[1] - this.snapTolerance / 2 &&
-        px[1] < auxPx[1] + this.snapTolerance / 2;
+    const {
+      showVerticalAndHorizontalLines,
+      showOrthoLines,
+      showSegmentLines,
+      snapLinesOrder,
+    } = this.properties;
 
-      if (drawVLine) {
-        let newY = px[1];
-        newY += px[1] < auxPx[1] ? -tol * 2 : tol * 2;
-        const newPt = this.map.getCoordinateFromPixel([auxPx[0], newY]);
-        lineCoords = [newPt, auxCoords[i]];
-      } else if (drawHLine) {
-        let newX = px[0];
-        newX += px[0] < auxPx[0] ? -tol * 2 : tol * 2;
-        const newPt = this.map.getCoordinateFromPixel([newX, auxPx[1]]);
-        lineCoords = [newPt, auxCoords[i]];
-      }
+    const lines = [];
+    const helpLinesOrdered = [];
+    const helpLines = {
+      [ORTHO_LINE_KEY]: [],
+      [SEGMENT_LINE_KEY]: [],
+      [VH_LINE_KEY]: [],
+      [CUSTOM_LINE_KEY]: [],
+    };
 
-      if (lineCoords) {
-        const geom = new LineString(lineCoords);
-        this.snapLayer.getSource().addFeature(new Feature(geom));
-      }
+    if (showOrthoLines) {
+      helpLines[ORTHO_LINE_KEY] =
+        this.getOrthoLines(coordinate, snapCoords, snapCoordsBefore) || [];
     }
 
-    // Snap to snap line intersection points
-    let vertLine = null;
-    let horiLine = null;
-    const snapFeatures = this.snapLayer.getSource().getFeatures();
-    if (snapFeatures.length) {
-      snapFeatures.forEach((feature) => {
-        // The calculated pixels are used to get the vertical and horizontal lines
-        // because using the coordinate doesn't work with a rotated map
-        const featureCoord = feature.getGeometry().getCoordinates();
-        const pixelA = this.map.getPixelFromCoordinate(featureCoord[0]);
-        const pixelB = this.map.getPixelFromCoordinate(featureCoord[1]);
-        const x0 = pixelA[0];
-        const x1 = pixelB[0];
-        const y0 = pixelA[1];
-        const y1 = pixelB[1];
+    if (showSegmentLines) {
+      helpLines[SEGMENT_LINE_KEY] =
+        this.getSegmentLines(coordinate, snapCoords, snapCoordsBefore) || [];
+    }
 
-        // The pixels are rounded to avoid micro differences in the decimals
-        if (x0.toFixed(4) === x1.toFixed(4)) {
-          vertLine = feature;
-        }
-        if (y0.toFixed(4) === y1.toFixed(4)) {
-          horiLine = feature;
+    if (showVerticalAndHorizontalLines) {
+      helpLines[VH_LINE_KEY] =
+        this.getVerticalAndHorizontalLines(coordinate, snapCoords) || [];
+    }
+
+    // Add custom lines
+    if (this.drawCustomSnapLines) {
+      helpLines[CUSTOM_LINE_KEY] =
+        this.drawCustomSnapLines(
+          coordinate,
+          snapCoords,
+          snapCoordsBefore,
+          snapCoordsAfter,
+        ) || [];
+    }
+
+    // Add help lines in a defined order.
+    snapLinesOrder.forEach((lineType) => {
+      helpLinesOrdered.push(...(helpLines[lineType] || []));
+    });
+
+    // Remove duplicated lines, comparing their equation using pixels.
+    helpLinesOrdered.forEach((lineA) => {
+      if (
+        !lines.length ||
+        !lines.find((lineB) => isSameLines(lineA, lineB, this.map))
+      ) {
+        lines.push(lineA);
+      }
+    });
+
+    // We snap on intersections of lines (distance < this.snapTolerance) or on all the help lines.
+    const intersectFeatures = getIntersectedLinesAndPoint(
+      coordinate,
+      lines,
+      this.map,
+      this.snapTolerance,
+    );
+
+    if (intersectFeatures?.length) {
+      intersectFeatures.forEach((feature) => {
+        if (feature.getGeometry().getType() === 'Point') {
+          this.snapLayer.getSource().addFeature(feature);
+        } else {
+          this.linesLayer.getSource().addFeature(feature);
         }
       });
-
-      // We check if horizontal and vertical snap lines intersect and calculate the intersection coordinate
-      const snapLinesIntersectCoords =
-        vertLine &&
-        horiLine &&
-        OverlayOp.intersection(
-          parser.read(vertLine.getGeometry()),
-          parser.read(horiLine.getGeometry()),
-        )?.getCoordinates()[0];
-
-      if (snapLinesIntersectCoords) {
-        this.linesLayer.getSource().addFeatures(snapFeatures);
-
-        this.snapLayer.getSource().clear();
-        const snapGeom = new Point([
-          snapLinesIntersectCoords.x,
-          snapLinesIntersectCoords.y,
-        ]);
-        this.snapLayer.getSource().addFeature(new Feature(snapGeom));
-      }
+    } else {
+      this.snapLayer.getSource().addFeatures(lines);
     }
   }
 
   /**
    * Adds snap points to the snapping layer.
    * @private
-   * @param {ol.Coordinate} coordinateMouse cursor coordinate.
+   * @param {ol.Coordinate} coordinate cursor coordinate.
    * @param {ol.eaturee} feature Feature to draw the snap points for.
    */
   drawSnapPoints(coordinate, feature) {
@@ -587,21 +774,21 @@ class CadControl extends Control {
     this.map.addInteraction(this.pointerInteraction);
     this.map.addInteraction(this.snapInteraction);
 
-    document.getElementById('aux-cb').addEventListener('change', (evt) => {
+    document.getElementById('aux-cb')?.addEventListener('change', (evt) => {
       this.setProperties({
         showSnapLines: evt.target.checked,
         showSnapPoints: !evt.target.checked,
       });
     });
 
-    document.getElementById('dist-cb').addEventListener('change', (evt) => {
+    document.getElementById('dist-cb')?.addEventListener('change', (evt) => {
       this.setProperties({
         showSnapPoints: evt.target.checked,
         showSnapLines: !evt.target.checked,
       });
     });
 
-    document.getElementById('width-input').addEventListener('keyup', (evt) => {
+    document.getElementById('width-input')?.addEventListener('keyup', (evt) => {
       const snapPointDist = parseFloat(evt.target.value);
       if (!Number.isNaN(snapPointDist)) {
         this.setProperties({ snapPointDist });

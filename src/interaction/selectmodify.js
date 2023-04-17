@@ -4,7 +4,6 @@ import { doubleClick } from 'ol/events/condition';
 import { Circle, Style, Fill, Stroke } from 'ol/style';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import { MultiPoint } from 'ol/geom';
-import GeometryType from 'ol/geom/GeometryType';
 
 // Default style on modifying geometries
 const selectModifyStyle = new Style({
@@ -27,29 +26,29 @@ const selectModifyStyle = new Style({
     const coordinates = [];
     const geometry = f.getGeometry();
     let geometries = [geometry];
-    if (geometry.getType() === GeometryType.GEOMETRY_COLLECTION) {
+    if (geometry.getType() === 'GeometryCollection') {
       geometries = geometry.getGeometriesArrayRecursive();
     }
 
     // At this point geometries doesn't contains any GeometryCollections.
     geometries.forEach((geom) => {
       let multiGeometries = [geom];
-      if (geom.getType() === GeometryType.MULTI_LINE_STRING) {
+      if (geom.getType() === 'MultiLineString') {
         multiGeometries = geom.getLineStrings();
-      } else if (geom.getType() === GeometryType.MULTI_POLYGON) {
+      } else if (geom.getType() === 'MultiPolygon') {
         multiGeometries = geom.getPolygons();
-      } else if (geom.getType() === GeometryType.MULTI_POINT) {
+      } else if (geom.getType() === 'MultiPoint') {
         multiGeometries = geom.getPoints();
       }
       // At this point multiGeometries contains only single geometry.
       multiGeometries.forEach((geomm) => {
-        if (geomm.getType() === GeometryType.POLYGON) {
+        if (geomm.getType() === 'Polygon') {
           geomm.getCoordinates()[0].forEach((coordinate) => {
             coordinates.push(coordinate);
           });
-        } else if (geomm.getType() === GeometryType.LINE_STRING) {
+        } else if (geomm.getType() === 'LineString') {
           coordinates.push(...geomm.getCoordinates());
-        } else if (geomm.getType() === GeometryType.POINT) {
+        } else if (geomm.getType() === 'Point') {
           coordinates.push(geomm.getCoordinates());
         }
       });

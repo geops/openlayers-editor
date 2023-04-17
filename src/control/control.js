@@ -9,12 +9,12 @@ class Control extends OLControl {
   /**
    * @inheritdoc
    * @param {Object} options Control options.
-   * @param {HTMLElement} options.element Element which to substitute button.
+   * @param {HTMLElement} options.element Element which to substitute button. Set to null if you don't want to display an html element.
    * @param {string} options.className Name of the control's HTML class.
    * @param {string} options.title Title of the control toolbar button.
    * @param {Image} options.image Control toolbar image.
    * @param {HTMLElement} [options.dialogTarget] Specify a target if you want
-   *   the dialog div used by the control to be rendered outside of the map's viewport.
+   *   the dialog div used by the control to be rendered outside of the map's viewport. Set tio null if you don't want to display the dialog of a control.
    * @param {ol.source.Vector} [options.source] Vector source holding
    *   edit features. If undefined, options.features must be passed.
    * @param {ol.Collection<ol.Feature>} [options.features] Collection of
@@ -23,13 +23,16 @@ class Control extends OLControl {
    */
   constructor(options) {
     let button = null;
-    if (!options.element) {
+    if (options.element !== null && !options.element) {
       button = document.createElement('button');
       button.className = `ole-control ${options.className}`;
     }
 
     super({
-      element: options.element || button,
+      element:
+        options.element === null
+          ? document.createElement('div') // An element must be define otherwise ol complains, when we add control
+          : options.element || button,
     });
 
     /**
@@ -150,7 +153,9 @@ class Control extends OLControl {
    */
   activate(silent) {
     this.active = true;
-    this.element.className += ' active';
+    if (this.element) {
+      this.element.className += ' active';
+    }
 
     if (!silent) {
       this.dispatchEvent({
@@ -169,7 +174,9 @@ class Control extends OLControl {
    */
   deactivate(silent) {
     this.active = false;
-    this.element.classList.remove('active');
+    if (this.element) {
+      this.element.classList.remove('active');
+    }
 
     if (!silent) {
       this.dispatchEvent({
@@ -195,7 +202,7 @@ class Control extends OLControl {
    */
   openDialog() {
     this.closeDialog();
-    if (this.getDialogTemplate) {
+    if (this.dialogTarget !== null && this.getDialogTemplate) {
       this.dialogDiv = document.createElement('div');
 
       this.dialogDiv.innerHTML = `

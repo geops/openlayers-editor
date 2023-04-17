@@ -1,5 +1,4 @@
 import Control from 'ol/control/Control';
-import '../style/ole.css';
 
 /**
  * The editor's toolbar.
@@ -49,7 +48,9 @@ class Toolbar extends Control {
   load() {
     for (let i = 0; i < this.controls.getLength(); i += 1) {
       const btn = this.controls.item(i).getElement();
-      this.element.appendChild(btn);
+      if (this.element && btn) {
+        this.element.appendChild(btn);
+      }
     }
   }
 
@@ -60,7 +61,9 @@ class Toolbar extends Control {
   destroy() {
     for (let i = 0; i < this.controls.getLength(); i += 1) {
       const btn = this.controls.item(i).getElement();
-      this.element.removeChild(btn);
+      if (this.element && btn) {
+        this.element.removeChild(btn);
+      }
     }
   }
 }
