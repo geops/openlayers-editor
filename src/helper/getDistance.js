@@ -1,8 +1,8 @@
 /**
  * Returns the distance between 2 coordinates of a plan.
  *
- * @param {number[2]} coordA
- * @param number[2]} coordB
+ * @param {Array<number>} coordA
+ * @param {Array<number>} coordB
  * @returns number
  */
 const getDistance = (coordA, coordB) => {
