@@ -40,7 +40,7 @@
     "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --loader:.svg=dataurl --minify --outfile=build/bundle.js",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",
-    "cy:test": "start-server-and-test start http://localhost:8000 cy:run",
+    "cy:test": "start-server-and-test start http://127.0.0.1:8000 cy:run",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
     "format": "prettier --write 'cypress/integration/*.js' 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
     "lint": "eslint 'cypress/e2e/**/*.js' 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
