@@ -52,56 +52,9 @@
     "release": "standard-version",
     "start": "esbuild src/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=index.js --serve=localhost:8000 --servedir=. --sourcemap --watch=forever"
   },
-  "eslintConfig": {
-    "env": {
-      "cypress/globals": true,
-      "node": true,
-      "browser": true,
-      "es6": true,
-      "jest": true
-    },
-    "extends": [
-      "airbnb-base",
-      "prettier"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2022
-    },
-    "plugins": [
-      "cypress",
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": "error",
-      "arrow-body-style": "off",
-      "import/no-named-as-default": "off",
-      "import/no-named-as-default-member": "off"
-    }
-  },
   "keywords": [
     "Editor",
     "OpenLayers"
   ],
-  "lint-staged": {
-    "(src|__mocks__)/**/*.js": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "package.json": [
-      "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
-    ],
-    "src/**/*.{css,scss}": [
-      "stylelint --fix"
-    ]
-  },
-  "prettier": {
-    "trailingComma": "all",
-    "singleQuote": true
-  },
-  "repository": "github:geops/openlayers-editor",
-  "stylelint": {
-    "extends": [
-      "stylelint-config-standard"
-    ]
-  }
+  "repository": "github:geops/openlayers-editor"
 }

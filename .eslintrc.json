@@ -1,0 +1,19 @@
+{
+  "env": {
+    "cypress/globals": true,
+    "node": true,
+    "browser": true,
+    "es6": true
+  },
+  "extends": ["eslint-config-airbnb-base", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 2022
+  },
+  "plugins": ["cypress", "prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+    "arrow-body-style": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off"
+  }
+}
