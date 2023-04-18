@@ -5,13 +5,16 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [14, 19]
     steps:
       - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
         with:
           cache: yarn
-          node-version: latest
+          node-version: ${{ matrix.node_version }}
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
