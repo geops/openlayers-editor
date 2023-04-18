@@ -10,14 +10,14 @@ export const SNAP_FEATURE_TYPE_PROPERTY = 'ole.snap.feature.type';
 export const defaultSnapStyles = {
   [ORTHO_LINE_KEY]: new Style({
     stroke: new Stroke({
-      width: 2,
+      width: 1,
       color: 'purple',
       lineDash: [5, 10],
     }),
   }),
   [SEGMENT_LINE_KEY]: new Style({
     stroke: new Stroke({
-      width: 2,
+      width: 1,
       color: 'orange',
       lineDash: [5, 10],
     }),
