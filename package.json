@@ -10,31 +10,30 @@
     "ol": "^7"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.5.1",
-    "@commitlint/config-conventional": "17.4.4",
-    "cypress": "12.9.0",
-    "esbuild": "0.17.16",
+    "@commitlint/cli": "17.6.1",
+    "@commitlint/config-conventional": "17.6.1",
+    "cypress": "12.10.0",
+    "esbuild": "0.17.17",
     "eslint": "8.38.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-cypress": "2.13.2",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
-    "fixpack": "3.0.6",
+    "fixpack": "4.0.0",
     "husky": "8.0.3",
     "is-ci": "3.0.1",
-    "jest": "26.6.3",
-    "jsdoc": "3.6.6",
+    "jsdoc": "4.0.2",
     "jsdoc-export-default-interop": "0.3.1",
-    "jsts": "2.6.1",
+    "jsts": "2.9.3",
     "lint-staged": "13.2.1",
     "ol": "7.3.0",
     "prettier": "2.8.7",
     "shx": "0.3.4",
     "standard-version": "9.5.0",
-    "start-server-and-test": "1.11.5",
-    "stylelint": "15.4.0",
-    "stylelint-config-standard": "32.0.0",
+    "start-server-and-test": "2.0.0",
+    "stylelint": "15.5.0",
+    "stylelint-config-standard": "33.0.0",
     "typescript": "5.0.4"
   },
   "scripts": {
@@ -51,9 +50,7 @@
     "publish:public": "yarn release && yarn build && git push origin HEAD && git push --tags && yarn publish",
     "publish:public:dryrun": "yarn release --dry-run",
     "release": "standard-version",
-    "start": "esbuild src/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=index.js --serve=localhost:8000 --servedir=. --sourcemap --watch=forever",
-    "test": "jest \"src/.*\\.test\\.js\" --passWithNoTests --env=jsdom --transformIgnorePatterns \"/node_modules/(?!(ol|ol-mapbox-style)/).*/\"",
-    "test:watch": "yarn test --watchAll"
+    "start": "esbuild src/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=index.js --serve=localhost:8000 --servedir=. --sourcemap --watch=forever"
   },
   "eslintConfig": {
     "env": {
