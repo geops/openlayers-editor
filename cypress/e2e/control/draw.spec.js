@@ -1,23 +1,23 @@
-import DrawControl from '../../../src/control/draw';
-
 describe('Draw control', () => {
-  it('should instantiate', () => {
-    const draw = new DrawControl({});
-    expect(draw).to.be.instanceOf(DrawControl);
+  beforeEach(() => {
+    cy.visit('/');
   });
 
-  it('should draw points per default', () => {
-    const draw = new DrawControl({});
-    expect(draw.title).to.equal('Draw Point');
+  it('should show draw control for points', () => {
+    cy.get('.ole-control-draw')
+      .first()
+      .should('have.attr', 'title', 'Draw Point');
   });
 
-  it('should draw LineStrings.', () => {
-    const draw = new DrawControl({ type: 'LineString' });
-    expect(draw.title).to.equal('Draw LineString');
+  it('should show draw control for lines', () => {
+    cy.get('.ole-control-draw')
+      .eq(1)
+      .should('have.attr', 'title', 'Draw LineString');
   });
 
-  it('should draw Polygons.', () => {
-    const draw = new DrawControl({ type: 'Polygon' });
-    expect(draw.title).to.equal('Draw Polygon');
+  it('should show draw control for polygons', () => {
+    cy.get('.ole-control-draw')
+      .last()
+      .should('have.attr', 'title', 'Draw Polygon');
   });
 });
