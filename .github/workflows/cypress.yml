@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: yarn
-          node-version: ${{ matrix.node_version }}
+          node-version: ${{ matrix.node }}
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
