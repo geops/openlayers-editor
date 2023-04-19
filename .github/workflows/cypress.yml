@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         # Test on oldest Node LTS and latest Node stable
-        node: [lts/-2, current]
+        node: [lts/-1, current]
     steps:
       - uses: actions/checkout@v3
 
