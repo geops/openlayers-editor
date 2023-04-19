@@ -7,7 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [14, 19]
+        # Test on oldest Node LTS and latest Node stable
+        node: [lts/-2, current]
     steps:
       - uses: actions/checkout@v3
 
