@@ -4,119 +4,57 @@
   "description": "OpenLayers Editor",
   "version": "2.2.0-beta.10",
   "main": "build/index.js",
+  "dependencies": {},
   "peerDependencies": {
     "jsts": "^2",
     "ol": "^7"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.5.1",
-    "@commitlint/config-conventional": "17.4.4",
-    "@constgen/neutrino-svg-loader": "1.9.2",
-    "@cypress/webpack-preprocessor": "5.4.11",
-    "@neutrinojs/image-loader": "9.5.0",
-    "@neutrinojs/library": "9.5.0",
-    "@neutrinojs/style-loader": "9.5.0",
-    "cypress": "9.2.0",
+    "@commitlint/cli": "17.6.1",
+    "@commitlint/config-conventional": "17.6.1",
+    "cypress": "12.10.0",
+    "esbuild": "0.17.17",
     "eslint": "8.38.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-cypress": "2.13.2",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
-    "fixpack": "3.0.6",
+    "fixpack": "4.0.0",
     "husky": "8.0.3",
     "is-ci": "3.0.1",
-    "jest": "26.6.3",
-    "jsdoc": "3.6.6",
+    "jsdoc": "4.0.2",
     "jsdoc-export-default-interop": "0.3.1",
-    "jsts": "2.6.1",
+    "jsts": "2.9.3",
     "lint-staged": "13.2.1",
-    "neutrino": "9.5.0",
     "ol": "7.3.0",
     "prettier": "2.8.7",
+    "shx": "0.3.4",
     "standard-version": "9.5.0",
-    "start-server-and-test": "1.11.5",
-    "stylelint": "15.4.0",
-    "stylelint-config-standard": "32.0.0",
-    "webpack": "4.44.2",
-    "webpack-cli": "3.3.12",
-    "webpack-dev-server": "3.11.0"
+    "start-server-and-test": "2.0.0",
+    "stylelint": "15.5.0",
+    "stylelint-config-standard": "33.0.0",
+    "typescript": "5.0.4"
   },
   "scripts": {
-    "build": "webpack --mode production ",
+    "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=build/bundle.js",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",
-    "cy:test": "yarn build && start-server-and-test start http://localhost:8080 cy:run",
-    "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md",
+    "cy:test": "start-server-and-test start http://127.0.0.1:8000 cy:run",
+    "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md && shx cp build/bundle.js index.js",
     "format": "prettier --write 'cypress/integration/*.js' 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
-    "lint": "eslint 'cypress/integration/**/*.js' 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
+    "lint": "eslint 'cypress/e2e/**/*.js' 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
     "prepare": "is-ci || husky install",
     "publish:beta": "yarn release -- --prerelease beta --skip.changelog && yarn build && git push origin HEAD && git push --tags && yarn publish --tag beta",
     "publish:beta:dryrun": "yarn release -- --prerelease beta --dry-run --skip.changelog",
     "publish:public": "yarn release && yarn build && git push origin HEAD && git push --tags && yarn publish",
     "publish:public:dryrun": "yarn release --dry-run",
     "release": "standard-version",
-    "start": "webpack-dev-server --mode development --open",
-    "test": "jest \"src/.*\\.test\\.js\" --passWithNoTests --env=jsdom --transformIgnorePatterns \"/node_modules/(?!(ol|ol-mapbox-style)/).*/\"",
-    "test:watch": "yarn test --watchAll"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not op_mini all",
-    "not ie <= 11",
-    "not android < 5"
-  ],
-  "eslintConfig": {
-    "env": {
-      "cypress/globals": true,
-      "node": true,
-      "browser": true,
-      "es6": true,
-      "jest": true
-    },
-    "extends": [
-      "airbnb-base",
-      "prettier"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2022
-    },
-    "plugins": [
-      "cypress",
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": "error",
-      "arrow-body-style": "off",
-      "import/no-named-as-default": "off",
-      "import/no-named-as-default-member": "off"
-    }
+    "start": "esbuild src/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=index.js --serve=localhost:8000 --servedir=. --sourcemap --watch=forever"
   },
   "keywords": [
     "Editor",
     "OpenLayers"
   ],
-  "lint-staged": {
-    "(src|__mocks__)/**/*.js": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "package.json": [
-      "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
-    ],
-    "src/**/*.{css,scss}": [
-      "stylelint --fix"
-    ]
-  },
-  "prettier": {
-    "trailingComma": "all",
-    "singleQuote": true
-  },
-  "repository": "github:geops/openlayers-editor",
-  "stylelint": {
-    "extends": [
-      "stylelint-config-standard"
-    ]
-  }
+  "repository": "github:geops/openlayers-editor"
 }
