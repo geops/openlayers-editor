@@ -7,8 +7,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
+* support OpenLayers 7.x support
+
 * add TypeScript definitions ([#256](https://github.com/geops/openlayers-editor/issues/256)) ([f6db2f6](https://github.com/geops/openlayers-editor/commit/f6db2f6ae37b21a7919428841ce421c07882772f))
 
+* add more snap lines in the CAD control. Configurable via showOrthoLines and showSegmentLines properties
 
 ### Bug Fixes
 
