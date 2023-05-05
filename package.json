@@ -36,7 +36,7 @@
     "typescript": "5.0.4"
   },
   "scripts": {
-    "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=build/bundle.js && node tasks/prepare-package.mjs",
+    "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && shx cp -r src/img build/img && esbuild build/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=build/bundle.js && node tasks/prepare-package.mjs",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",
     "cy:test": "start-server-and-test start http://127.0.0.1:8000 cy:run",

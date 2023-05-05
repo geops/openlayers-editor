@@ -1,7 +1,7 @@
 import { Modify, Interaction } from 'ol/interaction';
 import { singleClick } from 'ol/events/condition';
 import Control from './control';
-import image from '../../img/modify_geometry2.svg';
+import image from '../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
 import SelectModify from '../interaction/selectmodify';
 import Move from '../interaction/move';
