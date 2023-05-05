@@ -6,7 +6,7 @@ import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
 import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
 import Control from './control';
-import cadSVG from '../../img/cad.svg';
+import cadSVG from '../img/cad.svg';
 import { SnapEvent, SnapEventType } from '../event';
 import {
   parser,
@@ -50,6 +50,7 @@ class CadControl extends Control {
    *   must be an array containing the following values 'ortho', 'segment', 'vh'. Default is ['ortho', 'segment', 'vh', 'custom'].
    * @param {Number} [options.snapPointDist] Distance of the
    *   snap points (default is 30).
+   * @param {ol.source.Vector} [options.source] Vector source holding edit features.
    * @param {Boolean} [options.useMapUnits] Whether to use map units
    *   as measurement for point snapping. Default is false (pixel are used).
    * @param {ol.style.Style.StyleLike} [options.snapStyle] Style used for the snap layer.

@@ -1,6 +1,6 @@
 import Select from 'ol/interaction/Select';
 import Control from './control';
-import delSVG from '../../img/buffer.svg';
+import delSVG from '../img/buffer.svg';
 
 /**
  * Control for deleting geometries.

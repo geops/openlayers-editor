@@ -10,7 +10,7 @@ import {
   MultiPolygon,
 } from 'ol/geom';
 import TopologyControl from './topology';
-import unionSVG from '../../img/union.svg';
+import unionSVG from '../img/union.svg';
 
 /**
  * Control for creating a union of geometries.
