@@ -69,11 +69,23 @@ class Editor {
     control.setMap(this.map);
     control.setEditor(this);
 
-    control.addEventListener('change:active', (e) => {
-      this.activeStateChange(e.detail.control);
-    });
+    control.addEventListener('change:active', this.activeStateChange);
 
     this.controls.push(control);
+  }
+
+  /**
+   * Remove a control from the editor
+   * @param {ole.Control} control The control.
+   */
+  removeControl(control) {
+    control.deactivate(true);
+    control.setMap(null);
+    control.setEditor(null);
+    control.removeEventListener('change:active', this.activeStateChange);
+
+    this.controls.remove(control);
+    this.activeControls.remove(control);
   }
 
   /**
@@ -170,7 +182,8 @@ class Editor {
    * @param {ol.control.Control} control Control.
    * @private
    */
-  activeStateChange(ctrl) {
+  activeStateChange = (e) => {
+    const ctrl = e.detail.control;
     // Deactivate other controls that are not standalone
     if (ctrl.getActive() && ctrl.standalone) {
       for (let i = 0; i < this.controls.getLength(); i += 1) {
@@ -191,7 +204,7 @@ class Editor {
     } else {
       this.activeControls.remove(ctrl);
     }
-  }
+  };
 }
 
 export default Editor;
