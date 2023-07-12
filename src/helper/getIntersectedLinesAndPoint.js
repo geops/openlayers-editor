@@ -15,14 +15,25 @@ const getIntersectedLinesAndPoint = (coordinate, lines, map, snapTolerance) => {
   const isPointAlreadyExist = {};
   const mousePx = map.getPixelFromCoordinate(coordinate);
 
-  lines.forEach((lineA) => {
-    lines.forEach((lineB) => {
-      const intersections = OverlayOp.intersection(
-        parser.read(lineA.getGeometry()),
-        parser.read(lineB.getGeometry()),
-      );
+  const parsedLines = lines.map((line) => [
+    line,
+    parser.read(line.getGeometry()),
+  ]);
+  parsedLines.forEach(([lineA, parsedLineA]) => {
+    parsedLines.forEach(([lineB, parsedLineB]) => {
+      if (lineA === lineB || isSameLines(lineA, lineB, map)) {
+        return;
+      }
+
+      let intersections;
+      try {
+        intersections = OverlayOp.intersection(parsedLineA, parsedLineB);
+      } catch (e) {
+        return; // The OverlayOp will sometimes error with topology errors for certain lines
+      }
+
       const coord = intersections?.getCoordinates()[0];
-      if (coord && lineA !== lineB && !isSameLines(lineA, lineB, map)) {
+      if (coord) {
         intersections.getCoordinates().forEach(({ x, y }) => {
           if (
             getDistance(map.getPixelFromCoordinate([x, y]), mousePx) <=
