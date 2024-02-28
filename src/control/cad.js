@@ -26,7 +26,7 @@ import {
 
 /**
  * Control with snapping functionality for geometry alignment.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.CadControl
  */
 class CadControl extends Control {
