@@ -251,7 +251,7 @@ class CadControl extends Control {
    */
   getClosestFeatures(coordinate, numFeatures) {
     const num = numFeatures || 1;
-    const ext = [-Infinity, -Infinity, Infinity, Infinity];
+    const ext = this.map.getView().calculateExtent();
     const featureDict = {};
 
     const pushSnapFeatures = (f) => {
