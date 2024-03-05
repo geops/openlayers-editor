@@ -32,7 +32,7 @@
     "shx": "0.3.4",
     "standard-version": "9.5.0",
     "start-server-and-test": "2.0.0",
-    "stylelint": "15.5.0",
+    "stylelint": "15.10.1",
     "stylelint-config-standard": "33.0.0",
     "typescript": "5.0.4"
   },
