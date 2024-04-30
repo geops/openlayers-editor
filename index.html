@@ -164,6 +164,9 @@
 
       var modify = new ole.control.Modify({
         source: editLayer.getSource(),
+        selectModifyOptions: {
+          condition: ol.events.condition.click,
+        },
       });
 
       var buffer = new ole.control.Buffer({

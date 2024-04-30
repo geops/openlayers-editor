@@ -299,15 +299,20 @@ class CadControl extends Control {
       .filter((f) => f)
       .forEach((feature) => {
         const geom = feature.getGeometry();
-        const snapGeom = getShiftedMultiPoint(geom, coordinate);
-        const isPolygon = geom instanceof Polygon;
-        const snapFeature = feature.clone();
-        snapFeature
-          .getGeometry()
-          .setCoordinates(
-            isPolygon ? [snapGeom.getCoordinates()] : snapGeom.getCoordinates(),
-          );
-        features = [snapFeature, ...features];
+
+        if (geom.getType() !== 'Circle' && geom.getType() !== 'Point') {
+          const snapGeom = getShiftedMultiPoint(geom, coordinate);
+          const isPolygon = geom instanceof Polygon;
+          const snapFeature = feature.clone();
+          snapFeature
+            .getGeometry()
+            .setCoordinates(
+              isPolygon
+                ? [snapGeom.getCoordinates()]
+                : snapGeom.getCoordinates(),
+            );
+          features = [snapFeature, ...features];
+        }
       });
 
     return features;

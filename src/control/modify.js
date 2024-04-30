@@ -382,7 +382,7 @@ class ModifyControl extends Control {
     this.map.addInteraction(this.selectModify);
     // For the default behvior it's very important to add selectMove after selectModify.
     // It will avoid single/dbleclick mess.
-    this.map.addInteraction(this.selectMove);
+    // this.map.addInteraction(this.selectMove);
     this.map.addInteraction(this.moveInteraction);
     this.map.addInteraction(this.modifyInteraction);
   }
