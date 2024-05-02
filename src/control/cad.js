@@ -5,6 +5,7 @@ import Vector from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
 import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
+import { getUid } from 'ol/util';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
 import { SnapEvent, SnapEventType } from '../event';
@@ -143,7 +144,7 @@ class CadControl extends Control {
      * @type {Function}
      * @private
      */
-    this.filter = options.filter || null;
+    this.filter = options.filter || (() => true);
 
     /**
      * Interaction for snapping
@@ -246,47 +247,33 @@ class CadControl extends Control {
    * to a given coordinate.
    * @private
    * @param {ol.Coordinate} coordinate Coordinate.
-   * @param {Number} numFeatures Number of features to search.
+   * @param {Number} nbFeatures Number of features to search.
    * @returns {Array.<ol.Feature>} List of closest features.
    */
-  getClosestFeatures(coordinate, numFeatures) {
-    const num = numFeatures || 1;
-    const ext = [-Infinity, -Infinity, Infinity, Infinity];
-    const featureDict = {};
-
-    const pushSnapFeatures = (f) => {
-      const cCoord = f.getGeometry().getClosestPoint(coordinate);
-      const dx = cCoord[0] - coordinate[0];
-      const dy = cCoord[1] - coordinate[1];
-      const dist = dx * dx + dy * dy;
-      featureDict[dist] = f;
-    };
-
-    this.source.forEachFeatureInExtent(ext, (f) => {
-      if (!this.filter || (this.filter && this.filter(f))) {
-        pushSnapFeatures(f);
-      }
-    });
-
-    const dists = Object.keys(featureDict);
-    let features = [];
-    const count = Math.min(dists.length, num);
-
-    dists.sort((a, b) => a - b);
-
-    for (let i = 0; i < count; i += 1) {
-      features.push(featureDict[dists[i]]);
-    }
-
-    // Remove edit and draw feature for snapping list.
+  getClosestFeatures(coordinate, nbFeatures) {
     const editFeature = this.editor.getEditFeature();
     const drawFeature = this.editor.getDrawFeature();
-    [editFeature, drawFeature].forEach((feature) => {
-      const index = features.indexOf(feature);
-      if (index > -1) {
-        features.splice(index, 1);
+    const nb = nbFeatures || 1;
+
+    const cacheDist = {};
+    const dist = (f) => {
+      const uid = getUid(f);
+      if (!cacheDist[uid]) {
+        const cCoord = f.getGeometry().getClosestPoint(coordinate);
+        const dx = cCoord[0] - coordinate[0];
+        const dy = cCoord[1] - coordinate[1];
+        cacheDist[uid] = dx * dx + dy * dy;
       }
-    });
+      return cacheDist[uid];
+    };
+    const sortByDistance = (a, b) => dist(a) - dist(b);
+
+    let features = this.source
+      .getFeatures()
+      .filter(this.filter)
+      .filter((f) => ![editFeature, drawFeature].includes(f))
+      .sort(sortByDistance)
+      .slice(0, nb);
 
     // When using showSnapPoints, return all features except edit/draw features
     if (this.properties.showSnapPoints) {
@@ -295,25 +282,21 @@ class CadControl extends Control {
 
     // When using showSnapLines, return all features but edit/draw features are
     // cloned to remove the node at the mouse position.
-    [editFeature, drawFeature]
-      .filter((f) => f)
-      .forEach((feature) => {
-        const geom = feature.getGeometry();
+    [editFeature, drawFeature].filter(this.filter).forEach((feature) => {
+      const geom = feature.getGeometry();
 
-        if (!(geom instanceof Circle) && !(geom instanceof Point)) {
-          const snapGeom = getShiftedMultiPoint(geom, coordinate);
-          const isPolygon = geom instanceof Polygon;
-          const snapFeature = feature.clone();
-          snapFeature
-            .getGeometry()
-            .setCoordinates(
-              isPolygon
-                ? [snapGeom.getCoordinates()]
-                : snapGeom.getCoordinates(),
-            );
-          features = [snapFeature, ...features];
-        }
-      });
+      if (!(geom instanceof Circle) && !(geom instanceof Point)) {
+        const snapGeom = getShiftedMultiPoint(geom, coordinate);
+        const isPolygon = geom instanceof Polygon;
+        const snapFeature = feature.clone();
+        snapFeature
+          .getGeometry()
+          .setCoordinates(
+            isPolygon ? [snapGeom.getCoordinates()] : snapGeom.getCoordinates(),
+          );
+        features = [snapFeature, ...features];
+      }
+    });
 
     return features;
   }
