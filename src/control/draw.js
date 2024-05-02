@@ -57,7 +57,7 @@ class DrawControl extends Control {
     });
 
     this.drawInteraction.on('drawend', () => {
-      this.editor.setDrawFeature(null);
+      this.editor.setDrawFeature();
     });
   }
 

@@ -253,6 +253,7 @@ class CadControl extends Control {
   getClosestFeatures(coordinate, nbFeatures) {
     const editFeature = this.editor.getEditFeature();
     const drawFeature = this.editor.getDrawFeature();
+    const currentFeatures = [editFeature, drawFeature].filter((f) => !!f);
     const nb = nbFeatures || 1;
 
     const cacheDist = {};
@@ -271,7 +272,7 @@ class CadControl extends Control {
     let features = this.source
       .getFeatures()
       .filter(this.filter)
-      .filter((f) => ![editFeature, drawFeature].includes(f))
+      .filter((f) => !currentFeatures.includes(f))
       .sort(sortByDistance)
       .slice(0, nb);
 
@@ -282,7 +283,7 @@ class CadControl extends Control {
 
     // When using showSnapLines, return all features but edit/draw features are
     // cloned to remove the node at the mouse position.
-    [editFeature, drawFeature].filter(this.filter).forEach((feature) => {
+    currentFeatures.filter(this.filter).forEach((feature) => {
       const geom = feature.getGeometry();
 
       if (!(geom instanceof Circle) && !(geom instanceof Point)) {
