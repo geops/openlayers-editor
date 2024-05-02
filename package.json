@@ -2,7 +2,7 @@
   "name": "ole",
   "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
-  "version": "2.2.1-beta.3",
+  "version": "2.2.1-beta.4",
   "main": "build/index.js",
   "dependencies": {},
   "peerDependencies": {
@@ -27,7 +27,7 @@
     "jsdoc-export-default-interop": "0.3.1",
     "jsts": "2.11.1",
     "lint-staged": "15.2.2",
-    "ol": "9.0.0",
+    "ol": "8",
     "prettier": "3.2.5",
     "shx": "0.3.4",
     "standard-version": "9.5.0",
