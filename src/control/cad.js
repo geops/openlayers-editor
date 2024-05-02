@@ -1,5 +1,5 @@
 import { Style, Stroke } from 'ol/style';
-import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
+import { Point, LineString, Polygon, MultiPoint, Circle } from 'ol/geom';
 import Feature from 'ol/Feature';
 import Vector from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -300,7 +300,7 @@ class CadControl extends Control {
       .forEach((feature) => {
         const geom = feature.getGeometry();
 
-        if (geom.getType() !== 'Circle' && geom.getType() !== 'Point') {
+        if (!(geom instanceof Circle) && !(geom instanceof Point)) {
           const snapGeom = getShiftedMultiPoint(geom, coordinate);
           const isPolygon = geom instanceof Polygon;
           const snapFeature = feature.clone();
@@ -620,10 +620,15 @@ class CadControl extends Control {
 
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
-      const featureCoord = geom.getCoordinates();
+      let featureCoord = geom.getCoordinates();
+
+      if (!featureCoord && geom instanceof Circle) {
+        featureCoord = geom.getCenter();
+      }
+
       // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
-      if (featureCoord.length) {
-        if (geom instanceof Point) {
+      if (featureCoord?.length) {
+        if (geom instanceof Point || geom instanceof Circle) {
           snapCoordsBefore.push();
           snapCoords.push(featureCoord);
           snapCoordsAfter.push();
