@@ -34,6 +34,8 @@ class CadControl extends Control {
   /**
    * @param {Object} [options] Tool options.
    * @param {Function} [options.drawCustomSnapLines] Allow to draw more snapping lines using selected corrdinaites.
+   * @param {Function} [options.handleMoveEvent] A function passed to determine whether to apply snap hints
+   *   on a pointer move event (all pointer events handled by default)
    * @param {Function} [options.filter] Returns an array containing the features
    *   to include for CAD (takes the source as a single argument).
    * @param {Number} [options.nbClosestFeatures] Number of features to use for snapping (closest first). Default is 5.
@@ -147,6 +149,13 @@ class CadControl extends Control {
     this.filter = options.filter || (() => true);
 
     /**
+     * Determines whether to handle a pointer event
+     * @type {Function}
+     * @private
+     */
+    this.handleMoveEvent = options.handleMoveEvent || null;
+
+    /**
      * Interaction for snapping
      * @type {ol.interaction.Snap}
      * @private
@@ -221,13 +230,20 @@ class CadControl extends Control {
    * @param {ol.MapBrowserEvent} evt Move event.
    */
   onMove(evt) {
+    this.linesLayer.getSource().clear();
+    this.snapLayer.getSource().clear();
+
+    if (
+      typeof this.handleMoveEvent === 'function' &&
+      !this.handleMoveEvent(evt)
+    ) {
+      return;
+    }
+
     const features = this.getClosestFeatures(
       evt.coordinate,
       this.nbClosestFeatures,
     );
-
-    this.linesLayer.getSource().clear();
-    this.snapLayer.getSource().clear();
 
     this.pointerInteraction.dispatchEvent(
       new SnapEvent(SnapEventType.SNAP, features.length ? features : null, evt),
