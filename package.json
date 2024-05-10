@@ -34,7 +34,8 @@
     "start-server-and-test": "2.0.3",
     "stylelint": "16.5.0",
     "stylelint-config-standard": "36.0.0",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "vitest": "^1.6.0"
   },
   "scripts": {
     "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=build/bundle.js",
@@ -52,6 +53,7 @@
     "publish:public:dryrun": "yarn release --dry-run",
     "release": "standard-version",
     "start": "esbuild src/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=index.js --serve=localhost:8000 --servedir=. --sourcemap --watch=forever",
+    "test": "vitest",
     "up": "yarn upgrade-interactive --latest"
   },
   "keywords": [
