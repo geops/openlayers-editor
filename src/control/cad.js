@@ -47,17 +47,17 @@ class CadControl extends Control {
    *   snap lines that arae perpendicular to segment (default is true).
    * @param {Boolean} [options.showSegmentLines] Whether to show
    *   snap lines that extends a segment (default is true).
+   * @param {Boolean} [options.showVerticalAndHorizontalLines] Whether to show vertical
+   *   and horizontal lines for each snappable point (default is true).
    * @param {Boolean} [options.snapLinesOrder] Define order of display of snap lines,
    *   must be an array containing the following values 'ortho', 'segment', 'vh'. Default is ['ortho', 'segment', 'vh', 'custom'].
    * @param {Number} [options.snapPointDist] Distance of the
    *   snap points (default is 30).
    * @param {Boolean} [options.useMapUnits] Whether to use map units
    *   as measurement for point snapping. Default is false (pixel are used).
+   * @param {ol.VectorSource} [options.source] The vector source to retrieve the snappable features from.
    * @param {ol.style.Style.StyleLike} [options.snapStyle] Style used for the snap layer.
    * @param {ol.style.Style.StyleLike} [options.linesStyle] Style used for the lines layer.
-   * @param {ol.style.Style.StyleLike} [options.orthoLinesStyle] Style used for the lines layer.
-   * @param {ol.style.Style.StyleLike} [options.segmentLinesStyle] Style used for the lines layer.
-   * @param {ol.style.Style.StyleLike} [options.Style] Style used for the lines layer.
    *
    */
   constructor(options) {
