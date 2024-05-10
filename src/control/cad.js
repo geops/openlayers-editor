@@ -189,30 +189,34 @@ class CadControl extends Control {
     `;
   }
 
+  handleInteractionAdd = (e) => {
+    const pos = e.target.getArray().indexOf(this.snapInteraction);
+
+    if (
+      this.snapInteraction.getActive() &&
+      pos > -1 &&
+      pos !== e.target.getLength() - 1
+    ) {
+      this.deactivate(true);
+      this.activate(true);
+    }
+  };
+
   /**
    * @inheritdoc
    */
   setMap(map) {
+    if (this.map) {
+      this.map.getInteractions().un('add', this.handleInteractionAdd);
+    }
+
     super.setMap(map);
 
     // Ensure that the snap interaction is at the last position
     // as it must be the first to handle the  pointermove event.
-    this.map.getInteractions().on(
-      'add',
-      ((e) => {
-        const pos = e.target.getArray().indexOf(this.snapInteraction);
-
-        if (
-          this.snapInteraction.getActive() &&
-          pos > -1 &&
-          pos !== e.target.getLength() - 1
-        ) {
-          this.deactivate(true);
-          this.activate(true);
-        }
-        // eslint-disable-next-line no-extra-bind
-      }).bind(this),
-    );
+    if (this.map) {
+      this.map.getInteractions().on('add', this.handleInteractionAdd);
+    }
   }
 
   /**
