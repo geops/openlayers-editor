@@ -170,7 +170,7 @@ class ModifyControl extends Control {
     });
 
     this.moveInteraction.on('moveend', () => {
-      this.editor.setEditFeature(null);
+      this.editor.setEditFeature();
       this.isMoving = false;
     });
     this.moveInteraction.setActive(false);
@@ -198,7 +198,7 @@ class ModifyControl extends Control {
     });
 
     this.modifyInteraction.on('modifyend', () => {
-      this.editor.setEditFeature(null);
+      this.editor.setEditFeature();
       this.isModifying = false;
     });
     this.modifyInteraction.setActive(false);
