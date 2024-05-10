@@ -1,4 +1,5 @@
 # Openlayers Editor
+
 ![npm](https://img.shields.io/npm/v/ole)
 ![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)
 ![code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
@@ -83,9 +84,6 @@ The commit contains the following structural elements, to communicate intent to 
 
 Additional types are not mandated by the Conventional Commits specification, and have no implicit effect in semantic versioning (unless they include a BREAKING CHANGE). A scope may be provided to a commit’s type, to provide additional contextual information and is contained within parenthesis, e.g., feat(parser): add ability to parse arrays.
 
-## Contribution
+## Contributing
 
-- Install: `yarn install`
-- Build: `yarn build`
-- Create doc: `yarn doc`
-
+All PRs are welcome and will be reviewed soon or later. Please make sure to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
