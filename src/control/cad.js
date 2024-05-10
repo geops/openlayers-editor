@@ -157,6 +157,8 @@ class CadControl extends Control {
     });
 
     this.standalone = false;
+
+    this.handleInteractionAdd = this.handleInteractionAdd.bind(this);
   }
 
   /**
@@ -189,18 +191,18 @@ class CadControl extends Control {
     `;
   }
 
-  handleInteractionAdd = (e) => {
-    const pos = e.target.getArray().indexOf(this.snapInteraction);
+  handleInteractionAdd(evt) {
+    const pos = evt.target.getArray().indexOf(this.snapInteraction);
 
     if (
       this.snapInteraction.getActive() &&
       pos > -1 &&
-      pos !== e.target.getLength() - 1
+      pos !== evt.target.getLength() - 1
     ) {
       this.deactivate(true);
       this.activate(true);
     }
-  };
+  }
 
   /**
    * @inheritdoc
