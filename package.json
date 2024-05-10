@@ -39,7 +39,7 @@
   "scripts": {
     "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=build/bundle.js",
     "cy:open": "cypress open",
-    "cy:run": "cypress run --headless",
+    "cy:run": "cypress run --browser chrome",
     "cy:test": "start-server-and-test start http://127.0.0.1:8000 cy:run",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md && shx cp build/bundle.js index.js",
     "format": "prettier --write 'cypress/integration/*.js' 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
