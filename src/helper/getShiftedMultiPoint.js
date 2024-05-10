@@ -19,9 +19,9 @@ const getShiftedMultipoint = (geometry, coordinate) => {
 
   // Exclude the node being modified
   shiftedMultipoint.setCoordinates(
-    shiftedMultipoint.getCoordinates().filter((coord) => {
-      return coord.toString() !== drawNodeCoordinate.toString();
-    }),
+    shiftedMultipoint
+      .getCoordinates()
+      .filter((coord) => coord.toString() !== drawNodeCoordinate.toString()),
   );
 
   return shiftedMultipoint;
