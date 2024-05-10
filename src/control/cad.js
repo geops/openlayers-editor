@@ -33,9 +33,10 @@ import {
 class CadControl extends Control {
   /**
    * @param {Object} [options] Tool options.
-   * @param {Function} [options.drawCustomSnapLines] Allow to draw more snapping lines using selected corrdinaites.
+   * @param {Function} [options.drawCustomSnapLines] Allow to draw more snapping lines using selected coordinates.
    * @param {Function} [options.filter] Returns an array containing the features
    *   to include for CAD (takes the source as a single argument).
+   * @param {Function} [options.extentFilter] An optional spatial filter for the features to snap with. Returns an ol.Extent which will be used by the source.getFeaturesinExtent method.
    * @param {Function} [options.lineFilter] An optional filter for the generated snapping lines
    *   array (takes the lines and cursor coordinate as arguments and returns the new line array)
    * @param {Number} [options.nbClosestFeatures] Number of features to use for snapping (closest first). Default is 5.
@@ -147,6 +148,13 @@ class CadControl extends Control {
      * @private
      */
     this.filter = options.filter || (() => true);
+
+    /**
+     * Filter the features spatially.
+     */
+    this.extentFilter =
+      options.extentFilter ||
+      (() => [-Infinity, -Infinity, Infinity, Infinity]);
 
     /**
      * Filter the generated line list
@@ -282,9 +290,10 @@ class CadControl extends Control {
     const sortByDistance = (a, b) => dist(a) - dist(b);
 
     let features = this.source
-      .getFeatures()
-      .filter(this.filter)
-      .filter((f) => !currentFeatures.includes(f))
+      .getFeaturesInExtent(this.extentFilter())
+      .filter(
+        (feature) => this.filter(feature) && !currentFeatures.includes(feature),
+      )
       .sort(sortByDistance)
       .slice(0, nbFeatures);
 
