@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/geops/openlayers-editor/compare/v2.3.0...v2.4.0) (2024-05-10)
+
+
+### Features
+
+* add editor#removeControl ([#266](https://github.com/geops/openlayers-editor/issues/266)) ([cd4c777](https://github.com/geops/openlayers-editor/commit/cd4c7772cf9be101a00d2c226a564de815732b49))
+* add extentFilter property  in CAD control ([aa160a4](https://github.com/geops/openlayers-editor/commit/aa160a437f368799f6f31557aa2445b83afda22e))
+* add line filter for reducing line clutter ([#265](https://github.com/geops/openlayers-editor/issues/265)) ([842e836](https://github.com/geops/openlayers-editor/commit/842e836b44a9faf63a03a11affd5930dc5522e55))
+
+
+### Bug Fixes
+
+* cleanup map events unmounting cad control ([#264](https://github.com/geops/openlayers-editor/issues/264)) ([3907615](https://github.com/geops/openlayers-editor/commit/390761571f8146c62d4dc85ef4255210a4b592ec))
+
+## [2.3.0](https://github.com/geops/openlayers-editor/compare/v2.2.1...v2.3.0) (2024-05-10)
+
+
+### Features
+
+* allow to modifiy  circle geometry ([#270](https://github.com/geops/openlayers-editor/issues/270)) ([18deb75](https://github.com/geops/openlayers-editor/commit/18deb75c672c4d25e659598e7dd87386b24ffe73))
+
+### [2.2.1](https://github.com/geops/openlayers-editor/compare/v2.2.0...v2.2.1) (2024-03-05)
+
+
+### Bug Fixes
+
+* update JSDoc comments to improve TypeScript definitions ([#269](https://github.com/geops/openlayers-editor/issues/269)) ([769c1bc](https://github.com/geops/openlayers-editor/commit/769c1bc48f426310cece9a9b0444edd6c77895b3))
+
 ## [2.2.0](https://github.com/geops/openlayers-editor/compare/v2.1.2...v2.2.0) (2023-05-04)
 
 

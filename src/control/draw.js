@@ -6,7 +6,7 @@ import drawLineSVG from '../img/draw_line.svg';
 
 /**
  * Control for drawing features.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.DrawControl
  */
 class DrawControl extends Control {
@@ -41,7 +41,6 @@ class DrawControl extends Control {
 
     /**
      * @type {ol.interaction.Draw}
-     * @private
      */
     this.drawInteraction = new Draw({
       type: options?.type || 'Point',
@@ -57,7 +56,7 @@ class DrawControl extends Control {
     });
 
     this.drawInteraction.on('drawend', () => {
-      this.editor.setDrawFeature(null);
+      this.editor.setDrawFeature();
     });
   }
 

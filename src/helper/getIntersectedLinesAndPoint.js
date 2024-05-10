@@ -22,6 +22,7 @@ const getIntersectedLinesAndPoint = (coordinate, lines, map, snapTolerance) => {
         parser.read(lineB.getGeometry()),
       );
       const coord = intersections?.getCoordinates()[0];
+
       if (coord && lineA !== lineB && !isSameLines(lineA, lineB, map)) {
         intersections.getCoordinates().forEach(({ x, y }) => {
           if (

@@ -5,20 +5,14 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # Test on oldest Node LTS and latest Node stable
-        node: [lts/-1, current]
+    container:
+      image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
+      options: --user 1001
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          cache: yarn
-          node-version: ${{ matrix.node }}
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Run and record Cypress tests
-        run: yarn run cy:test
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: yarn install --frozen-lockfile
+      - run: yarn cypress info
+      - run: node --version
+      - run: node -p 'os.cpus()'
+      - run: yarn cy:test

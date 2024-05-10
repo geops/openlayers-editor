@@ -14,7 +14,7 @@ import intersectionSVG from '../img/intersection.svg';
 
 /**
  * Control for intersection geometries.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.Intersection
  */
 class Intersection extends TopologyControl {

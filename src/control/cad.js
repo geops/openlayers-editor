@@ -1,10 +1,11 @@
 import { Style, Stroke } from 'ol/style';
-import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
+import { Point, LineString, Polygon, MultiPoint, Circle } from 'ol/geom';
 import Feature from 'ol/Feature';
 import Vector from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
 import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
+import { getUid } from 'ol/util';
 import Control from './control';
 import cadSVG from '../img/cad.svg';
 import { SnapEvent, SnapEventType } from '../event';
@@ -26,15 +27,18 @@ import {
 
 /**
  * Control with snapping functionality for geometry alignment.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.CadControl
  */
 class CadControl extends Control {
   /**
    * @param {Object} [options] Tool options.
-   * @param {Function} [options.drawCustomSnapLines] Allow to draw more snapping lines using selected corrdinaites.
+   * @param {Function} [options.drawCustomSnapLines] Allow to draw more snapping lines using selected coordinates.
    * @param {Function} [options.filter] Returns an array containing the features
    *   to include for CAD (takes the source as a single argument).
+   * @param {Function} [options.extentFilter] An optional spatial filter for the features to snap with. Returns an ol.Extent which will be used by the source.getFeaturesinExtent method.
+   * @param {Function} [options.lineFilter] An optional filter for the generated snapping lines
+   *   array (takes the lines and cursor coordinate as arguments and returns the new line array)
    * @param {Number} [options.nbClosestFeatures] Number of features to use for snapping (closest first). Default is 5.
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
    *   for snap lines. Default is 10.
@@ -46,6 +50,8 @@ class CadControl extends Control {
    *   snap lines that arae perpendicular to segment (default is true).
    * @param {Boolean} [options.showSegmentLines] Whether to show
    *   snap lines that extends a segment (default is true).
+   * @param {Boolean} [options.showVerticalAndHorizontalLines] Whether to show vertical
+   *   and horizontal lines for each snappable point (default is true).
    * @param {Boolean} [options.snapLinesOrder] Define order of display of snap lines,
    *   must be an array containing the following values 'ortho', 'segment', 'vh'. Default is ['ortho', 'segment', 'vh', 'custom'].
    * @param {Number} [options.snapPointDist] Distance of the
@@ -53,14 +59,12 @@ class CadControl extends Control {
    * @param {ol.source.Vector} [options.source] Vector source holding edit features.
    * @param {Boolean} [options.useMapUnits] Whether to use map units
    *   as measurement for point snapping. Default is false (pixel are used).
+   * @param {ol.VectorSource} [options.source] The vector source to retrieve the snappable features from.
    * @param {ol.style.Style.StyleLike} [options.snapStyle] Style used for the snap layer.
    * @param {ol.style.Style.StyleLike} [options.linesStyle] Style used for the lines layer.
-   * @param {ol.style.Style.StyleLike} [options.orthoLinesStyle] Style used for the lines layer.
-   * @param {ol.style.Style.StyleLike} [options.segmentLinesStyle] Style used for the lines layer.
-   * @param {ol.style.Style.StyleLike} [options.Style] Style used for the lines layer.
    *
    */
-  constructor(options) {
+  constructor(options = {}) {
     super({
       title: 'CAD control',
       className: 'ole-control-cad',
@@ -144,7 +148,19 @@ class CadControl extends Control {
      * @type {Function}
      * @private
      */
-    this.filter = options.filter || null;
+    this.filter = options.filter || (() => true);
+
+    /**
+     * Filter the features spatially.
+     */
+    this.extentFilter =
+      options.extentFilter ||
+      (() => [-Infinity, -Infinity, Infinity, Infinity]);
+
+    /**
+     * Filter the generated line list
+     */
+    this.lineFilter = options.lineFilter;
 
     /**
      * Interaction for snapping
@@ -157,6 +173,8 @@ class CadControl extends Control {
     });
 
     this.standalone = false;
+
+    this.handleInteractionAdd = this.handleInteractionAdd.bind(this);
   }
 
   /**
@@ -189,30 +207,34 @@ class CadControl extends Control {
     `;
   }
 
+  handleInteractionAdd(evt) {
+    const pos = evt.target.getArray().indexOf(this.snapInteraction);
+
+    if (
+      this.snapInteraction.getActive() &&
+      pos > -1 &&
+      pos !== evt.target.getLength() - 1
+    ) {
+      this.deactivate(true);
+      this.activate(true);
+    }
+  }
+
   /**
    * @inheritdoc
    */
   setMap(map) {
+    if (this.map) {
+      this.map.getInteractions().un('add', this.handleInteractionAdd);
+    }
+
     super.setMap(map);
 
     // Ensure that the snap interaction is at the last position
     // as it must be the first to handle the  pointermove event.
-    this.map.getInteractions().on(
-      'add',
-      ((e) => {
-        const pos = e.target.getArray().indexOf(this.snapInteraction);
-
-        if (
-          this.snapInteraction.getActive() &&
-          pos > -1 &&
-          pos !== e.target.getLength() - 1
-        ) {
-          this.deactivate(true);
-          this.activate(true);
-        }
-        // eslint-disable-next-line no-extra-bind
-      }).bind(this),
-    );
+    if (this.map) {
+      this.map.getInteractions().on('add', this.handleInteractionAdd);
+    }
   }
 
   /**
@@ -247,47 +269,34 @@ class CadControl extends Control {
    * to a given coordinate.
    * @private
    * @param {ol.Coordinate} coordinate Coordinate.
-   * @param {Number} numFeatures Number of features to search.
+   * @param {Number} nbFeatures Number of features to search.
    * @returns {Array.<ol.Feature>} List of closest features.
    */
-  getClosestFeatures(coordinate, numFeatures) {
-    const num = numFeatures || 1;
-    const ext = [-Infinity, -Infinity, Infinity, Infinity];
-    const featureDict = {};
-
-    const pushSnapFeatures = (f) => {
-      const cCoord = f.getGeometry().getClosestPoint(coordinate);
-      const dx = cCoord[0] - coordinate[0];
-      const dy = cCoord[1] - coordinate[1];
-      const dist = dx * dx + dy * dy;
-      featureDict[dist] = f;
-    };
-
-    this.source.forEachFeatureInExtent(ext, (f) => {
-      if (!this.filter || (this.filter && this.filter(f))) {
-        pushSnapFeatures(f);
-      }
-    });
-
-    const dists = Object.keys(featureDict);
-    let features = [];
-    const count = Math.min(dists.length, num);
-
-    dists.sort((a, b) => a - b);
-
-    for (let i = 0; i < count; i += 1) {
-      features.push(featureDict[dists[i]]);
-    }
-
-    // Remove edit and draw feature for snapping list.
+  getClosestFeatures(coordinate, nbFeatures = 1) {
     const editFeature = this.editor.getEditFeature();
     const drawFeature = this.editor.getDrawFeature();
-    [editFeature, drawFeature].forEach((feature) => {
-      const index = features.indexOf(feature);
-      if (index > -1) {
-        features.splice(index, 1);
+    const currentFeatures = [editFeature, drawFeature].filter((f) => !!f);
+
+    const cacheDist = {};
+    const dist = (f) => {
+      const uid = getUid(f);
+      if (!cacheDist[uid]) {
+        const cCoord = f.getGeometry().getClosestPoint(coordinate);
+        const dx = cCoord[0] - coordinate[0];
+        const dy = cCoord[1] - coordinate[1];
+        cacheDist[uid] = dx * dx + dy * dy;
       }
-    });
+      return cacheDist[uid];
+    };
+    const sortByDistance = (a, b) => dist(a) - dist(b);
+
+    let features = this.source
+      .getFeaturesInExtent(this.extentFilter())
+      .filter(
+        (feature) => this.filter(feature) && !currentFeatures.includes(feature),
+      )
+      .sort(sortByDistance)
+      .slice(0, nbFeatures);
 
     // When using showSnapPoints, return all features except edit/draw features
     if (this.properties.showSnapPoints) {
@@ -296,10 +305,10 @@ class CadControl extends Control {
 
     // When using showSnapLines, return all features but edit/draw features are
     // cloned to remove the node at the mouse position.
-    [editFeature, drawFeature]
-      .filter((f) => f)
-      .forEach((feature) => {
-        const geom = feature.getGeometry();
+    currentFeatures.filter(this.filter).forEach((feature) => {
+      const geom = feature.getGeometry();
+
+      if (!(geom instanceof Circle) && !(geom instanceof Point)) {
         const snapGeom = getShiftedMultiPoint(geom, coordinate);
         const isPolygon = geom instanceof Polygon;
         const snapFeature = feature.clone();
@@ -309,7 +318,8 @@ class CadControl extends Control {
             isPolygon ? [snapGeom.getCoordinates()] : snapGeom.getCoordinates(),
           );
         features = [snapFeature, ...features];
-      });
+      }
+    });
 
     return features;
   }
@@ -616,10 +626,15 @@ class CadControl extends Control {
 
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
-      const featureCoord = geom.getCoordinates();
+      let featureCoord = geom.getCoordinates();
+
+      if (!featureCoord && geom instanceof Circle) {
+        featureCoord = geom.getCenter();
+      }
+
       // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
-      if (featureCoord.length) {
-        if (geom instanceof Point) {
+      if (featureCoord?.length) {
+        if (geom instanceof Point || geom instanceof Circle) {
           snapCoordsBefore.push();
           snapCoords.push(featureCoord);
           snapCoordsAfter.push();
@@ -658,7 +673,7 @@ class CadControl extends Control {
       snapLinesOrder,
     } = this.properties;
 
-    const lines = [];
+    let lines = [];
     const helpLinesOrdered = [];
     const helpLines = {
       [ORTHO_LINE_KEY]: [],
@@ -707,6 +722,10 @@ class CadControl extends Control {
         lines.push(lineA);
       }
     });
+
+    if (this.lineFilter) {
+      lines = this.lineFilter(lines, coordinate);
+    }
 
     // We snap on intersections of lines (distance < this.snapTolerance) or on all the help lines.
     const intersectFeatures = getIntersectedLinesAndPoint(

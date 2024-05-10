@@ -14,7 +14,7 @@ import unionSVG from '../img/union.svg';
 
 /**
  * Control for creating a union of geometries.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.Union
  */
 class Union extends TopologyControl {

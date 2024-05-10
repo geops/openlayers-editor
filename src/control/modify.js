@@ -9,7 +9,7 @@ import Delete from '../interaction/delete';
 
 /**
  * Control for modifying geometries.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.ModifyControl
  */
 class ModifyControl extends Control {
@@ -126,7 +126,6 @@ class ModifyControl extends Control {
     /**
      * Select interaction to modify features.
      * @type {ol.interaction.Select}
-     * @private
      */
     this.selectModify = new SelectModify({
       filter: this.selectFilter,
@@ -171,7 +170,7 @@ class ModifyControl extends Control {
     });
 
     this.moveInteraction.on('moveend', () => {
-      this.editor.setEditFeature(null);
+      this.editor.setEditFeature();
       this.isMoving = false;
     });
     this.moveInteraction.setActive(false);
@@ -199,7 +198,7 @@ class ModifyControl extends Control {
     });
 
     this.modifyInteraction.on('modifyend', () => {
-      this.editor.setEditFeature(null);
+      this.editor.setEditFeature();
       this.isModifying = false;
     });
     this.modifyInteraction.setActive(false);

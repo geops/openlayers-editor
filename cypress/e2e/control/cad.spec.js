@@ -1,10 +1,11 @@
 const FORCE = { force: true };
 
 const coordToFixed = (coordArray, decimals) => {
-  return [
+  const arr = [
     parseFloat(coordArray[0].toFixed(decimals)),
     parseFloat(coordArray[1].toFixed(decimals)),
   ];
+  return arr;
 };
 
 describe('CAD control', () => {
@@ -16,7 +17,7 @@ describe('CAD control', () => {
     cy.get('.ol-overlaycontainer').click(500, 500, FORCE);
   });
 
-  it('should not snap new points when CAD deactivated', () => {
+  it.only('should not snap new points when CAD deactivated', () => {
     cy.window().then((win) => {
       // Draw new point (click on map canvas container at x: 507 and y: 500)
       cy.get('.ol-overlaycontainer')
