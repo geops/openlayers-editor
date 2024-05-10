@@ -250,11 +250,10 @@ class CadControl extends Control {
    * @param {Number} nbFeatures Number of features to search.
    * @returns {Array.<ol.Feature>} List of closest features.
    */
-  getClosestFeatures(coordinate, nbFeatures) {
+  getClosestFeatures(coordinate, nbFeatures = 1) {
     const editFeature = this.editor.getEditFeature();
     const drawFeature = this.editor.getDrawFeature();
     const currentFeatures = [editFeature, drawFeature].filter((f) => !!f);
-    const nb = nbFeatures || 1;
 
     const cacheDist = {};
     const dist = (f) => {
@@ -274,7 +273,7 @@ class CadControl extends Control {
       .filter(this.filter)
       .filter((f) => !currentFeatures.includes(f))
       .sort(sortByDistance)
-      .slice(0, nb);
+      .slice(0, nbFeatures);
 
     // When using showSnapPoints, return all features except edit/draw features
     if (this.properties.showSnapPoints) {
