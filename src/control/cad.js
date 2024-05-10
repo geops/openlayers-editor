@@ -151,7 +151,7 @@ class CadControl extends Control {
     /**
      * Filter the generated line list
      */
-    this.lineFilter = options.lineFilter || null;
+    this.lineFilter = options.lineFilter;
 
     /**
      * Interaction for snapping
