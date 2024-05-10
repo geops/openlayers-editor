@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/geops/openlayers-editor/compare/v2.2.1...v2.3.0) (2024-05-10)
+
+
+### Features
+
+* allow to modifiy  circle geometry ([#270](https://github.com/geops/openlayers-editor/issues/270)) ([18deb75](https://github.com/geops/openlayers-editor/commit/18deb75c672c4d25e659598e7dd87386b24ffe73))
+
 ### [2.2.1](https://github.com/geops/openlayers-editor/compare/v2.2.0...v2.2.1) (2024-03-05)
 
 
