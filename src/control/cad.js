@@ -62,7 +62,7 @@ class CadControl extends Control {
    * @param {ol.style.Style.StyleLike} [options.linesStyle] Style used for the lines layer.
    *
    */
-  constructor(options) {
+  constructor(options = {}) {
     super({
       title: 'CAD control',
       className: 'ole-control-cad',
