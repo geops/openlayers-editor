@@ -42,6 +42,7 @@
     "cy:run": "cypress run --browser chrome",
     "cy:test": "start-server-and-test start http://127.0.0.1:8000 cy:run",
     "doc": "jsdoc -p -r -c jsdoc_conf.json src -d doc README.md && shx cp build/bundle.js index.js",
+    "fixpack": "fixpack",
     "format": "prettier --write 'cypress/integration/*.js' 'src/**/*.js' && eslint 'src/**/*.js' --fix && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss' --fix",
     "lint": "ESLINT_USE_FLAT_CONFIG=false eslint 'cypress/e2e/**/*.js' 'src/**/*.js' && stylelint 'style/**/*.css' 'src/**/*.css' 'src/**/*.scss'",
     "prepare": "is-ci || husky",
