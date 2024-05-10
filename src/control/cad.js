@@ -713,7 +713,7 @@ class CadControl extends Control {
       }
     });
 
-    if (typeof this.lineFilter === 'function') {
+    if (this.lineFilter) {
       lines = this.lineFilter(lines, coordinate);
     }
 
