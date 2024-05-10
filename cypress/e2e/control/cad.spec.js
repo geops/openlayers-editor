@@ -1,10 +1,11 @@
 const FORCE = { force: true };
 
 const coordToFixed = (coordArray, decimals) => {
-  return [
+  const arr = [
     parseFloat(coordArray[0].toFixed(decimals)),
     parseFloat(coordArray[1].toFixed(decimals)),
   ];
+  return arr;
 };
 
 describe('CAD control', () => {

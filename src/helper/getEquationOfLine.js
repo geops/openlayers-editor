@@ -10,9 +10,7 @@ const getEquationOfLine = (coordA, coordB) => {
   }
   const m = (yB - yA) / (xB - xA);
   const b = yB - m * xB;
-  return (x) => {
-    return m * x + b;
-  };
+  return (x) => m * x + b;
 };
 
 export default getEquationOfLine;
