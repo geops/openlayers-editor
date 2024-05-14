@@ -5,10 +5,8 @@
     <link rel="stylesheet" type="text/css" href="style/style.css" />
     <link
       rel="stylesheet"
-      type="text/css"
-      href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io/en/v6.5.0/css/ol.css"
+      href="https://unpkg.com/ol@8.2.0/ol.css"
     />
-    <!-- href="https://unpkg.com/ol@8.2.0/ol.css" -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/maplibre-gl@4.2.0/dist/maplibre-gl.css"
@@ -111,6 +109,7 @@
           var canvas = mbMap.getCanvas();
           var viewState = frameState.viewState;
           var visible = mbLayer.getVisible();
+          canvas.style.position = 'absolute';
           canvas.style.display = visible ? 'block' : 'none';
 
           var opacity = mbLayer.getOpacity();
@@ -124,8 +123,16 @@
             bearing: (-rotation * 180) / Math.PI,
             animate: false,
           });
+          if (!(
+            canvas.width === Math.floor(frameState.size[0] * frameState.pixelRatio) &&
+            canvas.height === Math.floor(frameState.size[1] * frameState.pixelRatio)
+          )) {
+            mbMap.resize();
+          }
 
-          return canvas;
+          mbMap.redraw();
+
+          return mbMap.getCanvas();
         },
       });
 
