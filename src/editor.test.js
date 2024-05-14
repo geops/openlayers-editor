@@ -44,4 +44,18 @@ describe('editor', () => {
     expect(cad.editor).toBe();
     expect(cad.getActive()).toBe(false);
   });
+
+  test('is removed', () => {
+    editor.addControl(cad);
+    cad.activate();
+    expect(cad.getActive()).toBe(true);
+    expect(editor.controls.getArray()[0]).toBe(cad);
+    expect(editor.activeControls.getArray()[0]).toBe(cad);
+    editor.remove();
+    expect(editor.controls.getLength()).toBe(0);
+    expect(editor.activeControls.getLength()).toBe(0);
+    expect(cad.map).toBe();
+    expect(cad.editor).toBe();
+    expect(cad.getActive()).toBe(false);
+  });
 });
