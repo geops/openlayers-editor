@@ -393,7 +393,7 @@ class ModifyControl extends Control {
    */
   addListeners() {
     this.removeListeners();
-    this.map.on('pointermove', this.cursorHandler);
+    this.map?.on('pointermove', this.cursorHandler);
   }
 
   /**
@@ -403,7 +403,7 @@ class ModifyControl extends Control {
    */
   removeListeners() {
     clearTimeout(this.cursorTimeout);
-    this.map.un('pointermove', this.cursorHandler);
+    this.map?.un('pointermove', this.cursorHandler);
   }
 
   /**
