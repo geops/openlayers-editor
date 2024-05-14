@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [2.4.2](https://github.com/geops/openlayers-editor/compare/v2.4.2-beta.1...v2.4.2) (2024-05-14)
+### [2.4.2](https://github.com/geops/openlayers-editor/compare/v2.4.1...v2.4.2) (2024-05-14)
+
+
+### Bug Fixes
+
+* fix: listen only when possible ([5a2c042](https://github.com/geops/openlayers-editor/commit/5a2c042cf2fa54cc7f4e56432eb2191f1d034aac))
+* fix: unlisten only when possible ([b1029294](https://github.com/geops/openlayers-editor/commit/b1029294f84e9b2c0c7c409a17b4cdf32cf91ac2))
 
 ### [2.4.1](https://github.com/geops/openlayers-editor/compare/v2.4.0...v2.4.1) (2024-05-14)
 
