@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.1](https://github.com/geops/openlayers-editor/compare/v2.4.0...v2.4.1) (2024-05-14)
+
+
+### Bug Fixes
+
+* fix editor.remove and add a test ([1427d6e](https://github.com/geops/openlayers-editor/commit/1427d6e25edab0088ff327de98d4d45efb414b5c))
+
 ## [2.4.0](https://github.com/geops/openlayers-editor/compare/v2.3.0...v2.4.0) (2024-05-10)
 
 
