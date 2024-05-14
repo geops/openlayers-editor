@@ -3,11 +3,13 @@ import { expect, test, describe, beforeEach } from 'vitest';
 import Map from 'ol/Map';
 import Editor from './editor';
 import CAD from './control/cad';
+import ModifyControl from './control/modify';
 
 describe('editor', () => {
   let map;
   let editor;
   let cad;
+  let modify;
 
   beforeEach(() => {
     // In the test we use pixel as coordinates.
@@ -16,6 +18,7 @@ describe('editor', () => {
     });
     editor = new Editor(map);
     cad = new CAD();
+    modify = new ModifyControl();
   });
 
   test('adds a control', () => {
@@ -46,14 +49,20 @@ describe('editor', () => {
   });
 
   test('is removed', () => {
+    editor.addControl(modify);
     editor.addControl(cad);
-    cad.activate();
-    expect(cad.getActive()).toBe(true);
-    expect(editor.controls.getArray()[0]).toBe(cad);
-    expect(editor.activeControls.getArray()[0]).toBe(cad);
+    modify.activate();
+    expect(modify.getActive()).toBe(true);
+    expect(editor.controls.getArray()[0]).toBe(modify);
+    expect(editor.controls.getArray()[1]).toBe(cad);
+    expect(editor.activeControls.getArray()[0]).toBe(modify);
+    expect(editor.activeControls.getArray()[0]).toBe(modify);
     editor.remove();
     expect(editor.controls.getLength()).toBe(0);
     expect(editor.activeControls.getLength()).toBe(0);
+    expect(modify.map).toBe();
+    expect(modify.editor).toBe();
+    expect(modify.getActive()).toBe(false);
     expect(cad.map).toBe();
     expect(cad.editor).toBe();
     expect(cad.getActive()).toBe(false);
