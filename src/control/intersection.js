@@ -10,7 +10,7 @@ import {
   MultiPolygon,
 } from 'ol/geom';
 import TopologyControl from './topology';
-import intersectionSVG from '../../img/intersection.svg';
+import intersectionSVG from '../img/intersection.svg';
 
 /**
  * Control for intersection geometries.

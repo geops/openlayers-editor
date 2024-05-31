@@ -1,8 +1,8 @@
 import { Draw } from 'ol/interaction';
 import Control from './control';
-import drawPointSVG from '../../img/draw_point.svg';
-import drawPolygonSVG from '../../img/draw_polygon.svg';
-import drawLineSVG from '../../img/draw_line.svg';
+import drawPointSVG from '../img/draw_point.svg';
+import drawPolygonSVG from '../img/draw_polygon.svg';
+import drawLineSVG from '../img/draw_line.svg';
 
 /**
  * Control for drawing features.
