@@ -9,7 +9,7 @@ import Delete from '../interaction/delete';
 
 /**
  * Control for modifying geometries.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.ModifyControl
  */
 class ModifyControl extends Control {
@@ -25,7 +25,7 @@ class ModifyControl extends Control {
    * @param {Object} [options.deleteInteractionOptions] Options for the delete interaction.
    * @param {Object} [options.deselectInteractionOptions] Options for the deselect interaction. Default: features are deselected on click on map.
    */
-  constructor(options) {
+  constructor(options = {}) {
     super({
       title: 'Modify geometry',
       className: 'ole-control-modify',
@@ -126,7 +126,6 @@ class ModifyControl extends Control {
     /**
      * Select interaction to modify features.
      * @type {ol.interaction.Select}
-     * @private
      */
     this.selectModify = new SelectModify({
       filter: this.selectFilter,
@@ -171,7 +170,7 @@ class ModifyControl extends Control {
     });
 
     this.moveInteraction.on('moveend', () => {
-      this.editor.setEditFeature(null);
+      this.editor.setEditFeature();
       this.isMoving = false;
     });
     this.moveInteraction.setActive(false);
@@ -199,7 +198,7 @@ class ModifyControl extends Control {
     });
 
     this.modifyInteraction.on('modifyend', () => {
-      this.editor.setEditFeature(null);
+      this.editor.setEditFeature();
       this.isModifying = false;
     });
     this.modifyInteraction.setActive(false);
@@ -377,14 +376,14 @@ class ModifyControl extends Control {
     }
     super.setMap(map);
     this.addListeners();
-    this.map.addInteraction(this.deselectInteraction);
-    this.map.addInteraction(this.deleteInteraction);
-    this.map.addInteraction(this.selectModify);
+    this.map?.addInteraction(this.deselectInteraction);
+    this.map?.addInteraction(this.deleteInteraction);
+    this.map?.addInteraction(this.selectModify);
     // For the default behvior it's very important to add selectMove after selectModify.
     // It will avoid single/dbleclick mess.
-    this.map.addInteraction(this.selectMove);
-    this.map.addInteraction(this.moveInteraction);
-    this.map.addInteraction(this.modifyInteraction);
+    this.map?.addInteraction(this.selectMove);
+    this.map?.addInteraction(this.moveInteraction);
+    this.map?.addInteraction(this.modifyInteraction);
   }
 
   /**
@@ -394,7 +393,7 @@ class ModifyControl extends Control {
    */
   addListeners() {
     this.removeListeners();
-    this.map.on('pointermove', this.cursorHandler);
+    this.map?.on('pointermove', this.cursorHandler);
   }
 
   /**
@@ -404,7 +403,7 @@ class ModifyControl extends Control {
    */
   removeListeners() {
     clearTimeout(this.cursorTimeout);
-    this.map.un('pointermove', this.cursorHandler);
+    this.map?.un('pointermove', this.cursorHandler);
   }
 
   /**

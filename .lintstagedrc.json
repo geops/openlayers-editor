@@ -1,7 +1,5 @@
 {
   "(src|__mocks__)/**/*.js": ["eslint --fix", "prettier --write"],
-  "package.json": [
-    "fixpack --sortToTop name --sortToTop license --sortToTop description --sortToTop version --sortToTop author --sortToTop main --sortToTop module --sortToTop files --sortToTop proxy --sortToTop dependencies --sortToTop peerDependencies --sortToTop devDependencies --sortToTop resolutions --sortToTop scripts"
-  ],
+  "package.json": ["yarn fixpack"],
   "src/**/*.{css,scss}": ["stylelint --fix"]
 }

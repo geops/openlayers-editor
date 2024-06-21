@@ -14,7 +14,7 @@ import diffSVG from '../../img/difference.svg';
 
 /**
  * Control for creating a difference of geometries.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.Difference
  */
 class Difference extends TopologyControl {

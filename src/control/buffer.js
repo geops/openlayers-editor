@@ -15,7 +15,7 @@ import bufferSVG from '../../img/buffer.svg';
 
 /**
  * Control for creating buffers.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.BufferControl
  */
 class BufferControl extends Control {

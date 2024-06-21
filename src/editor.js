@@ -59,6 +59,8 @@ class Editor {
     if (this.options.showToolbar) {
       this.toolbar = new Toolbar(this.map, this.controls, this.options.target);
     }
+
+    this.activeStateChange = this.activeStateChange.bind(this);
   }
 
   /**
@@ -68,12 +70,20 @@ class Editor {
   addControl(control) {
     control.setMap(this.map);
     control.setEditor(this);
-
-    control.addEventListener('change:active', (e) => {
-      this.activeStateChange(e.detail.control);
-    });
-
+    control.addEventListener('change:active', this.activeStateChange);
     this.controls.push(control);
+  }
+
+  /**
+   * Remove a control from the editor
+   * @param {ole.Control} control The control.
+   */
+  removeControl(control) {
+    control.deactivate();
+    this.controls.remove(control);
+    control.removeEventListener('change:active', this.activeStateChange);
+    control.setEditor();
+    control.setMap();
   }
 
   /**
@@ -103,8 +113,9 @@ class Editor {
    * Removes the editor from the map.
    */
   remove() {
-    this.controls.forEach((c) => {
-      c.deactivate(true);
+    const controls = [...this.controls.getArray()];
+    controls.forEach((control) => {
+      this.removeControl(control);
     });
     if (this.toolbar) {
       this.toolbar.destroy();
@@ -170,7 +181,8 @@ class Editor {
    * @param {ol.control.Control} control Control.
    * @private
    */
-  activeStateChange(ctrl) {
+  activeStateChange(evt) {
+    const ctrl = evt.detail.control;
     // Deactivate other controls that are not standalone
     if (ctrl.getActive() && ctrl.standalone) {
       for (let i = 0; i < this.controls.getLength(); i += 1) {

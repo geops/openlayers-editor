@@ -4,7 +4,7 @@ import delSVG from '../../img/buffer.svg';
 
 /**
  * Control for deleting geometries.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.TopologyControl
  */
 class TopologyControl extends Control {

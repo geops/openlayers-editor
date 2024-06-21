@@ -14,12 +14,12 @@ class Delete extends Interaction {
     this.condition =
       options.condition ||
       ((mapBrowserEvent) => {
-        return (
+        const bool =
           noModifierKeys(mapBrowserEvent) &&
           targetNotEditable(mapBrowserEvent) &&
           (mapBrowserEvent.originalEvent.keyCode === 46 ||
-            mapBrowserEvent.originalEvent.keyCode === 8)
-        );
+            mapBrowserEvent.originalEvent.keyCode === 8);
+        return bool;
       });
   }
 

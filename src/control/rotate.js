@@ -9,7 +9,7 @@ import rotateMapSVG from '../../img/rotate_map.svg';
 
 /**
  * Tool with for rotating geometries.
- * @extends {ole.Control}
+ * @extends {Control}
  * @alias ole.RotateControl
  */
 class RotateControl extends Control {
