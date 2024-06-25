@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.3](https://github.com/geops/openlayers-editor/compare/v2.4.2...v2.4.3) (2024-06-25)
+
+
+### Bug Fixes
+
+* hide topology errors in line hit detection & optimizations ([ae85670](https://github.com/geops/openlayers-editor/commit/ae856703dd11a99bd2fe35ede6977ce50670831b))
+
 ### [2.4.2](https://github.com/geops/openlayers-editor/compare/v2.4.1...v2.4.2) (2024-05-14)
 
 
