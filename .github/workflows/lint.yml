@@ -23,6 +23,6 @@ jobs:
 
       - name: Run linting
         run: yarn lint
-        
+
       - name: Run testing
         run: yarn test
