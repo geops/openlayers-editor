@@ -4,9 +4,9 @@
   "description": "OpenLayers Editor",
   "version": "2.4.3",
   "main": "build/index.js",
-  "dependencies": {},
   "peerDependencies": {
     "jsts": ">=2",
+    "lodash": ">=4.0.1",
     "ol": ">=7"
   },
   "devDependencies": {
@@ -28,6 +28,7 @@
     "jsdoc-export-default-interop": "0.3.1",
     "jsts": "2.11.3",
     "lint-staged": "15.2.2",
+    "lodash": "^4.17.21",
     "ol": "8",
     "prettier": "3.2.5",
     "shx": "0.3.4",
