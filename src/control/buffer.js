@@ -11,7 +11,7 @@ import {
 } from 'ol/geom';
 import Select from 'ol/interaction/Select';
 import Control from './control';
-import bufferSVG from '../../img/buffer.svg';
+import bufferSVG from '../img/buffer.svg';
 
 /**
  * Control for creating buffers.

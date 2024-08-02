@@ -4,8 +4,8 @@ import Vector from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Pointer from 'ol/interaction/Pointer';
 import Control from './control';
-import rotateSVG from '../../img/rotate.svg';
-import rotateMapSVG from '../../img/rotate_map.svg';
+import rotateSVG from '../img/rotate.svg';
+import rotateMapSVG from '../img/rotate_map.svg';
 
 /**
  * Tool with for rotating geometries.
