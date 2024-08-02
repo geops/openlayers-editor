@@ -2,12 +2,12 @@
   "name": "ole",
   "license": "BSD-2-Clause",
   "description": "OpenLayers Editor",
-  "version": "2.4.0",
+  "version": "2.4.3",
   "main": "build/index.js",
   "dependencies": {},
   "peerDependencies": {
-    "jsts": "^2",
-    "ol": "^7"
+    "jsts": ">=2",
+    "ol": ">=7"
   },
   "devDependencies": {
     "@commitlint/cli": "19.3.0",
@@ -61,5 +61,6 @@
     "Editor",
     "OpenLayers"
   ],
+  "packageManager": "yarn@1.22.19+sha256.732620bac8b1690d507274f025f3c6cfdc3627a84d9642e38a07452cc00e0f2e",
   "repository": "github:geops/openlayers-editor"
 }

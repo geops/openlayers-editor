@@ -115,7 +115,7 @@ class Editor {
   remove() {
     const controls = [...this.controls.getArray()];
     controls.forEach((control) => {
-      control.removeControl(control);
+      this.removeControl(control);
     });
     if (this.toolbar) {
       this.toolbar.destroy();

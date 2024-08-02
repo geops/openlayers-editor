@@ -43,8 +43,8 @@ const selectModifyStyle = new Style({
       // At this point multiGeometries contains only single geometry.
       multiGeometries.forEach((geomm) => {
         if (geomm.getType() === 'Polygon') {
-          geomm.getCoordinates()[0].forEach((coordinate) => {
-            coordinates.push(coordinate);
+          geomm.getLinearRings().forEach((ring) => {
+            coordinates.push(...ring.getCoordinates());
           });
         } else if (geomm.getType() === 'LineString') {
           coordinates.push(...geomm.getCoordinates());
