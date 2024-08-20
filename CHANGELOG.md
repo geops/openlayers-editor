@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.4](https://github.com/geops/openlayers-editor/compare/v2.4.3...v2.4.4) (2024-08-20)
+
+
+### Bug Fixes
+
+* add new option cursorStyleHandler to change cursor style value ([ceb4bff](https://github.com/geops/openlayers-editor/commit/ceb4bff19ce9adee53e94b25d2ef13204504a7f0))
+* display points of all linear rings of a polygon ([027b52b](https://github.com/geops/openlayers-editor/commit/027b52bb8e99aab81de84e4ae4db28155e86a910))
+* throttle the cursor style change in modify control ([5175746](https://github.com/geops/openlayers-editor/commit/5175746aff4ab34171b8765df26df6e6debec14d))
+
 ### [2.4.3](https://github.com/geops/openlayers-editor/compare/v2.4.2...v2.4.3) (2024-06-25)
 
 

@@ -7,6 +7,7 @@
   "dependencies": {},
   "peerDependencies": {
     "jsts": ">=2",
+    "lodash.throttle": ">=4",
     "ol": ">=7"
   },
   "devDependencies": {
@@ -28,6 +29,7 @@
     "jsdoc-export-default-interop": "0.3.1",
     "jsts": "2.11.3",
     "lint-staged": "15.2.2",
+    "lodash.throttle": "4.1.1",
     "ol": "8",
     "prettier": "3.2.5",
     "shx": "0.3.4",

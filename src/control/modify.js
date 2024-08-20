@@ -1,5 +1,8 @@
 import { Modify, Interaction } from 'ol/interaction';
 import { singleClick } from 'ol/events/condition';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import throttle from 'lodash.throttle';
+import { unByKey } from 'ol/Observable';
 import Control from './control';
 import image from '../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
@@ -24,6 +27,7 @@ class ModifyControl extends Control {
    * @param {Object} [options.modifyInteractionOptions] Options for the modify interaction.
    * @param {Object} [options.deleteInteractionOptions] Options for the delete interaction.
    * @param {Object} [options.deselectInteractionOptions] Options for the deselect interaction. Default: features are deselected on click on map.
+   * @param {Function} [options.cursorStyleHandler] Options to override default cursor styling behavior.
    */
   constructor(options = {}) {
     super({
@@ -67,7 +71,11 @@ class ModifyControl extends Control {
     /* Cursor management */
     this.previousCursor = null;
     this.cursorTimeout = null;
-    this.cursorHandler = this.cursorHandler.bind(this);
+    this.cursorHandlerThrottled = throttle(this.cursorHandler.bind(this), 150, {
+      leading: true,
+    });
+    this.cursorStyleHandler =
+      options?.cursorStyleHandler || ((cursorStyle) => cursorStyle);
 
     /* Interactions */
     this.createSelectMoveInteraction(options.selectMoveOptions);
@@ -315,35 +323,30 @@ class ModifyControl extends Control {
    * @private
    */
   cursorHandler(evt) {
-    if (this.cursorTimeout) {
-      clearTimeout(this.cursorTimeout);
+    if (evt.dragging || this.isMoving || this.isModifying) {
+      this.changeCursor('grabbing');
+      return;
     }
-    this.cursorTimeout = setTimeout(() => {
-      if (evt.dragging || this.isMoving || this.isModifying) {
-        this.changeCursor('grabbing');
-        return;
-      }
 
-      const feature = this.getFeatureAtPixel(evt.pixel);
-      if (!feature) {
-        this.changeCursor(this.previousCursor);
-        this.previousCursor = null;
-        return;
-      }
+    const feature = this.getFeatureAtPixel(evt.pixel);
+    if (!feature) {
+      this.changeCursor(this.previousCursor);
+      this.previousCursor = null;
+      return;
+    }
 
-      if (this.isSelectedByMove(feature)) {
+    if (this.isSelectedByMove(feature)) {
+      this.changeCursor('grab');
+    } else if (this.isSelectedByModify(feature)) {
+      if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
         this.changeCursor('grab');
-      } else if (this.isSelectedByModify(feature)) {
-        if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
-          this.changeCursor('grab');
-        } else {
-          this.changeCursor(this.previousCursor);
-        }
       } else {
-        // Feature available for selection.
-        this.changeCursor('pointer');
+        this.changeCursor(this.previousCursor);
       }
-    }, 100);
+    } else {
+      // Feature available for selection.
+      this.changeCursor('pointer');
+    }
   }
 
   /**
@@ -355,12 +358,16 @@ class ModifyControl extends Control {
     if (!this.getActive()) {
       return;
     }
+    const newCursor = this.cursorStyleHandler(cursor);
     const element = this.map.getTargetElement();
-    if ((element.style.cursor || cursor) && element.style.cursor !== cursor) {
+    if (
+      (element.style.cursor || newCursor) &&
+      element.style.cursor !== newCursor
+    ) {
       if (this.previousCursor === null) {
         this.previousCursor = element.style.cursor;
       }
-      element.style.cursor = cursor;
+      element.style.cursor = newCursor;
     }
   }
 
@@ -375,7 +382,9 @@ class ModifyControl extends Control {
       this.removeListeners();
     }
     super.setMap(map);
-    this.addListeners();
+    if (this.getActive()) {
+      this.addListeners();
+    }
     this.map?.addInteraction(this.deselectInteraction);
     this.map?.addInteraction(this.deleteInteraction);
     this.map?.addInteraction(this.selectModify);
@@ -393,7 +402,21 @@ class ModifyControl extends Control {
    */
   addListeners() {
     this.removeListeners();
-    this.map?.on('pointermove', this.cursorHandler);
+    this.cursorListenerKeys = [
+      this.map?.on('pointerdown', () => {
+        const element = this.map.getTargetElement();
+        if (element?.style?.cursor === 'grab') {
+          this.changeCursor('grabbing');
+        }
+      }),
+      this.map?.on('pointermove', this.cursorHandlerThrottled),
+      this.map?.on('pointerup', () => {
+        const element = this.map.getTargetElement();
+        if (element?.style?.cursor === 'grabbing') {
+          this.changeCursor('grab');
+        }
+      }),
+    ];
   }
 
   /**
@@ -402,8 +425,7 @@ class ModifyControl extends Control {
    * @private
    */
   removeListeners() {
-    clearTimeout(this.cursorTimeout);
-    this.map?.un('pointermove', this.cursorHandler);
+    unByKey(this.cursorListenerKeys);
   }
 
   /**
@@ -417,13 +439,14 @@ class ModifyControl extends Control {
     // For the default behavior it's very important to add selectMove after selectModify.
     // It will avoid single/dbleclick mess.
     this.selectMove.setActive(true);
+    this.addListeners();
   }
 
   /**
    * @inheritdoc
    */
   deactivate(silent) {
-    clearTimeout(this.cursorTimeout);
+    this.removeListeners();
     this.selectMove.getFeatures().clear();
     this.selectModify.getFeatures().clear();
     this.deselectInteraction.setActive(false);
