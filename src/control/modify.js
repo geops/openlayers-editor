@@ -359,7 +359,7 @@ class ModifyControl extends Control {
       return;
     }
     const newCursor = this.cursorStyleHandler(cursor);
-    const element = this.map.getTargetElement();
+    const element = this.map.getViewport();
     if (
       (element.style.cursor || newCursor) &&
       element.style.cursor !== newCursor
@@ -403,15 +403,15 @@ class ModifyControl extends Control {
   addListeners() {
     this.removeListeners();
     this.cursorListenerKeys = [
-      this.map?.on('pointerdown', () => {
-        const element = this.map.getTargetElement();
+      this.map?.on('pointerdown', (evt) => {
+        const element = evt.map.getViewport();
         if (element?.style?.cursor === 'grab') {
           this.changeCursor('grabbing');
         }
       }),
       this.map?.on('pointermove', this.cursorHandlerThrottled),
-      this.map?.on('pointerup', () => {
-        const element = this.map.getTargetElement();
+      this.map?.on('pointerup', (evt) => {
+        const element = evt.map.getViewport();
         if (element?.style?.cursor === 'grabbing') {
           this.changeCursor('grab');
         }
