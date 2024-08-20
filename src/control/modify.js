@@ -1,6 +1,8 @@
 import { Modify, Interaction } from 'ol/interaction';
 import { singleClick } from 'ol/events/condition';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import throttle from 'lodash.throttle';
+import { unByKey } from 'ol/Observable';
 import Control from './control';
 import image from '../../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
@@ -69,7 +71,7 @@ class ModifyControl extends Control {
     /* Cursor management */
     this.previousCursor = null;
     this.cursorTimeout = null;
-    this.cursorHandler = throttle(this.cursorHandler.bind(this), 150, {
+    this.cursorHandlerThrottled = throttle(this.cursorHandler.bind(this), 150, {
       leading: true,
     });
     this.cursorStyleHandler =
@@ -377,8 +379,12 @@ class ModifyControl extends Control {
       this.map.removeInteraction(this.selectModify);
       this.map.removeInteraction(this.deleteInteraction);
       this.map.removeInteraction(this.deselectInteraction);
+      this.removeListeners();
     }
     super.setMap(map);
+    if (this.getActive()) {
+      this.addListeners();
+    }
     this.map?.addInteraction(this.deselectInteraction);
     this.map?.addInteraction(this.deleteInteraction);
     this.map?.addInteraction(this.selectModify);
@@ -396,9 +402,21 @@ class ModifyControl extends Control {
    */
   addListeners() {
     this.removeListeners();
-    this.map?.on('pointerdown', this.cursorHandler);
-    this.map?.on('pointermove', this.cursorHandler);
-    this.map?.on('pointerup', this.cursorHandler);
+    this.cursorListenerKeys = [
+      this.map?.on('pointerdown', () => {
+        const element = this.map.getTargetElement();
+        if (element?.style?.cursor === 'grab') {
+          this.changeCursor('grabbing');
+        }
+      }),
+      this.map?.on('pointermove', this.cursorHandlerThrottled),
+      this.map?.on('pointerup', () => {
+        const element = this.map.getTargetElement();
+        if (element?.style?.cursor === 'grabbing') {
+          this.changeCursor('grab');
+        }
+      }),
+    ];
   }
 
   /**
@@ -407,9 +425,7 @@ class ModifyControl extends Control {
    * @private
    */
   removeListeners() {
-    this.map?.un('pointerdown', this.cursorHandler);
-    this.map?.un('pointermove', this.cursorHandler);
-    this.map?.un('pointerup', this.cursorHandler);
+    unByKey(this.cursorListenerKeys);
   }
 
   /**
