@@ -24,6 +24,7 @@ class ModifyControl extends Control {
    * @param {Object} [options.modifyInteractionOptions] Options for the modify interaction.
    * @param {Object} [options.deleteInteractionOptions] Options for the delete interaction.
    * @param {Object} [options.deselectInteractionOptions] Options for the deselect interaction. Default: features are deselected on click on map.
+   * @param {Function} [options.cursorStyleHandler] Options to override default cursor styling behavior.
    */
   constructor(options = {}) {
     super({
@@ -68,6 +69,8 @@ class ModifyControl extends Control {
     this.previousCursor = null;
     this.cursorTimeout = null;
     this.cursorHandler = this.cursorHandler.bind(this);
+    this.cursorStyleHandler =
+      options?.cursorStyleHandler || ((cursorStyle) => cursorStyle);
 
     /* Interactions */
     this.createSelectMoveInteraction(options.selectMoveOptions);
@@ -355,12 +358,16 @@ class ModifyControl extends Control {
     if (!this.getActive()) {
       return;
     }
+    const newCursor = this.cursorStyleHandler(cursor);
     const element = this.map.getTargetElement();
-    if ((element.style.cursor || cursor) && element.style.cursor !== cursor) {
+    if (
+      (element.style.cursor || newCursor) &&
+      element.style.cursor !== newCursor
+    ) {
       if (this.previousCursor === null) {
         this.previousCursor = element.style.cursor;
       }
-      element.style.cursor = cursor;
+      element.style.cursor = newCursor;
     }
   }
 
