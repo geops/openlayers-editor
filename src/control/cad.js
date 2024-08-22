@@ -791,8 +791,8 @@ class CadControl extends Control {
     super.activate(silent);
     this.snapLayer.setMap(this.map);
     this.linesLayer.setMap(this.map);
-    this.map.addInteraction(this.pointerInteraction);
-    this.map.addInteraction(this.snapInteraction);
+    this.map?.addInteraction(this.pointerInteraction);
+    this.map?.addInteraction(this.snapInteraction);
 
     document.getElementById('aux-cb')?.addEventListener('change', (evt) => {
       this.setProperties({
@@ -823,8 +823,8 @@ class CadControl extends Control {
     super.deactivate(silent);
     this.snapLayer.setMap(null);
     this.linesLayer.setMap(null);
-    this.map.removeInteraction(this.pointerInteraction);
-    this.map.removeInteraction(this.snapInteraction);
+    this.map?.removeInteraction(this.pointerInteraction);
+    this.map?.removeInteraction(this.snapInteraction);
   }
 }
 

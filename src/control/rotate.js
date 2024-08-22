@@ -152,7 +152,7 @@ class RotateControl extends Control {
    * @inheritdoc
    */
   activate() {
-    this.map.addInteraction(this.pointerInteraction);
+    this.map?.addInteraction(this.pointerInteraction);
     this.rotateLayer.setMap(this.map);
     super.activate();
   }
@@ -163,7 +163,7 @@ class RotateControl extends Control {
   deactivate(silent) {
     this.rotateLayer.getSource().clear();
     this.rotateLayer.setMap(null);
-    this.map.removeInteraction(this.pointerInteraction);
+    this.map?.removeInteraction(this.pointerInteraction);
     super.deactivate(silent);
   }
 }

@@ -64,7 +64,7 @@ class DrawControl extends Control {
    * @inheritdoc
    */
   activate() {
-    this.map.addInteraction(this.drawInteraction);
+    this.map?.addInteraction(this.drawInteraction);
     super.activate();
   }
 
@@ -72,7 +72,7 @@ class DrawControl extends Control {
    * @inheritdoc
    */
   deactivate(silent) {
-    this.map.removeInteraction(this.drawInteraction);
+    this.map?.removeInteraction(this.drawInteraction);
     super.deactivate(silent);
   }
 }
