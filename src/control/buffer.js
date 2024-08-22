@@ -93,7 +93,7 @@ class BufferControl extends Control {
    * @inheritdoc
    */
   activate() {
-    this.map.addInteraction(this.selectInteraction);
+    this.map?.addInteraction(this.selectInteraction);
     super.activate();
 
     document.getElementById('buffer-width')?.addEventListener('change', (e) => {
@@ -114,7 +114,7 @@ class BufferControl extends Control {
    * @inheritdoc
    */
   deactivate() {
-    this.map.removeInteraction(this.selectInteraction);
+    this.map?.removeInteraction(this.selectInteraction);
     super.deactivate();
   }
 }

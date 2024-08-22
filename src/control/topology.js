@@ -61,7 +61,7 @@ class TopologyControl extends Control {
    * @inheritdoc
    */
   activate() {
-    this.map.addInteraction(this.selectInteraction);
+    this.map?.addInteraction(this.selectInteraction);
     this.addedFeatures = [];
     super.activate();
   }
@@ -71,7 +71,7 @@ class TopologyControl extends Control {
    */
   deactivate(silent) {
     this.addedFeatures = [];
-    this.map.removeInteraction(this.selectInteraction);
+    this.map?.removeInteraction(this.selectInteraction);
     super.deactivate(silent);
   }
 }
