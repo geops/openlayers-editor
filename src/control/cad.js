@@ -187,7 +187,7 @@ class CadControl extends Control {
         // eslint-disable-next-line no-param-reassign
         evt.coordinate = newCoordinate;
         // eslint-disable-next-line no-param-reassign
-        evt.pixel = this.map.getPixelFromCoordinate(evt.coordinate);
+        evt.pixel = this.getMap().getPixelFromCoordinate(evt.coordinate);
       }
       // The following code is exactly the same as in ol.interaction.Snap
       const result = this.snapTo(evt.pixel, evt.coordinate, evt.map);
