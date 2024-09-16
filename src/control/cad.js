@@ -181,16 +181,15 @@ class CadControl extends Control {
     });
     const control = this;
     Snap.prototype.handleEvent = function handleEvent(evt) {
-      const newCoordinate =
+      const testCoordinate =
         control.getCoordinateToSnap?.(evt) || evt.coordinate;
-      if (newCoordinate !== evt.coordinate) {
+      let testPixel = evt.pixel;
+      if (testCoordinate !== evt.coordinate) {
         // eslint-disable-next-line no-param-reassign
-        evt.coordinate = newCoordinate;
-        // eslint-disable-next-line no-param-reassign
-        evt.pixel = this.getMap().getPixelFromCoordinate(evt.coordinate);
+        testPixel = this.getMap().getPixelFromCoordinate(evt.coordinate);
       }
       // The following code is exactly the same as in ol.interaction.Snap
-      const result = this.snapTo(evt.pixel, evt.coordinate, evt.map);
+      const result = this.snapTo(testPixel, testCoordinate, evt.map);
       if (result) {
         // eslint-disable-next-line no-param-reassign
         evt.coordinate = result.vertex.slice(0, 2);
