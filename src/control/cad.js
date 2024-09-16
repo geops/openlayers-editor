@@ -37,6 +37,7 @@ class CadControl extends Control {
    * @param {Function} [options.filter] Returns an array containing the features
    *   to include for CAD (takes the source as a single argument).
    * @param {Function} [options.extentFilter] An optional spatial filter for the features to snap with. Returns an ol.Extent which will be used by the source.getFeaturesinExtent method.
+   * @param {Function} [options.getCoordinateToSnap] Allow to determine another coordinate to snap to than the mouse pointer coordinate.
    * @param {Function} [options.lineFilter] An optional filter for the generated snapping lines
    *   array (takes the lines and cursor coordinate as arguments and returns the new line array)
    * @param {Number} [options.nbClosestFeatures] Number of features to use for snapping (closest first). Default is 5.
@@ -77,6 +78,13 @@ class CadControl extends Control {
       snapLinesOrder: ['ortho', 'segment', 'vh'],
       ...options,
     });
+
+    /**
+     * Depending on the rendering style of a feature, you may want to snap to a different coordinate, a corner for example.
+     * @type {Function}
+     * @private
+     */
+    this.getCoordinateToSnap = options.getCoordinateToSnap;
 
     /**
      * Interaction for handling move events.
@@ -242,8 +250,9 @@ class CadControl extends Control {
    * @param {ol.MapBrowserEvent} evt Move event.
    */
   onMove(evt) {
+    const coordinateToSnap = this.getCoordinateToSnap?.(evt) || evt.coordinate;
     const features = this.getClosestFeatures(
-      evt.coordinate,
+      coordinateToSnap,
       this.nbClosestFeatures,
     );
 
@@ -255,11 +264,11 @@ class CadControl extends Control {
     );
 
     if (this.properties.showSnapLines) {
-      this.drawSnapLines(evt.coordinate, features);
+      this.drawSnapLines(coordinateToSnap, features);
     }
 
     if (this.properties.showSnapPoints && features.length) {
-      this.drawSnapPoints(evt.coordinate, features[0]);
+      this.drawSnapPoints(coordinateToSnap, features[0]);
     }
   }
 
