@@ -179,9 +179,10 @@ class CadControl extends Control {
       pixelTolerance: this.snapTolerance,
       source: this.snapLayer.getSource(),
     });
-
+    const control = this;
     Snap.prototype.handleEvent = function handleEvent(evt) {
-      const newCoordinate = this.getCoordinateToSnap?.(evt) || evt.coordinate;
+      const newCoordinate =
+        control.getCoordinateToSnap?.(evt) || evt.coordinate;
       if (newCoordinate !== evt.coordinate) {
         // eslint-disable-next-line no-param-reassign
         evt.coordinate = newCoordinate;
