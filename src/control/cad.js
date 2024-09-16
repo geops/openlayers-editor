@@ -6,6 +6,7 @@ import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
 import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
 import { getUid } from 'ol/util';
+import PointerInteraction from 'ol/interaction/Pointer';
 import Control from './control';
 import cadSVG from '../../img/cad.svg';
 import { SnapEvent, SnapEventType } from '../event';
@@ -178,6 +179,33 @@ class CadControl extends Control {
       pixelTolerance: this.snapTolerance,
       source: this.snapLayer.getSource(),
     });
+
+    Snap.prototype.handleEvent = function handleEvent(evt) {
+      const newCoordinate = this.getCoordinateToSnap?.(evt) || evt.coordinate;
+      if (newCoordinate !== evt.coordinate) {
+        // eslint-disable-next-line no-param-reassign
+        evt.coordinate = newCoordinate;
+        // eslint-disable-next-line no-param-reassign
+        evt.pixel = this.map.getPixelFromCoordinate(evt.coordinate);
+      }
+      // The following code is exactly the same as in ol.interaction.Snap
+      const result = this.snapTo(evt.pixel, evt.coordinate, evt.map);
+      if (result) {
+        // eslint-disable-next-line no-param-reassign
+        evt.coordinate = result.vertex.slice(0, 2);
+        // eslint-disable-next-line no-param-reassign
+        evt.pixel = result.vertexPixel;
+        this.dispatchEvent(
+          new SnapEvent(SnapEventType.SNAP, {
+            vertex: evt.coordinate,
+            vertexPixel: evt.pixel,
+            feature: result.feature,
+            segment: result.segment,
+          }),
+        );
+      }
+      return PointerInteraction.prototype.handleEvent(evt);
+    };
 
     this.standalone = false;
 
