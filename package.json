@@ -8,7 +8,7 @@
   "peerDependencies": {
     "jsts": ">=2",
     "lodash.throttle": ">=4",
-    "ol": ">=9"
+    "ol": ">=7"
   },
   "devDependencies": {
     "@commitlint/cli": "19.5.0",
