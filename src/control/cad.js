@@ -4,6 +4,7 @@ import Feature from 'ol/Feature';
 import Vector from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Pointer, Snap } from 'ol/interaction';
+import { distance as euclideanDistance } from 'ol/coordinate';
 import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
 import { getUid } from 'ol/util';
 import Control from './control';
@@ -40,6 +41,8 @@ class CadControl extends Control {
    * @param {Function} [options.lineFilter] An optional filter for the generated snapping lines
    *   array (takes the lines and cursor coordinate as arguments and returns the new line array)
    * @param {Number} [options.nbClosestFeatures] Number of features to use for snapping (closest first). Default is 5.
+   * @param {Number} [options.limitGuidesPerFeature] A feature with complex geometry may generate
+   *   a large number of lines. This option can be used to limit the guides to the n closest segments. Deafult is 3.
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
    *   for snap lines. Default is 10.
    * @param {Boolean} [options.showSnapLines] Whether to show
@@ -133,6 +136,18 @@ class CadControl extends Control {
      */
     this.nbClosestFeatures =
       options.nbClosestFeatures === undefined ? 5 : options.nbClosestFeatures;
+
+    /**
+     * Number of guide lines to limit cad to generate for a single feature.
+     * this.nbClosestFeatures * this.limitGuidesPerFeature will be the maximum
+     * number of guides shown at any time. Default is 3.
+     * @type {Number}
+     * @private
+     */
+    this.limitGuidesPerFeature =
+      options.limitGuidesPerFeature === undefined
+        ? 3
+        : options.limitGuidesPerFeature;
 
     /**
      * Snap tolerance in pixel.
@@ -505,7 +520,6 @@ class CadControl extends Control {
   getSegmentLines(coordinate, snapCoords, snapCoordsBefore) {
     const mousePx = this.map.getPixelFromCoordinate(coordinate);
     const doubleTol = this.snapTolerance * 2;
-    const [mouseX, mouseY] = mousePx;
     const lines = [];
 
     for (let i = 0; i < snapCoords.length; i += 1) {
@@ -522,13 +536,12 @@ class CadControl extends Control {
 
       // Calculate projected point
       const projMousePx = getProjectedPoint(mousePx, snapPxBefore, snapPx);
-      const [projMouseX, projMouseY] = projMousePx;
-      const distance = Math.sqrt(
-        (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
-      );
+      const distance = euclideanDistance(mousePx, projMousePx);
+
       let newPt;
 
       if (distance <= this.snapTolerance) {
+        const [projMouseX, projMouseY] = projMousePx;
         // lineFunc is undefined when it's a vertical line
         const lineFunc = getEquationOfLine(snapPxBefore, snapPx);
         const newX = projMouseX + (projMouseX < snapX ? -doubleTol : doubleTol);
@@ -557,7 +570,6 @@ class CadControl extends Control {
   getOrthoLines(coordinate, snapCoords, snapCoordsBefore) {
     const mousePx = this.map.getPixelFromCoordinate(coordinate);
     const doubleTol = this.snapTolerance * 2;
-    const [mouseX, mouseY] = mousePx;
     const lines = [];
 
     for (let i = 0; i < snapCoords.length; i += 1) {
@@ -579,13 +591,11 @@ class CadControl extends Control {
       [orthoLine1, orthoLine2].forEach((line) => {
         const [anchorPx, last] = line.getCoordinates();
         const projMousePx = getProjectedPoint(mousePx, anchorPx, last);
-        const [projMouseX, projMouseY] = projMousePx;
-        const distance = Math.sqrt(
-          (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
-        );
+        const distance = euclideanDistance(mousePx, projMousePx);
 
         let newPt;
         if (distance <= this.snapTolerance) {
+          const [projMouseX, projMouseY] = projMousePx;
           // lineFunc is undefined when it's a vertical line
           const lineFunc = getEquationOfLine(anchorPx, projMousePx);
           const newX =
@@ -623,6 +633,27 @@ class CadControl extends Control {
     const snapCoords = [];
     const snapCoordsAfter = []; // store the direct next point in the coordinate array
 
+    // Parse the list of coords, we will add the ortho and segment lines which
+    // are closest to the users cursor up until the limit of `this.limitGuidesPerFeature`
+    const parseCoordList = (coords) => {
+      // Check the euclidean distance between coord at index and the
+      // included vertices so far. Create an array of `this.limitGuidesPerFeature`
+      // closest items.
+      const sortedCoords = coords
+        .slice()
+        .sort(
+          (a, b) =>
+            euclideanDistance(a, coordinate) - euclideanDistance(b, coordinate),
+        );
+      const includedCoords = sortedCoords.slice(0, this.limitGuidesPerFeature);
+
+      includedCoords.forEach((index) => {
+        snapCoordsBefore.push(coords[index - 1]);
+        snapCoords.push(coords[index]);
+        snapCoordsAfter.push(coords[index + 1]);
+      });
+    };
+
     for (let i = 0; i < features.length; i += 1) {
       const geom = features[i].getGeometry();
       let featureCoord = geom.getCoordinates();
@@ -641,17 +672,9 @@ class CadControl extends Control {
           // Add feature vertices
           // eslint-disable-next-line no-lonely-if
           if (geom instanceof LineString) {
-            for (let j = 0; j < featureCoord.length; j += 1) {
-              snapCoordsBefore.push(featureCoord[j - 1]);
-              snapCoords.push(featureCoord[j]);
-              snapCoordsAfter.push(featureCoord[j + 1]);
-            }
+            parseCoordList(featureCoord);
           } else if (geom instanceof Polygon) {
-            for (let j = 0; j < featureCoord[0].length; j += 1) {
-              snapCoordsBefore.push(featureCoord[0][j - 1]);
-              snapCoords.push(featureCoord[0][j]);
-              snapCoordsAfter.push(featureCoord[0][j + 1]);
-            }
+            parseCoordList(featureCoord[0]);
           }
 
           // Add extent vertices
