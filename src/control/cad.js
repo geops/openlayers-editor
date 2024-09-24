@@ -43,9 +43,11 @@ class CadControl extends Control {
    * @param {Number} [options.snapTolerance] Snap tolerance in pixel
    *   for snap lines. Default is 10.
    * @param {Boolean} [options.showSnapLines] Whether to show
-   *   snap lines (default is true).
+   *   snap lines. Default is true.
    * @param {Boolean} [options.showSnapPoints] Whether to show
    *  snap points around the closest feature.
+   * @param {Boolean} [options.showSnapPointsOnlyOnPoints] Whether to show
+   *  snap points only on points or not. Default is false.
    * @param {Boolean} [options.showOrthoLines] Whether to show
    *   snap lines that arae perpendicular to segment (default is true).
    * @param {Boolean} [options.showSegmentLines] Whether to show
@@ -75,6 +77,7 @@ class CadControl extends Control {
       showVerticalAndHorizontalLines: true,
       snapPointDist: 10,
       snapLinesOrder: ['ortho', 'segment', 'vh'],
+      showSnapPointsOnlyOnPoints: false,
       ...options,
     });
 
@@ -174,6 +177,10 @@ class CadControl extends Control {
     this.standalone = false;
 
     this.handleInteractionAdd = this.handleInteractionAdd.bind(this);
+
+    this.on('propertychange', () => {
+      this.updateDialog();
+    });
   }
 
   /**
@@ -754,6 +761,12 @@ class CadControl extends Control {
    * @param {ol.eaturee} feature Feature to draw the snap points for.
    */
   drawSnapPoints(coordinate, feature) {
+    if (
+      this.properties.showSnapPointsOnlyOnPoints &&
+      !(feature.getGeometry() instanceof Point)
+    ) {
+      return;
+    }
     const featCoord = feature.getGeometry().getClosestPoint(coordinate);
 
     const px = this.map.getPixelFromCoordinate(featCoord);

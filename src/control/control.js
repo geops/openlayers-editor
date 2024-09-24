@@ -216,6 +216,16 @@ class Control extends OLControl {
     }
   }
 
+  updateDialog() {
+    if (this.dialogDiv && this.getDialogTemplate) {
+      this.dialogDiv.innerHTML = `
+        <div class="ole-dialog">
+          ${this.getDialogTemplate()}
+        </div>
+      `;
+    }
+  }
+
   /**
    * Closes the control dialog.
    * @private

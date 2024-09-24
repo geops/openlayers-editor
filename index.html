@@ -150,6 +150,9 @@
 
       var cad = new ole.control.CAD({
         source: editLayer.getSource(),
+        showSnapPointsOnlyOnPoints: true,
+        dialogTarget: null,
+        element: null
       });
 
       var draw = new ole.control.Draw({
@@ -190,6 +193,75 @@
         source: editLayer.getSource(),
       });
 
+      draw.on('change:active', function (evt) {
+        console.log('drawPoint', evt);
+        if (evt.target.active) {
+          cad.setProperties({
+            showSnapPoints: true,
+            showSnapLines: false,
+          });
+          if (!cad.getActive()) {
+            cad.activate(true);
+          }
+          // cad.updateDialog();
+        }
+      });
+
+      drawLine.on('change:active', function (evt) {
+        console.log('drawLine', evt);
+        if (evt.target.active) {
+          cad.setProperties({
+            showSnapPoints: false,
+            showSnapLines: true,
+          });
+          if (!cad.getActive()) {
+            cad.activate(true);
+          }
+          // cad.updateDialog();
+        }
+      });
+
+      drawPoly.on('change:active', function (evt) {
+        console.log('drawLine', evt);
+        if (evt.target.active) {
+          cad.setProperties({
+            showSnapPoints: false,
+            showSnapLines: true,
+          });
+          if (!cad.getActive()) {
+            cad.activate(true);
+          }
+          // cad.updateDialog();
+        }
+      });
+
+      [modify, buffer, union, intersection, difference].forEach(function (control) {
+        control.on('change:active', function (evt) {
+          if (evt.target.active) {
+            cad.deactivate(true);
+          }
+        });
+      });
+
+      // editor.on('propertychange', function (evt) {
+      //   console.log(evt);
+      //   const geometry = evt.target?.getDrawFeature()?.getGeometry();
+      //   if (geometry?.getType() === 'Point') {
+      //     cad.setProperties({
+      //       showSnapPoints: true,
+      //       showSnapLines:false,
+      //     });
+      //     // cad.updateDialog();
+      //   }else if (geometry?.getType() === 'Polygon' || geometry?.getType() === 'LineString') {
+      //     cad.setProperties({
+      //       showSnapPoints: false,
+      //       showSnapLines:true,
+      //     });
+      //     // cad.updateDialog();
+      //   }
+      //   console.log(evt);
+      // }); 
+
       editor.addControls([
         cad,
         draw,
@@ -210,6 +282,9 @@
       // For tests purpose
       window.editor = editor;
       window.editLayer = editLayer;
+
+      // cad.activate(true);
+
     </script>
   </body>
 </html>
