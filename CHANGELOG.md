@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.5](https://github.com/geops/openlayers-editor/compare/v2.4.4...v2.4.5) (2024-09-04)
+
+
+### Bug Fixes
+
+* avoid js error when map is not set when activate/deactivate is called ([c808a36](https://github.com/geops/openlayers-editor/commit/c808a36a6eaa5704f650adfd4b6176b0c7fc96cd))
+* improve cursor behavior on pointer down and up in modify control ([5eb32b9](https://github.com/geops/openlayers-editor/commit/5eb32b9be4f4cc23dc4a17c67f459c55072f5fcf))
+* use viewport to set cursor style ([62a427d](https://github.com/geops/openlayers-editor/commit/62a427d8830b1641aeec7d3a03f4e266cae3eac8))
+
 ### [2.4.4](https://github.com/geops/openlayers-editor/compare/v2.4.3...v2.4.4) (2024-08-20)
 
 

@@ -1,11 +1,12 @@
 import Collection from 'ol/Collection';
+import BaseObject from 'ol/Object';
 import Toolbar from './control/toolbar';
 
 /**
  * Core component of OLE.
  * All controls are added to this class.
  */
-class Editor {
+class Editor extends BaseObject {
   /**
    * Initialization of the editor.
    * @param {ol.Map} map The map object.
@@ -15,6 +16,7 @@ class Editor {
    *   the toolbar to be rendered outside of the map's viewport.
    */
   constructor(map, opts) {
+    super();
     /**
      * @private
      * @type {ol.Map}
@@ -146,7 +148,9 @@ class Editor {
    * @protected
    */
   setEditFeature(feature) {
-    this.editFeature = feature;
+    if (feature !== this.editFeature) {
+      this.editFeature = feature;
+    }
   }
 
   /**
@@ -165,7 +169,9 @@ class Editor {
    * @protected
    */
   setDrawFeature(feature) {
-    this.drawFeature = feature;
+    if (feature !== this.drawFeature) {
+      this.drawFeature = feature;
+    }
   }
 
   /**
@@ -203,6 +209,22 @@ class Editor {
     } else {
       this.activeControls.remove(ctrl);
     }
+  }
+
+  get editFeature() {
+    return this.get('editFeature');
+  }
+
+  set editFeature(feature) {
+    this.set('editFeature', feature);
+  }
+
+  get drawFeature() {
+    return this.get('drawFeature');
+  }
+
+  set drawFeature(feature) {
+    this.set('drawFeature', feature);
   }
 }
 
