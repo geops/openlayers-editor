@@ -10,7 +10,7 @@ import {
   MultiPolygon,
 } from 'ol/geom';
 import TopologyControl from './topology';
-import diffSVG from '../../img/difference.svg';
+import diffSVG from '../img/difference.svg';
 
 /**
  * Control for creating a difference of geometries.

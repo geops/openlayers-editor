@@ -4,7 +4,7 @@ import { singleClick } from 'ol/events/condition';
 import throttle from 'lodash.throttle';
 import { unByKey } from 'ol/Observable';
 import Control from './control';
-import image from '../../img/modify_geometry2.svg';
+import image from '../img/modify_geometry2.svg';
 import SelectMove from '../interaction/selectmove';
 import SelectModify from '../interaction/selectmodify';
 import Move from '../interaction/move';

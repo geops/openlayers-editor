@@ -9,6 +9,7 @@ function main() {
 
   // write out simplified package.json
   pkg.main = 'index.js';
+  pkg.type = 'module';
   delete pkg.devDependencies;
   delete pkg.scripts;
   const data = JSON.stringify(pkg, null, 2);

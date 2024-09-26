@@ -15,10 +15,9 @@ class Control extends OLControl {
    * @param {Image} options.image Control toolbar image.
    * @param {HTMLElement} [options.dialogTarget] Specify a target if you want
    *   the dialog div used by the control to be rendered outside of the map's viewport. Set tio null if you don't want to display the dialog of a control.
-   * @param {ol.source.Vector} [options.source] Vector source holding
-   *   edit features. If undefined, options.features must be passed.
+   * @param {ol.source.Vector} [options.source] Vector source holding edit features.
    * @param {ol.Collection<ol.Feature>} [options.features] Collection of
-   *   edit features. If undefined, options.source must be set.
+   *   edit features. Requires options.source to be set.
    * @param {function} [options.layerFilter] Filter editable layer.
    */
   constructor(options) {
