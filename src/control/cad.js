@@ -75,7 +75,7 @@ class CadControl extends Control {
       showOrthoLines: true,
       showSegmentLines: true,
       showVerticalAndHorizontalLines: true,
-      snapPointDist: 10,
+      snapPointDist: 30,
       snapLinesOrder: ['ortho', 'segment', 'vh'],
       showSnapPointsOnlyOnPoints: false,
       ...options,
