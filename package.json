@@ -13,13 +13,13 @@
   "devDependencies": {
     "@commitlint/cli": "19.5.0",
     "@commitlint/config-conventional": "19.5.0",
-    "cypress": "13.14.2",
+    "cypress": "13.15.0",
     "esbuild": "0.24.0",
     "eslint": "8",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-cypress": "3.5.0",
-    "eslint-plugin-import": "2.30.0",
+    "eslint-plugin-import": "2.31.0",
     "eslint-plugin-prettier": "5.2.1",
     "fixpack": "4.0.0",
     "happy-dom": "^15.7.4",
@@ -30,7 +30,7 @@
     "jsts": "2.11.3",
     "lint-staged": "15.2.10",
     "lodash.throttle": "4.1.1",
-    "ol": "^10.2.0",
+    "ol": "^10.2.1",
     "prettier": "3.3.3",
     "shx": "0.3.4",
     "standard-version": "9.5.0",
@@ -38,7 +38,7 @@
     "stylelint": "16.9.0",
     "stylelint-config-standard": "36.0.1",
     "typescript": "5.6.2",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.2"
   },
   "scripts": {
     "build": "shx rm -rf build && tsc --project config/tsconfig-build.json && esbuild build/index.js --bundle --global-name=ole --loader:.svg=dataurl --minify --outfile=build/bundle.js",

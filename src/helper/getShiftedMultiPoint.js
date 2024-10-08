@@ -1,30 +1,25 @@
-import { MultiPoint } from 'ol/geom';
+import { MultiPoint, LineString } from 'ol/geom';
 
 /**
- * Removes the closest node to a given coordinate from a given geometry.
+ * Removes the last coordinate of a given geometry (Line or Polygon).
+ * When we draw the last coordinate if tat mouse cursor.
  * @private
  * @param {ol.Geometry} geometry An openlayers geometry.
- * @param {ol.Coordinate} coordinate Coordinate.
  * @returns {ol.Geometry.MultiPoint} An openlayers MultiPoint geometry.
  */
-const getShiftedMultipoint = (geometry, coordinate) => {
-  // Include all but the closest vertex to the coordinate (e.g. at mouse position)
+const getShiftedMultipoint = (geometry) => {
+  // Include all but the last vertex to the coordinate (e.g. at mouse position)
   // to prevent snapping on mouse cursor node
   const isPolygon = geometry.getType() === 'Polygon';
-  const shiftedMultipoint = new MultiPoint(
-    isPolygon ? geometry.getCoordinates()[0] : geometry.getCoordinates(),
-  );
+  const lineGeometry = isPolygon
+    ? new LineString(geometry.getCoordinates()[0])
+    : geometry;
 
-  const drawNodeCoordinate = shiftedMultipoint.getClosestPoint(coordinate);
-
-  // Exclude the node being modified
-  shiftedMultipoint.setCoordinates(
-    shiftedMultipoint
-      .getCoordinates()
-      .filter((coord) => coord.toString() !== drawNodeCoordinate.toString()),
-  );
-
-  return shiftedMultipoint;
+  const coordinates = [];
+  lineGeometry.forEachSegment((start) => {
+    coordinates.push(start);
+  });
+  return new MultiPoint(coordinates);
 };
 
 export default getShiftedMultipoint;

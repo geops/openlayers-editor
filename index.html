@@ -194,7 +194,6 @@
       });
 
       draw.on('change:active', function (evt) {
-        console.log('drawPoint', evt);
         if (evt.target.active) {
           cad.setProperties({
             showSnapPoints: true,
@@ -208,7 +207,6 @@
       });
 
       drawLine.on('change:active', function (evt) {
-        console.log('drawLine', evt);
         if (evt.target.active) {
           cad.setProperties({
             showSnapPoints: false,
@@ -222,7 +220,6 @@
       });
 
       drawPoly.on('change:active', function (evt) {
-        console.log('drawLine', evt);
         if (evt.target.active) {
           cad.setProperties({
             showSnapPoints: false,
