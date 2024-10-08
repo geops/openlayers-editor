@@ -19,6 +19,9 @@ const getShiftedMultipoint = (geometry) => {
   lineGeometry.forEachSegment((start) => {
     coordinates.push(start);
   });
+  if (isPolygon) {
+    coordinates.pop();
+  }
   return new MultiPoint(coordinates);
 };
 
