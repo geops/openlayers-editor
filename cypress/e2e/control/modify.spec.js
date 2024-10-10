@@ -1,35 +1,36 @@
+/* eslint-disable cypress/unsafe-to-chain-command */
 const FORCE = { force: true };
 
-describe('ModifyControl', () => {
+describe("ModifyControl", () => {
   beforeEach(() => {
-    cy.visit('/');
+    cy.visit("/");
 
     // Draw polygon (click on map container, double click to finish drawing)
     cy.get('[title="Draw Polygon"]').click();
-    cy.get('.ol-overlaycontainer').click(100, 100, FORCE);
-    cy.get('.ol-overlaycontainer').click(100, 150, FORCE);
-    cy.get('.ol-overlaycontainer').click(150, 170, FORCE);
-    cy.get('.ol-overlaycontainer').dblclick(200, 100, FORCE);
+    cy.get(".ol-overlaycontainer").click(100, 100, FORCE);
+    cy.get(".ol-overlaycontainer").click(100, 150, FORCE);
+    cy.get(".ol-overlaycontainer").click(150, 170, FORCE);
+    cy.get(".ol-overlaycontainer").dblclick(200, 100, FORCE);
 
     // Draw line (click on map container, double click to finish drawing)
     cy.get('[title="Draw LineString"]').click();
-    cy.get('.ol-overlaycontainer').click(400, 350, FORCE);
-    cy.get('.ol-overlaycontainer').click(270, 344, FORCE);
-    cy.get('.ol-overlaycontainer').dblclick(200, 450, FORCE);
+    cy.get(".ol-overlaycontainer").click(400, 350, FORCE);
+    cy.get(".ol-overlaycontainer").click(270, 344, FORCE);
+    cy.get(".ol-overlaycontainer").dblclick(200, 450, FORCE);
   });
 
-  it('should correctly handle node deletion', () => {
+  it("should correctly handle node deletion", () => {
     cy.window().then((win) => {
       // Spy on selectModify.addFeatureLayerAssociation_, called when a feature is selected
       const omitFeatureSelectSpy = cy.spy(
         win.modify.selectModify,
-        'addFeatureLayerAssociation_',
+        "addFeatureLayerAssociation_",
       );
       let selectedFeaturesArray = [];
       // Select Modify Control (click on toolbar)
-      cy.get('.ole-control-modify').click();
+      cy.get(".ole-control-modify").click();
       // Select polygon (double click polygon in map canvas container to start modifying)
-      cy.get('.ol-viewport')
+      cy.get(".ol-viewport")
         .dblclick(100, 100, FORCE)
         .then(() => {
           selectedFeaturesArray = win.modify.selectModify
@@ -44,7 +45,7 @@ describe('ModifyControl', () => {
         });
       // Click & delete a node (click on map canvas at node pixel)
       // Click & delete a node (click on map canvas at node pixel)
-      cy.get('.ol-viewport')
+      cy.get(".ol-viewport")
         .click(102, 152)
         .then(() => {
           // singleclick event needs a timeout period.
@@ -60,7 +61,7 @@ describe('ModifyControl', () => {
         });
 
       // Click another node (click on map canvas at node pixel)
-      cy.get('.ol-viewport')
+      cy.get(".ol-viewport")
         .click(100, 100, FORCE)
         .then(() => {
           // singleclick event needs a timeout period.
@@ -74,13 +75,14 @@ describe('ModifyControl', () => {
               omitFeatureSelectSpy.args[0][0],
               null,
             );
-            // eslint-disable-next-line no-unused-expressions
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(toTest).to.not.be.called;
           });
         });
 
       // Select line (double click line in map canvas container to start modifying)
-      cy.get('.ol-viewport')
+      cy.get(".ol-viewport")
         .dblclick(270, 344, FORCE)
         .then(() => {
           selectedFeaturesArray = win.modify.selectModify
@@ -95,7 +97,7 @@ describe('ModifyControl', () => {
         });
 
       // Click & delete a node (click on map canvas at node pixel)
-      cy.get('.ol-viewport')
+      cy.get(".ol-viewport")
         .click(270, 344, FORCE)
         .then(() => {
           // singleclick event needs a timeout period.
@@ -108,7 +110,7 @@ describe('ModifyControl', () => {
         });
 
       // Click another node (click on map canvas at node pixel)
-      cy.get('.ol-viewport')
+      cy.get(".ol-viewport")
         .click(400, 350, FORCE)
         .then(() => {
           // Verify no further node was deleted on click (because polygon minimum number nodes is 2)
@@ -116,7 +118,8 @@ describe('ModifyControl', () => {
             selectedFeaturesArray[0].getGeometry().getCoordinates().length,
           ).to.equal(2);
           // Check that no features from the overlay are mistakenly selected
-          // eslint-disable-next-line no-unused-expressions
+
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           expect(
             omitFeatureSelectSpy.withArgs(
               omitFeatureSelectSpy.args[0][0],

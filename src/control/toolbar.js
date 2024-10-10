@@ -1,4 +1,4 @@
-import Control from 'ol/control/Control';
+import Control from "ol/control/Control";
 
 /**
  * The editor's toolbar.
@@ -14,8 +14,8 @@ class Toolbar extends Control {
    *   the control to be rendered outside of the map's viewport.
    */
   constructor(map, controls, target) {
-    const element = document.createElement('div');
-    element.setAttribute('id', 'ole-toolbar');
+    const element = document.createElement("div");
+    element.setAttribute("id", "ole-toolbar");
 
     super({
       element: target || element,
@@ -38,20 +38,7 @@ class Toolbar extends Control {
     }
 
     this.load();
-    this.controls.on('change:length', this.load.bind(this));
-  }
-
-  /**
-   * Load the toolbar.
-   * @private
-   */
-  load() {
-    for (let i = 0; i < this.controls.getLength(); i += 1) {
-      const btn = this.controls.item(i).getElement();
-      if (this.element && btn) {
-        this.element.appendChild(btn);
-      }
-    }
+    this.controls.on("change:length", this.load.bind(this));
   }
 
   /**
@@ -63,6 +50,19 @@ class Toolbar extends Control {
       const btn = this.controls.item(i).getElement();
       if (this.element && btn) {
         this.element.removeChild(btn);
+      }
+    }
+  }
+
+  /**
+   * Load the toolbar.
+   * @private
+   */
+  load() {
+    for (let i = 0; i < this.controls.getLength(); i += 1) {
+      const btn = this.controls.item(i).getElement();
+      if (this.element && btn) {
+        this.element.appendChild(btn);
       }
     }
   }

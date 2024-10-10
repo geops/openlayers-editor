@@ -1,6 +1,7 @@
-import Collection from 'ol/Collection';
-import BaseObject from 'ol/Object';
-import Toolbar from './control/toolbar';
+import Collection from "ol/Collection";
+import BaseObject from "ol/Object";
+
+import Toolbar from "./control/toolbar";
 
 /**
  * Core component of OLE.
@@ -54,7 +55,7 @@ class Editor extends BaseObject {
      */
     this.editFeature = null;
 
-    if (typeof this.options.showToolbar === 'undefined') {
+    if (typeof this.options.showToolbar === "undefined") {
       this.options.showToolbar = true;
     }
 
@@ -63,123 +64,6 @@ class Editor extends BaseObject {
     }
 
     this.activeStateChange = this.activeStateChange.bind(this);
-  }
-
-  /**
-   * Adds a new control to the editor.
-   * @param {ole.Control} control The control.
-   */
-  addControl(control) {
-    control.setMap(this.map);
-    control.setEditor(this);
-    control.addEventListener('change:active', this.activeStateChange);
-    this.controls.push(control);
-  }
-
-  /**
-   * Remove a control from the editor
-   * @param {ole.Control} control The control.
-   */
-  removeControl(control) {
-    control.deactivate();
-    this.controls.remove(control);
-    control.removeEventListener('change:active', this.activeStateChange);
-    control.setEditor();
-    control.setMap();
-  }
-
-  /**
-   * Adds a service to the editor.
-   */
-  addService(service) {
-    service.setMap(this.map);
-    service.setEditor(this);
-    service.activate();
-    this.services.push(service);
-  }
-
-  /**
-   * Adds a collection of controls to the editor.
-   * @param {ol.Collection<ole.Control>} controls Collection of controls.
-   */
-  addControls(controls) {
-    const ctrls =
-      controls instanceof Collection ? controls : new Collection(controls);
-
-    for (let i = 0; i < ctrls.getLength(); i += 1) {
-      this.addControl(ctrls.item(i));
-    }
-  }
-
-  /**
-   * Removes the editor from the map.
-   */
-  remove() {
-    const controls = [...this.controls.getArray()];
-    controls.forEach((control) => {
-      this.removeControl(control);
-    });
-    if (this.toolbar) {
-      this.toolbar.destroy();
-    }
-  }
-
-  /**
-   * Returns a list of ctive controls.
-   * @returns {ol.Collection.<ole.Control>} Active controls.
-   */
-  getControls() {
-    return this.controls;
-  }
-
-  /**
-   * Returns a list of active controls.
-   * @returns {ol.Collection.<ole.Control>} Active controls.
-   */
-  getActiveControls() {
-    return this.activeControls;
-  }
-
-  /**
-   * Sets an instance of the feature that is edited.
-   * Some controls need information about the feature
-   * that is currently edited (e.g. for not snapping on them).
-   * @param {ol.Feature|null} feature The editfeature (or null if none)
-   * @protected
-   */
-  setEditFeature(feature) {
-    if (feature !== this.editFeature) {
-      this.editFeature = feature;
-    }
-  }
-
-  /**
-   * Returns the feature that is currently edited.
-   * @returns {ol.Feature|null} The edit feature.
-   */
-  getEditFeature() {
-    return this.editFeature;
-  }
-
-  /**
-   * Sets an instance of the feature that is being drawn.
-   * Some controls need information about the feature
-   * that is currently being drawn (e.g. for not snapping on them).
-   * @param {ol.Feature|null} feature The drawFeature (or null if none).
-   * @protected
-   */
-  setDrawFeature(feature) {
-    if (feature !== this.drawFeature) {
-      this.drawFeature = feature;
-    }
-  }
-
-  /**
-   * Returns the feature that is currently being drawn.
-   * @returns {ol.Feature|null} The drawFeature.
-   */
-  getDrawFeature() {
-    return this.drawFeature;
   }
 
   /**
@@ -211,20 +95,137 @@ class Editor extends BaseObject {
     }
   }
 
-  get editFeature() {
-    return this.get('editFeature');
+  /**
+   * Adds a new control to the editor.
+   * @param {ole.Control} control The control.
+   */
+  addControl(control) {
+    control.setMap(this.map);
+    control.setEditor(this);
+    control.addEventListener("change:active", this.activeStateChange);
+    this.controls.push(control);
   }
 
-  set editFeature(feature) {
-    this.set('editFeature', feature);
+  /**
+   * Adds a collection of controls to the editor.
+   * @param {ol.Collection<ole.Control>} controls Collection of controls.
+   */
+  addControls(controls) {
+    const ctrls =
+      controls instanceof Collection ? controls : new Collection(controls);
+
+    for (let i = 0; i < ctrls.getLength(); i += 1) {
+      this.addControl(ctrls.item(i));
+    }
+  }
+
+  /**
+   * Adds a service to the editor.
+   */
+  addService(service) {
+    service.setMap(this.map);
+    service.setEditor(this);
+    service.activate();
+    this.services.push(service);
+  }
+
+  /**
+   * Returns a list of active controls.
+   * @returns {ol.Collection.<ole.Control>} Active controls.
+   */
+  getActiveControls() {
+    return this.activeControls;
+  }
+
+  /**
+   * Returns a list of ctive controls.
+   * @returns {ol.Collection.<ole.Control>} Active controls.
+   */
+  getControls() {
+    return this.controls;
+  }
+
+  /**
+   * Returns the feature that is currently being drawn.
+   * @returns {ol.Feature|null} The drawFeature.
+   */
+  getDrawFeature() {
+    return this.drawFeature;
+  }
+
+  /**
+   * Returns the feature that is currently edited.
+   * @returns {ol.Feature|null} The edit feature.
+   */
+  getEditFeature() {
+    return this.editFeature;
+  }
+
+  /**
+   * Removes the editor from the map.
+   */
+  remove() {
+    const controls = [...this.controls.getArray()];
+    controls.forEach((control) => {
+      this.removeControl(control);
+    });
+    if (this.toolbar) {
+      this.toolbar.destroy();
+    }
+  }
+
+  /**
+   * Remove a control from the editor
+   * @param {ole.Control} control The control.
+   */
+  removeControl(control) {
+    control.deactivate();
+    this.controls.remove(control);
+    control.removeEventListener("change:active", this.activeStateChange);
+    control.setEditor();
+    control.setMap();
+  }
+
+  /**
+   * Sets an instance of the feature that is being drawn.
+   * Some controls need information about the feature
+   * that is currently being drawn (e.g. for not snapping on them).
+   * @param {ol.Feature|null} feature The drawFeature (or null if none).
+   * @protected
+   */
+  setDrawFeature(feature) {
+    if (feature !== this.drawFeature) {
+      this.drawFeature = feature;
+    }
+  }
+
+  /**
+   * Sets an instance of the feature that is edited.
+   * Some controls need information about the feature
+   * that is currently edited (e.g. for not snapping on them).
+   * @param {ol.Feature|null} feature The editfeature (or null if none)
+   * @protected
+   */
+  setEditFeature(feature) {
+    if (feature !== this.editFeature) {
+      this.editFeature = feature;
+    }
   }
 
   get drawFeature() {
-    return this.get('drawFeature');
+    return this.get("drawFeature");
   }
 
   set drawFeature(feature) {
-    this.set('drawFeature', feature);
+    this.set("drawFeature", feature);
+  }
+
+  get editFeature() {
+    return this.get("editFeature");
+  }
+
+  set editFeature(feature) {
+    this.set("editFeature", feature);
   }
 }
 

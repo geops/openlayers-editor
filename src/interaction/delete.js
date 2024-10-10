@@ -1,7 +1,8 @@
-import Interaction from 'ol/interaction/Interaction';
-import EventType from 'ol/events/EventType';
-import { noModifierKeys, targetNotEditable } from 'ol/events/condition';
-import DeleteEvent, { DeleteEventType } from '../event/delete-event';
+import { noModifierKeys, targetNotEditable } from "ol/events/condition";
+import EventType from "ol/events/EventType";
+import Interaction from "ol/interaction/Interaction";
+
+import DeleteEvent, { DeleteEventType } from "../event/delete-event";
 
 class Delete extends Interaction {
   constructor(options = {}) {
@@ -23,10 +24,6 @@ class Delete extends Interaction {
       });
   }
 
-  setFeatures(features) {
-    this.features = features;
-  }
-
   handleEvent(mapBrowserEvent) {
     let stopEvent = false;
     if (
@@ -36,9 +33,9 @@ class Delete extends Interaction {
       this.features
     ) {
       // Loop delete through selected features array
-      this.features
-        .getArray()
-        .forEach((feature) => this.source.removeFeature(feature));
+      this.features.getArray().forEach((feature) => {
+        return this.source.removeFeature(feature);
+      });
 
       this.dispatchEvent(
         new DeleteEvent(DeleteEventType.DELETE, this.features, mapBrowserEvent),
@@ -49,6 +46,10 @@ class Delete extends Interaction {
       stopEvent = true;
     }
     return !stopEvent;
+  }
+
+  setFeatures(features) {
+    this.features = features;
   }
 }
 

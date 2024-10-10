@@ -1,9 +1,9 @@
-describe('OLE', () => {
+describe("OLE", () => {
   beforeEach(() => {
-    cy.visit('/');
+    cy.visit("/");
   });
 
-  it('should initialize OLE toolbar', () => {
-    cy.get('#ole-toolbar').should('exist');
+  it("should initialize OLE toolbar", () => {
+    cy.get("#ole-toolbar").should("exist");
   });
 });

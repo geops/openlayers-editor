@@ -1,7 +1,8 @@
-import Pointer from 'ol/interaction/Pointer';
-import Point from 'ol/geom/Point';
-import { getCenter } from 'ol/extent';
-import MoveEvent, { MoveEventType } from '../event/move-event';
+import { getCenter } from "ol/extent";
+import Point from "ol/geom/Point";
+import Pointer from "ol/interaction/Pointer";
+
+import MoveEvent, { MoveEventType } from "../event/move-event";
 
 class Move extends Pointer {
   constructor(options) {
