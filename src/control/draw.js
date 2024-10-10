@@ -1,8 +1,9 @@
-import { Draw } from 'ol/interaction';
-import Control from './control';
-import drawPointSVG from '../../img/draw_point.svg';
-import drawPolygonSVG from '../../img/draw_polygon.svg';
-import drawLineSVG from '../../img/draw_line.svg';
+import { Draw } from "ol/interaction";
+
+import drawLineSVG from "../../img/draw_line.svg";
+import drawPointSVG from "../../img/draw_point.svg";
+import drawPolygonSVG from "../../img/draw_polygon.svg";
+import Control from "./control";
 
 /**
  * Control for drawing features.
@@ -22,10 +23,10 @@ class DrawControl extends Control {
     let image = null;
 
     switch (options?.type) {
-      case 'Polygon':
+      case "Polygon":
         image = drawPolygonSVG;
         break;
-      case 'LineString':
+      case "LineString":
         image = drawLineSVG;
         break;
       default:
@@ -33,9 +34,9 @@ class DrawControl extends Control {
     }
 
     super({
-      title: `Draw ${options?.type || 'Point'}`,
-      className: 'ole-control-draw',
+      className: "ole-control-draw",
       image,
+      title: `Draw ${options?.type || "Point"}`,
       ...(options || {}),
     });
 
@@ -43,19 +44,19 @@ class DrawControl extends Control {
      * @type {ol.interaction.Draw}
      */
     this.drawInteraction = new Draw({
-      type: options?.type || 'Point',
       features: options?.features,
       source: options?.source,
-      style: options?.style,
       stopClick: true,
+      style: options?.style,
+      type: options?.type || "Point",
       ...(options?.drawInteractionOptions || {}),
     });
 
-    this.drawInteraction.on('drawstart', (evt) => {
+    this.drawInteraction.on("drawstart", (evt) => {
       this.editor.setDrawFeature(evt.feature);
     });
 
-    this.drawInteraction.on('drawend', () => {
+    this.drawInteraction.on("drawend", () => {
       this.editor.setDrawFeature();
     });
   }

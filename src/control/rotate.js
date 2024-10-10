@@ -1,11 +1,12 @@
-import { Style, Icon } from 'ol/style';
-import Point from 'ol/geom/Point';
-import Vector from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import Pointer from 'ol/interaction/Pointer';
-import Control from './control';
-import rotateSVG from '../../img/rotate.svg';
-import rotateMapSVG from '../../img/rotate_map.svg';
+import Point from "ol/geom/Point";
+import Pointer from "ol/interaction/Pointer";
+import Vector from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import { Icon, Style } from "ol/style";
+
+import rotateMapSVG from "../../img/rotate_map.svg";
+import rotateSVG from "../../img/rotate.svg";
+import Control from "./control";
 
 /**
  * Tool with for rotating geometries.
@@ -22,9 +23,9 @@ class RotateControl extends Control {
    */
   constructor(options) {
     super({
-      title: 'Rotate',
-      className: 'icon-rotate',
+      className: "icon-rotate",
       image: rotateSVG,
+      title: "Rotate",
       ...options,
     });
 
@@ -42,7 +43,7 @@ class RotateControl extends Control {
      * @type {string}
      * @private
      */
-    this.rotateAttribute = options.rotateAttribute || 'ole_rotation';
+    this.rotateAttribute = options.rotateAttribute || "ole_rotation";
 
     /**
      * Layer for rotation feature.
@@ -66,6 +67,25 @@ class RotateControl extends Control {
           ];
         }),
     });
+  }
+
+  /**
+   * @inheritdoc
+   */
+  activate() {
+    this.map?.addInteraction(this.pointerInteraction);
+    this.rotateLayer.setMap(this.map);
+    super.activate();
+  }
+
+  /**
+   * @inheritdoc
+   */
+  deactivate(silent) {
+    this.rotateLayer.getSource().clear();
+    this.rotateLayer.setMap(null);
+    this.map?.removeInteraction(this.pointerInteraction);
+    super.deactivate(silent);
   }
 
   /**
@@ -146,25 +166,6 @@ class RotateControl extends Control {
         this.rotateLayer.getSource().clear();
       }
     }
-  }
-
-  /**
-   * @inheritdoc
-   */
-  activate() {
-    this.map?.addInteraction(this.pointerInteraction);
-    this.rotateLayer.setMap(this.map);
-    super.activate();
-  }
-
-  /**
-   * @inheritdoc
-   */
-  deactivate(silent) {
-    this.rotateLayer.getSource().clear();
-    this.rotateLayer.setMap(null);
-    this.map?.removeInteraction(this.pointerInteraction);
-    super.deactivate(silent);
   }
 }
 

@@ -1,54 +1,41 @@
-/* eslint-disable no-underscore-dangle */
-import Select from 'ol/interaction/Select';
-import { doubleClick } from 'ol/events/condition';
-import { Circle, Style, Fill, Stroke } from 'ol/style';
-import GeometryCollection from 'ol/geom/GeometryCollection';
-import { MultiPoint } from 'ol/geom';
+import { doubleClick } from "ol/events/condition";
+import { MultiPoint } from "ol/geom";
+import GeometryCollection from "ol/geom/GeometryCollection";
+import Select from "ol/interaction/Select";
+import { Circle, Fill, Stroke, Style } from "ol/style";
 
 // Default style on modifying geometries
 const selectModifyStyle = new Style({
-  zIndex: 10000, // Always on top
-  image: new Circle({
-    radius: 5,
-    fill: new Fill({
-      color: '#05A0FF',
-    }),
-    stroke: new Stroke({ color: '#05A0FF', width: 2 }),
-  }),
-  stroke: new Stroke({
-    color: '#05A0FF',
-    width: 3,
-  }),
   fill: new Fill({
-    color: 'rgba(255,255,255,0.4)',
+    color: "rgba(255,255,255,0.4)",
   }),
   geometry: (f) => {
     const coordinates = [];
     const geometry = f.getGeometry();
     let geometries = [geometry];
-    if (geometry.getType() === 'GeometryCollection') {
+    if (geometry.getType() === "GeometryCollection") {
       geometries = geometry.getGeometriesArrayRecursive();
     }
 
     // At this point geometries doesn't contains any GeometryCollections.
     geometries.forEach((geom) => {
       let multiGeometries = [geom];
-      if (geom.getType() === 'MultiLineString') {
+      if (geom.getType() === "MultiLineString") {
         multiGeometries = geom.getLineStrings();
-      } else if (geom.getType() === 'MultiPolygon') {
+      } else if (geom.getType() === "MultiPolygon") {
         multiGeometries = geom.getPolygons();
-      } else if (geom.getType() === 'MultiPoint') {
+      } else if (geom.getType() === "MultiPoint") {
         multiGeometries = geom.getPoints();
       }
       // At this point multiGeometries contains only single geometry.
       multiGeometries.forEach((geomm) => {
-        if (geomm.getType() === 'Polygon') {
+        if (geomm.getType() === "Polygon") {
           geomm.getLinearRings().forEach((ring) => {
             coordinates.push(...ring.getCoordinates());
           });
-        } else if (geomm.getType() === 'LineString') {
+        } else if (geomm.getType() === "LineString") {
           coordinates.push(...geomm.getCoordinates());
-        } else if (geomm.getType() === 'Point') {
+        } else if (geomm.getType() === "Point") {
           coordinates.push(geomm.getCoordinates());
         }
       });
@@ -58,6 +45,18 @@ const selectModifyStyle = new Style({
       new MultiPoint(coordinates),
     ]);
   },
+  image: new Circle({
+    fill: new Fill({
+      color: "#05A0FF",
+    }),
+    radius: 5,
+    stroke: new Stroke({ color: "#05A0FF", width: 2 }),
+  }),
+  stroke: new Stroke({
+    color: "#05A0FF",
+    width: 3,
+  }),
+  zIndex: 10000, // Always on top
 });
 
 /**
@@ -100,8 +99,8 @@ class SelectModify extends Select {
           }
         },
         {
-          layerFilter: this.layerFilter_,
           hitTolerance: this.hitTolerance_,
+          layerFilter: this.layerFilter_,
         },
       );
 

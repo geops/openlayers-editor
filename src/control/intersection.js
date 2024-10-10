@@ -1,16 +1,17 @@
-import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
-import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
-import LinearRing from 'ol/geom/LinearRing';
+import OL3Parser from "jsts/org/locationtech/jts/io/OL3Parser";
+import { OverlayOp } from "jsts/org/locationtech/jts/operation/overlay";
 import {
-  Point,
   LineString,
-  Polygon,
-  MultiPoint,
   MultiLineString,
+  MultiPoint,
   MultiPolygon,
-} from 'ol/geom';
-import TopologyControl from './topology';
-import intersectionSVG from '../../img/intersection.svg';
+  Point,
+  Polygon,
+} from "ol/geom";
+import LinearRing from "ol/geom/LinearRing";
+
+import intersectionSVG from "../../img/intersection.svg";
+import TopologyControl from "./topology";
 
 /**
  * Control for intersection geometries.
@@ -26,9 +27,9 @@ class Intersection extends TopologyControl {
    */
   constructor(options) {
     super({
-      title: 'Intersection',
-      className: 'ole-control-intersection',
+      className: "ole-control-intersection",
       image: intersectionSVG,
+      title: "Intersection",
       ...options,
     });
   }

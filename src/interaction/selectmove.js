@@ -1,24 +1,24 @@
-import Select from 'ol/interaction/Select';
-import { Circle, Style, Fill, Stroke } from 'ol/style';
-import { singleClick } from 'ol/events/condition';
+import { singleClick } from "ol/events/condition";
+import Select from "ol/interaction/Select";
+import { Circle, Fill, Stroke, Style } from "ol/style";
 
 // Default style on moving geometries
 const selectMoveStyle = new Style({
-  zIndex: 10000, // Always on top
+  fill: new Fill({
+    color: "rgba(255,255,255,0.4)",
+  }),
   image: new Circle({
-    radius: 5,
     fill: new Fill({
-      color: '#05A0FF',
+      color: "#05A0FF",
     }),
-    stroke: new Stroke({ color: '#05A0FF', width: 2 }),
+    radius: 5,
+    stroke: new Stroke({ color: "#05A0FF", width: 2 }),
   }),
   stroke: new Stroke({
-    color: '#05A0FF',
+    color: "#05A0FF",
     width: 3,
   }),
-  fill: new Fill({
-    color: 'rgba(255,255,255,0.4)',
-  }),
+  zIndex: 10000, // Always on top
 });
 
 /**

@@ -228,11 +228,10 @@
           if (!cad.getActive()) {
             cad.activate(true);
           }
-          // cad.updateDialog();
         }
       });
 
-      [modify, buffer, union, intersection, difference].forEach(function (control) {
+      [buffer, union, intersection, difference].forEach(function (control) {
         control.on('change:active', function (evt) {
           if (evt.target.active) {
             cad.deactivate(true);
@@ -240,24 +239,15 @@
         });
       });
 
-      // editor.on('propertychange', function (evt) {
-      //   console.log(evt);
-      //   const geometry = evt.target?.getDrawFeature()?.getGeometry();
-      //   if (geometry?.getType() === 'Point') {
-      //     cad.setProperties({
-      //       showSnapPoints: true,
-      //       showSnapLines:false,
-      //     });
-      //     // cad.updateDialog();
-      //   }else if (geometry?.getType() === 'Polygon' || geometry?.getType() === 'LineString') {
-      //     cad.setProperties({
-      //       showSnapPoints: false,
-      //       showSnapLines:true,
-      //     });
-      //     // cad.updateDialog();
-      //   }
-      //   console.log(evt);
-      // }); 
+      [modify].forEach(function (control) {
+        control.on('change:active', function (evt) {
+          if (evt.target.active && !cad.getActive()) {
+            cad.activate(true);
+          }
+        });
+      });
+
+
 
       editor.addControls([
         cad,

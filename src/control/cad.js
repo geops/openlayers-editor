@@ -1,29 +1,30 @@
-import { Style, Stroke } from 'ol/style';
-import { Point, LineString, Polygon, MultiPoint, Circle } from 'ol/geom';
-import Feature from 'ol/Feature';
-import Vector from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { Pointer, Snap } from 'ol/interaction';
-import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
-import { getUid } from 'ol/util';
-import Control from './control';
-import cadSVG from '../../img/cad.svg';
-import { SnapEvent, SnapEventType } from '../event';
+import { OverlayOp } from "jsts/org/locationtech/jts/operation/overlay";
+import Feature from "ol/Feature";
+import { Circle, LineString, MultiPoint, Point, Polygon } from "ol/geom";
+import { Pointer, Snap } from "ol/interaction";
+import Vector from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import { Stroke, Style } from "ol/style";
+import { getUid } from "ol/util";
+
+import cadSVG from "../../img/cad.svg";
+import { SnapEvent, SnapEventType } from "../event";
 import {
-  parser,
-  getProjectedPoint,
-  getEquationOfLine,
-  getShiftedMultiPoint,
-  getIntersectedLinesAndPoint,
-  isSameLines,
-  defaultSnapStyles,
-  VH_LINE_KEY,
-  SNAP_POINT_KEY,
-  SNAP_FEATURE_TYPE_PROPERTY,
-  SEGMENT_LINE_KEY,
-  ORTHO_LINE_KEY,
   CUSTOM_LINE_KEY,
-} from '../helper';
+  defaultSnapStyles,
+  getEquationOfLine,
+  getIntersectedLinesAndPoint,
+  getProjectedPoint,
+  getShiftedMultiPoint,
+  isSameLines,
+  ORTHO_LINE_KEY,
+  parser,
+  SEGMENT_LINE_KEY,
+  SNAP_FEATURE_TYPE_PROPERTY,
+  SNAP_POINT_KEY,
+  VH_LINE_KEY,
+} from "../helper";
+import Control from "./control";
 
 /**
  * Control with snapping functionality for geometry alignment.
@@ -67,17 +68,17 @@ class CadControl extends Control {
    */
   constructor(options = {}) {
     super({
-      title: 'CAD control',
-      className: 'ole-control-cad',
+      className: "ole-control-cad",
       image: cadSVG,
-      showSnapPoints: true,
-      showSnapLines: false,
       showOrthoLines: true,
       showSegmentLines: true,
-      showVerticalAndHorizontalLines: true,
-      snapPointDist: 30,
-      snapLinesOrder: ['ortho', 'segment', 'vh'],
+      showSnapLines: false,
+      showSnapPoints: true,
       showSnapPointsOnlyOnPoints: false,
+      showVerticalAndHorizontalLines: true,
+      snapLinesOrder: ["ortho", "segment", "vh"],
+      snapPointDist: 30,
+      title: "CAD control",
       ...options,
     });
 
@@ -114,9 +115,9 @@ class CadControl extends Control {
       style: options.linesStyle || [
         new Style({
           stroke: new Stroke({
-            width: 1,
+            color: "#FF530D",
             lineDash: [5, 10],
-            color: '#FF530D',
+            width: 1,
           }),
         }),
       ],
@@ -150,14 +151,20 @@ class CadControl extends Control {
      * @type {Function}
      * @private
      */
-    this.filter = options.filter || (() => true);
+    this.filter =
+      options.filter ||
+      (() => {
+        return true;
+      });
 
     /**
      * Filter the features spatially.
      */
     this.extentFilter =
       options.extentFilter ||
-      (() => [-Infinity, -Infinity, Infinity, Infinity]);
+      (() => {
+        return [-Infinity, -Infinity, Infinity, Infinity];
+      });
 
     /**
      * Filter the generated line list
@@ -178,7 +185,7 @@ class CadControl extends Control {
 
     this.handleInteractionAdd = this.handleInteractionAdd.bind(this);
 
-    this.on('propertychange', () => {
+    this.on("propertychange", () => {
       this.updateDialog();
     });
   }
@@ -186,88 +193,225 @@ class CadControl extends Control {
   /**
    * @inheritdoc
    */
-  getDialogTemplate() {
-    const distLabel = this.properties.useMapUnits ? 'map units' : 'px';
+  activate(silent) {
+    super.activate(silent);
+    this.snapLayer.setMap(this.map);
+    this.linesLayer.setMap(this.map);
+    this.map?.addInteraction(this.pointerInteraction);
+    this.map?.addInteraction(this.snapInteraction);
 
-    return `
-      <div>
-        <input
-          id="aux-cb"
-          type="radio"
-          name="radioBtn"
-          ${this.properties.showSnapLines ? 'checked' : ''}
-        >
-        <label>Show snap lines</label>
-      </div>
-      <div>
-        <input
-          id="dist-cb"
-          type="radio"
-          name="radioBtn"
-          ${this.properties.showSnapPoints ? 'checked' : ''}
-        >
-        <label>Show snap points. Distance (${distLabel}):</label>
-        <input type="text" id="width-input"
-          value="${this.properties.snapPointDist}">
-      </div>
-    `;
-  }
+    document.getElementById("aux-cb")?.addEventListener("change", (evt) => {
+      this.setProperties({
+        showSnapLines: evt.target.checked,
+        showSnapPoints: !evt.target.checked,
+      });
+    });
 
-  handleInteractionAdd(evt) {
-    const pos = evt.target.getArray().indexOf(this.snapInteraction);
+    document.getElementById("dist-cb")?.addEventListener("change", (evt) => {
+      this.setProperties({
+        showSnapLines: !evt.target.checked,
+        showSnapPoints: evt.target.checked,
+      });
+    });
 
-    if (
-      this.snapInteraction.getActive() &&
-      pos > -1 &&
-      pos !== evt.target.getLength() - 1
-    ) {
-      this.deactivate(true);
-      this.activate(true);
-    }
+    document.getElementById("width-input")?.addEventListener("keyup", (evt) => {
+      const snapPointDist = parseFloat(evt.target.value);
+      if (!Number.isNaN(snapPointDist)) {
+        this.setProperties({ snapPointDist });
+      }
+    });
   }
 
   /**
    * @inheritdoc
    */
-  setMap(map) {
-    if (this.map) {
-      this.map.getInteractions().un('add', this.handleInteractionAdd);
+  deactivate(silent) {
+    super.deactivate(silent);
+    this.snapLayer.setMap(null);
+    this.linesLayer.setMap(null);
+    this.map?.removeInteraction(this.pointerInteraction);
+    this.map?.removeInteraction(this.snapInteraction);
+  }
+
+  /**
+   * Draws snap lines by building the extent for
+   * a pair of features.
+   * @private
+   * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
+   * @param {Array.<ol.Feature>} features List of features.
+   */
+  drawSnapLines(coordinate, features) {
+    // First get all snap points: neighbouring feature vertices and extent corners
+    const snapCoordsBefore = []; // store the direct before point in the coordinate array
+    const snapCoords = [];
+    const snapCoordsAfter = []; // store the direct next point in the coordinate array
+
+    for (let i = 0; i < features.length; i += 1) {
+      const geom = features[i].getGeometry();
+      let featureCoord = geom.getCoordinates();
+
+      if (!featureCoord && geom instanceof Circle) {
+        featureCoord = geom.getCenter();
+      }
+
+      // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
+      if (featureCoord?.length) {
+        if (geom instanceof Point || geom instanceof Circle) {
+          snapCoordsBefore.push();
+          snapCoords.push(featureCoord);
+          snapCoordsAfter.push();
+        } else {
+          // Add feature vertices
+
+          if (geom instanceof LineString) {
+            for (let j = 0; j < featureCoord.length; j += 1) {
+              snapCoordsBefore.push(featureCoord[j - 1]);
+              snapCoords.push(featureCoord[j]);
+              snapCoordsAfter.push(featureCoord[j + 1]);
+            }
+          } else if (geom instanceof Polygon) {
+            for (let j = 0; j < featureCoord[0].length; j += 1) {
+              snapCoordsBefore.push(featureCoord[0][j - 1]);
+              snapCoords.push(featureCoord[0][j]);
+              snapCoordsAfter.push(featureCoord[0][j + 1]);
+            }
+          }
+
+          // Add extent vertices
+          // const coords = this.getRotatedExtent(geom, coordinate);
+          // for (let j = 0; j < coords.length; j += 1) {
+          //   snapCoordsBefore.push();
+          //   snapCoords.push(coords[j]);
+          //   snapCoordsNext.push();
+          // }
+        }
+      }
     }
 
-    super.setMap(map);
+    const {
+      showOrthoLines,
+      showSegmentLines,
+      showVerticalAndHorizontalLines,
+      snapLinesOrder,
+    } = this.properties;
 
-    // Ensure that the snap interaction is at the last position
-    // as it must be the first to handle the  pointermove event.
-    if (this.map) {
-      this.map.getInteractions().on('add', this.handleInteractionAdd);
+    let lines = [];
+    const helpLinesOrdered = [];
+    const helpLines = {
+      [CUSTOM_LINE_KEY]: [],
+      [ORTHO_LINE_KEY]: [],
+      [SEGMENT_LINE_KEY]: [],
+      [VH_LINE_KEY]: [],
+    };
+
+    if (showOrthoLines) {
+      helpLines[ORTHO_LINE_KEY] =
+        this.getOrthoLines(coordinate, snapCoords, snapCoordsBefore) || [];
+    }
+
+    if (showSegmentLines) {
+      helpLines[SEGMENT_LINE_KEY] =
+        this.getSegmentLines(coordinate, snapCoords, snapCoordsBefore) || [];
+    }
+
+    if (showVerticalAndHorizontalLines) {
+      helpLines[VH_LINE_KEY] =
+        this.getVerticalAndHorizontalLines(coordinate, snapCoords) || [];
+    }
+
+    // Add custom lines
+    if (this.drawCustomSnapLines) {
+      helpLines[CUSTOM_LINE_KEY] =
+        this.drawCustomSnapLines(
+          coordinate,
+          snapCoords,
+          snapCoordsBefore,
+          snapCoordsAfter,
+        ) || [];
+    }
+
+    // Add help lines in a defined order.
+    snapLinesOrder.forEach((lineType) => {
+      helpLinesOrdered.push(...(helpLines[lineType] || []));
+    });
+
+    // Remove duplicated lines, comparing their equation using pixels.
+    helpLinesOrdered.forEach((lineA) => {
+      if (
+        !lines.length ||
+        !lines.find((lineB) => {
+          return isSameLines(lineA, lineB, this.map);
+        })
+      ) {
+        lines.push(lineA);
+      }
+    });
+
+    if (this.lineFilter) {
+      lines = this.lineFilter(lines, coordinate);
+    }
+
+    // We snap on intersections of lines (distance < this.snapTolerance) or on all the help lines.
+    const intersectFeatures = getIntersectedLinesAndPoint(
+      coordinate,
+      lines,
+      this.map,
+      this.snapTolerance,
+    );
+
+    if (intersectFeatures?.length) {
+      intersectFeatures.forEach((feature) => {
+        if (feature.getGeometry().getType() === "Point") {
+          this.snapLayer.getSource().addFeature(feature);
+        } else {
+          this.linesLayer.getSource().addFeature(feature);
+        }
+      });
+    } else {
+      this.snapLayer.getSource().addFeatures(lines);
     }
   }
 
   /**
-   * Handle move event.
+   * Adds snap points to the snapping layer.
    * @private
-   * @param {ol.MapBrowserEvent} evt Move event.
+   * @param {ol.Coordinate} coordinate cursor coordinate.
+   * @param {ol.eaturee} feature Feature to draw the snap points for.
    */
-  onMove(evt) {
-    const features = this.getClosestFeatures(
-      evt.coordinate,
-      this.nbClosestFeatures,
-    );
+  drawSnapPoints(coordinate, feature) {
+    if (
+      this.properties.showSnapPointsOnlyOnPoints &&
+      !(feature.getGeometry() instanceof Point)
+    ) {
+      return;
+    }
+    const featCoord = feature.getGeometry().getClosestPoint(coordinate);
 
-    this.linesLayer.getSource().clear();
-    this.snapLayer.getSource().clear();
+    const px = this.map.getPixelFromCoordinate(featCoord);
+    let snapCoords = [];
 
-    this.pointerInteraction.dispatchEvent(
-      new SnapEvent(SnapEventType.SNAP, features.length ? features : null, evt),
-    );
+    if (this.properties.useMapUnits) {
+      snapCoords = [
+        [featCoord[0] - this.properties.snapPointDist, featCoord[1]],
+        [featCoord[0] + this.properties.snapPointDist, featCoord[1]],
+        [featCoord[0], featCoord[1] - this.properties.snapPointDist],
+        [featCoord[0], featCoord[1] + this.properties.snapPointDist],
+      ];
+    } else {
+      const snapPx = [
+        [px[0] - this.properties.snapPointDist, px[1]],
+        [px[0] + this.properties.snapPointDist, px[1]],
+        [px[0], px[1] - this.properties.snapPointDist],
+        [px[0], px[1] + this.properties.snapPointDist],
+      ];
 
-    if (this.properties.showSnapLines) {
-      this.drawSnapLines(evt.coordinate, features);
+      for (let j = 0; j < snapPx.length; j += 1) {
+        snapCoords.push(this.map.getCoordinateFromPixel(snapPx[j]));
+      }
     }
 
-    if (this.properties.showSnapPoints && features.length) {
-      this.drawSnapPoints(evt.coordinate, features[0]);
-    }
+    const snapGeom = new MultiPoint(snapCoords);
+    this.snapLayer.getSource().addFeature(new Feature(snapGeom));
   }
 
   /**
@@ -281,7 +425,9 @@ class CadControl extends Control {
   getClosestFeatures(coordinate, nbFeatures = 1) {
     const editFeature = this.editor.getEditFeature();
     const drawFeature = this.editor.getDrawFeature();
-    const currentFeatures = [editFeature, drawFeature].filter((f) => !!f);
+    const currentFeatures = [editFeature, drawFeature].filter((f) => {
+      return !!f;
+    });
 
     const cacheDist = {};
     const dist = (f) => {
@@ -294,13 +440,15 @@ class CadControl extends Control {
       }
       return cacheDist[uid];
     };
-    const sortByDistance = (a, b) => dist(a) - dist(b);
+    const sortByDistance = (a, b) => {
+      return dist(a) - dist(b);
+    };
 
     let features = this.source
       .getFeaturesInExtent(this.extentFilter())
-      .filter(
-        (feature) => this.filter(feature) && !currentFeatures.includes(feature),
-      )
+      .filter((feature) => {
+        return this.filter(feature) && !currentFeatures.includes(feature);
+      })
       .sort(sortByDistance)
       .slice(0, nbFeatures);
 
@@ -327,6 +475,94 @@ class CadControl extends Control {
     });
 
     return features;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getDialogTemplate() {
+    const distLabel = this.properties.useMapUnits ? "map units" : "px";
+
+    return `
+      <div>
+        <input
+          id="aux-cb"
+          type="radio"
+          name="radioBtn"
+          ${this.properties.showSnapLines ? "checked" : ""}
+        >
+        <label>Show snap lines</label>
+      </div>
+      <div>
+        <input
+          id="dist-cb"
+          type="radio"
+          name="radioBtn"
+          ${this.properties.showSnapPoints ? "checked" : ""}
+        >
+        <label>Show snap points. Distance (${distLabel}):</label>
+        <input type="text" id="width-input"
+          value="${this.properties.snapPointDist}">
+      </div>
+    `;
+  }
+
+  /**
+   * For each segment, we calculate lines that are perpendicular.
+   */
+  getOrthoLines(coordinate, snapCoords, snapCoordsBefore) {
+    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+    const doubleTol = this.snapTolerance * 2;
+    const [mouseX, mouseY] = mousePx;
+    const lines = [];
+
+    for (let i = 0; i < snapCoords.length; i += 1) {
+      if (!snapCoordsBefore[i]) {
+        continue;
+      }
+      const snapCoordBefore = snapCoordsBefore[i];
+      const snapCoord = snapCoords[i];
+      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
+      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
+
+      const orthoLine1 = new LineString([snapPxBefore, snapPx]);
+      orthoLine1.rotate((90 * Math.PI) / 180, snapPxBefore);
+
+      const orthoLine2 = new LineString([snapPx, snapPxBefore]);
+      orthoLine2.rotate((90 * Math.PI) / 180, snapPx);
+
+      [orthoLine1, orthoLine2].forEach((line) => {
+        const [anchorPx, last] = line.getCoordinates();
+        const projMousePx = getProjectedPoint(mousePx, anchorPx, last);
+        const [projMouseX, projMouseY] = projMousePx;
+        const distance = Math.sqrt(
+          (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
+        );
+
+        let newPt;
+        if (distance <= this.snapTolerance) {
+          // lineFunc is undefined when it's a vertical line
+          const lineFunc = getEquationOfLine(anchorPx, projMousePx);
+          const newX =
+            projMouseX + (projMouseX < anchorPx[0] ? -doubleTol : doubleTol);
+          if (lineFunc) {
+            newPt = this.map.getCoordinateFromPixel([
+              newX,
+              lineFunc ? lineFunc(newX) : projMouseY,
+            ]);
+          }
+        }
+
+        if (newPt) {
+          const coords = [this.map.getCoordinateFromPixel(anchorPx), newPt];
+          const geom = new LineString(coords);
+          const feature = new Feature(geom);
+          feature.set(SNAP_FEATURE_TYPE_PROPERTY, ORTHO_LINE_KEY);
+          lines.push(feature);
+        }
+      });
+    }
+    return lines;
   }
 
   /**
@@ -433,6 +669,57 @@ class CadControl extends Control {
     ];
   }
 
+  /**
+   * For each segment, we calculate lines that extends it.
+   */
+  getSegmentLines(coordinate, snapCoords, snapCoordsBefore) {
+    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+    const doubleTol = this.snapTolerance * 2;
+    const [mouseX, mouseY] = mousePx;
+    const lines = [];
+
+    for (let i = 0; i < snapCoords.length; i += 1) {
+      if (!snapCoordsBefore[i]) {
+        continue;
+      }
+      const snapCoordBefore = snapCoordsBefore[i];
+      const snapCoord = snapCoords[i];
+      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
+      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
+
+      const [snapX] = snapPx;
+
+      // Calculate projected point
+      const projMousePx = getProjectedPoint(mousePx, snapPxBefore, snapPx);
+      const [projMouseX, projMouseY] = projMousePx;
+      const distance = Math.sqrt(
+        (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
+      );
+      let newPt;
+
+      if (distance <= this.snapTolerance) {
+        // lineFunc is undefined when it's a vertical line
+        const lineFunc = getEquationOfLine(snapPxBefore, snapPx);
+        const newX = projMouseX + (projMouseX < snapX ? -doubleTol : doubleTol);
+        if (lineFunc) {
+          newPt = this.map.getCoordinateFromPixel([
+            newX,
+            lineFunc ? lineFunc(newX) : projMouseY,
+          ]);
+        }
+      }
+
+      if (newPt) {
+        const lineCoords = [snapCoordBefore, snapCoord, newPt];
+        const geom = new LineString(lineCoords);
+        const feature = new Feature(geom);
+        feature.set(SNAP_FEATURE_TYPE_PROPERTY, SEGMENT_LINE_KEY);
+        lines.push(feature);
+      }
+    }
+    return lines;
+  }
+
   // Calculate lines that are vertical or horizontal to a coordinate.
   getVerticalAndHorizontalLines(coordinate, snapCoords) {
     // Draw snaplines when cursor vertically or horizontally aligns with a snap feature.
@@ -459,7 +746,6 @@ class CadControl extends Control {
         (drawVLine && distanceWithVLine > closerDistanceWithVLine) ||
         (drawHLine && distanceWithHLine > closerDistanceWithHLine)
       ) {
-        // eslint-disable-next-line no-continue
         continue;
       }
 
@@ -505,337 +791,61 @@ class CadControl extends Control {
     return lines;
   }
 
-  /**
-   * For each segment, we calculate lines that extends it.
-   */
-  getSegmentLines(coordinate, snapCoords, snapCoordsBefore) {
-    const mousePx = this.map.getPixelFromCoordinate(coordinate);
-    const doubleTol = this.snapTolerance * 2;
-    const [mouseX, mouseY] = mousePx;
-    const lines = [];
+  handleInteractionAdd(evt) {
+    const pos = evt.target.getArray().indexOf(this.snapInteraction);
 
-    for (let i = 0; i < snapCoords.length; i += 1) {
-      if (!snapCoordsBefore[i]) {
-        // eslint-disable-next-line no-continue
-        continue;
-      }
-      const snapCoordBefore = snapCoordsBefore[i];
-      const snapCoord = snapCoords[i];
-      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
-      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
-
-      const [snapX] = snapPx;
-
-      // Calculate projected point
-      const projMousePx = getProjectedPoint(mousePx, snapPxBefore, snapPx);
-      const [projMouseX, projMouseY] = projMousePx;
-      const distance = Math.sqrt(
-        (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
-      );
-      let newPt;
-
-      if (distance <= this.snapTolerance) {
-        // lineFunc is undefined when it's a vertical line
-        const lineFunc = getEquationOfLine(snapPxBefore, snapPx);
-        const newX = projMouseX + (projMouseX < snapX ? -doubleTol : doubleTol);
-        if (lineFunc) {
-          newPt = this.map.getCoordinateFromPixel([
-            newX,
-            lineFunc ? lineFunc(newX) : projMouseY,
-          ]);
-        }
-      }
-
-      if (newPt) {
-        const lineCoords = [snapCoordBefore, snapCoord, newPt];
-        const geom = new LineString(lineCoords);
-        const feature = new Feature(geom);
-        feature.set(SNAP_FEATURE_TYPE_PROPERTY, SEGMENT_LINE_KEY);
-        lines.push(feature);
-      }
+    if (
+      this.snapInteraction.getActive() &&
+      pos > -1 &&
+      pos !== evt.target.getLength() - 1
+    ) {
+      this.deactivate(true);
+      this.activate(true);
     }
-    return lines;
   }
 
   /**
-   * For each segment, we calculate lines that are perpendicular.
-   */
-  getOrthoLines(coordinate, snapCoords, snapCoordsBefore) {
-    const mousePx = this.map.getPixelFromCoordinate(coordinate);
-    const doubleTol = this.snapTolerance * 2;
-    const [mouseX, mouseY] = mousePx;
-    const lines = [];
-
-    for (let i = 0; i < snapCoords.length; i += 1) {
-      if (!snapCoordsBefore[i]) {
-        // eslint-disable-next-line no-continue
-        continue;
-      }
-      const snapCoordBefore = snapCoordsBefore[i];
-      const snapCoord = snapCoords[i];
-      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
-      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
-
-      const orthoLine1 = new LineString([snapPxBefore, snapPx]);
-      orthoLine1.rotate((90 * Math.PI) / 180, snapPxBefore);
-
-      const orthoLine2 = new LineString([snapPx, snapPxBefore]);
-      orthoLine2.rotate((90 * Math.PI) / 180, snapPx);
-
-      [orthoLine1, orthoLine2].forEach((line) => {
-        const [anchorPx, last] = line.getCoordinates();
-        const projMousePx = getProjectedPoint(mousePx, anchorPx, last);
-        const [projMouseX, projMouseY] = projMousePx;
-        const distance = Math.sqrt(
-          (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
-        );
-
-        let newPt;
-        if (distance <= this.snapTolerance) {
-          // lineFunc is undefined when it's a vertical line
-          const lineFunc = getEquationOfLine(anchorPx, projMousePx);
-          const newX =
-            projMouseX + (projMouseX < anchorPx[0] ? -doubleTol : doubleTol);
-          if (lineFunc) {
-            newPt = this.map.getCoordinateFromPixel([
-              newX,
-              lineFunc ? lineFunc(newX) : projMouseY,
-            ]);
-          }
-        }
-
-        if (newPt) {
-          const coords = [this.map.getCoordinateFromPixel(anchorPx), newPt];
-          const geom = new LineString(coords);
-          const feature = new Feature(geom);
-          feature.set(SNAP_FEATURE_TYPE_PROPERTY, ORTHO_LINE_KEY);
-          lines.push(feature);
-        }
-      });
-    }
-    return lines;
-  }
-
-  /**
-   * Draws snap lines by building the extent for
-   * a pair of features.
+   * Handle move event.
    * @private
-   * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
-   * @param {Array.<ol.Feature>} features List of features.
+   * @param {ol.MapBrowserEvent} evt Move event.
    */
-  drawSnapLines(coordinate, features) {
-    // First get all snap points: neighbouring feature vertices and extent corners
-    const snapCoordsBefore = []; // store the direct before point in the coordinate array
-    const snapCoords = [];
-    const snapCoordsAfter = []; // store the direct next point in the coordinate array
-
-    for (let i = 0; i < features.length; i += 1) {
-      const geom = features[i].getGeometry();
-      let featureCoord = geom.getCoordinates();
-
-      if (!featureCoord && geom instanceof Circle) {
-        featureCoord = geom.getCenter();
-      }
-
-      // Polygons initially return a geometry with an empty coordinate array, so we need to catch it
-      if (featureCoord?.length) {
-        if (geom instanceof Point || geom instanceof Circle) {
-          snapCoordsBefore.push();
-          snapCoords.push(featureCoord);
-          snapCoordsAfter.push();
-        } else {
-          // Add feature vertices
-          // eslint-disable-next-line no-lonely-if
-          if (geom instanceof LineString) {
-            for (let j = 0; j < featureCoord.length; j += 1) {
-              snapCoordsBefore.push(featureCoord[j - 1]);
-              snapCoords.push(featureCoord[j]);
-              snapCoordsAfter.push(featureCoord[j + 1]);
-            }
-          } else if (geom instanceof Polygon) {
-            for (let j = 0; j < featureCoord[0].length; j += 1) {
-              snapCoordsBefore.push(featureCoord[0][j - 1]);
-              snapCoords.push(featureCoord[0][j]);
-              snapCoordsAfter.push(featureCoord[0][j + 1]);
-            }
-          }
-
-          // Add extent vertices
-          // const coords = this.getRotatedExtent(geom, coordinate);
-          // for (let j = 0; j < coords.length; j += 1) {
-          //   snapCoordsBefore.push();
-          //   snapCoords.push(coords[j]);
-          //   snapCoordsNext.push();
-          // }
-        }
-      }
-    }
-
-    const {
-      showVerticalAndHorizontalLines,
-      showOrthoLines,
-      showSegmentLines,
-      snapLinesOrder,
-    } = this.properties;
-
-    let lines = [];
-    const helpLinesOrdered = [];
-    const helpLines = {
-      [ORTHO_LINE_KEY]: [],
-      [SEGMENT_LINE_KEY]: [],
-      [VH_LINE_KEY]: [],
-      [CUSTOM_LINE_KEY]: [],
-    };
-
-    if (showOrthoLines) {
-      helpLines[ORTHO_LINE_KEY] =
-        this.getOrthoLines(coordinate, snapCoords, snapCoordsBefore) || [];
-    }
-
-    if (showSegmentLines) {
-      helpLines[SEGMENT_LINE_KEY] =
-        this.getSegmentLines(coordinate, snapCoords, snapCoordsBefore) || [];
-    }
-
-    if (showVerticalAndHorizontalLines) {
-      helpLines[VH_LINE_KEY] =
-        this.getVerticalAndHorizontalLines(coordinate, snapCoords) || [];
-    }
-
-    // Add custom lines
-    if (this.drawCustomSnapLines) {
-      helpLines[CUSTOM_LINE_KEY] =
-        this.drawCustomSnapLines(
-          coordinate,
-          snapCoords,
-          snapCoordsBefore,
-          snapCoordsAfter,
-        ) || [];
-    }
-
-    // Add help lines in a defined order.
-    snapLinesOrder.forEach((lineType) => {
-      helpLinesOrdered.push(...(helpLines[lineType] || []));
-    });
-
-    // Remove duplicated lines, comparing their equation using pixels.
-    helpLinesOrdered.forEach((lineA) => {
-      if (
-        !lines.length ||
-        !lines.find((lineB) => isSameLines(lineA, lineB, this.map))
-      ) {
-        lines.push(lineA);
-      }
-    });
-
-    if (this.lineFilter) {
-      lines = this.lineFilter(lines, coordinate);
-    }
-
-    // We snap on intersections of lines (distance < this.snapTolerance) or on all the help lines.
-    const intersectFeatures = getIntersectedLinesAndPoint(
-      coordinate,
-      lines,
-      this.map,
-      this.snapTolerance,
+  onMove(evt) {
+    const features = this.getClosestFeatures(
+      evt.coordinate,
+      this.nbClosestFeatures,
     );
 
-    if (intersectFeatures?.length) {
-      intersectFeatures.forEach((feature) => {
-        if (feature.getGeometry().getType() === 'Point') {
-          this.snapLayer.getSource().addFeature(feature);
-        } else {
-          this.linesLayer.getSource().addFeature(feature);
-        }
-      });
-    } else {
-      this.snapLayer.getSource().addFeatures(lines);
-    }
-  }
+    this.linesLayer.getSource().clear();
+    this.snapLayer.getSource().clear();
 
-  /**
-   * Adds snap points to the snapping layer.
-   * @private
-   * @param {ol.Coordinate} coordinate cursor coordinate.
-   * @param {ol.eaturee} feature Feature to draw the snap points for.
-   */
-  drawSnapPoints(coordinate, feature) {
-    if (
-      this.properties.showSnapPointsOnlyOnPoints &&
-      !(feature.getGeometry() instanceof Point)
-    ) {
-      return;
-    }
-    const featCoord = feature.getGeometry().getClosestPoint(coordinate);
+    this.pointerInteraction.dispatchEvent(
+      new SnapEvent(SnapEventType.SNAP, features.length ? features : null, evt),
+    );
 
-    const px = this.map.getPixelFromCoordinate(featCoord);
-    let snapCoords = [];
-
-    if (this.properties.useMapUnits) {
-      snapCoords = [
-        [featCoord[0] - this.properties.snapPointDist, featCoord[1]],
-        [featCoord[0] + this.properties.snapPointDist, featCoord[1]],
-        [featCoord[0], featCoord[1] - this.properties.snapPointDist],
-        [featCoord[0], featCoord[1] + this.properties.snapPointDist],
-      ];
-    } else {
-      const snapPx = [
-        [px[0] - this.properties.snapPointDist, px[1]],
-        [px[0] + this.properties.snapPointDist, px[1]],
-        [px[0], px[1] - this.properties.snapPointDist],
-        [px[0], px[1] + this.properties.snapPointDist],
-      ];
-
-      for (let j = 0; j < snapPx.length; j += 1) {
-        snapCoords.push(this.map.getCoordinateFromPixel(snapPx[j]));
-      }
+    if (this.properties.showSnapLines) {
+      this.drawSnapLines(evt.coordinate, features);
     }
 
-    const snapGeom = new MultiPoint(snapCoords);
-    this.snapLayer.getSource().addFeature(new Feature(snapGeom));
+    if (this.properties.showSnapPoints && features.length) {
+      this.drawSnapPoints(evt.coordinate, features[0]);
+    }
   }
 
   /**
    * @inheritdoc
    */
-  activate(silent) {
-    super.activate(silent);
-    this.snapLayer.setMap(this.map);
-    this.linesLayer.setMap(this.map);
-    this.map?.addInteraction(this.pointerInteraction);
-    this.map?.addInteraction(this.snapInteraction);
+  setMap(map) {
+    if (this.map) {
+      this.map.getInteractions().un("add", this.handleInteractionAdd);
+    }
 
-    document.getElementById('aux-cb')?.addEventListener('change', (evt) => {
-      this.setProperties({
-        showSnapLines: evt.target.checked,
-        showSnapPoints: !evt.target.checked,
-      });
-    });
+    super.setMap(map);
 
-    document.getElementById('dist-cb')?.addEventListener('change', (evt) => {
-      this.setProperties({
-        showSnapPoints: evt.target.checked,
-        showSnapLines: !evt.target.checked,
-      });
-    });
-
-    document.getElementById('width-input')?.addEventListener('keyup', (evt) => {
-      const snapPointDist = parseFloat(evt.target.value);
-      if (!Number.isNaN(snapPointDist)) {
-        this.setProperties({ snapPointDist });
-      }
-    });
-  }
-
-  /**
-   * @inheritdoc
-   */
-  deactivate(silent) {
-    super.deactivate(silent);
-    this.snapLayer.setMap(null);
-    this.linesLayer.setMap(null);
-    this.map?.removeInteraction(this.pointerInteraction);
-    this.map?.removeInteraction(this.snapInteraction);
+    // Ensure that the snap interaction is at the last position
+    // as it must be the first to handle the  pointermove event.
+    if (this.map) {
+      this.map.getInteractions().on("add", this.handleInteractionAdd);
+    }
   }
 }
 

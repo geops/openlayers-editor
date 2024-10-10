@@ -1,4 +1,4 @@
-import { MultiPoint, LineString } from 'ol/geom';
+import { LineString, MultiPoint } from "ol/geom";
 
 /**
  * Removes the last coordinate of a given geometry (Line or Polygon).
@@ -10,7 +10,7 @@ import { MultiPoint, LineString } from 'ol/geom';
 const getShiftedMultipoint = (geometry) => {
   // Include all but the last vertex to the coordinate (e.g. at mouse position)
   // to prevent snapping on mouse cursor node
-  const isPolygon = geometry.getType() === 'Polygon';
+  const isPolygon = geometry.getType() === "Polygon";
   const lineGeometry = isPolygon
     ? new LineString(geometry.getCoordinates()[0])
     : geometry;

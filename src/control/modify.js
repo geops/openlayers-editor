@@ -1,14 +1,14 @@
-import { Modify, Interaction } from 'ol/interaction';
-import { singleClick } from 'ol/events/condition';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import throttle from 'lodash.throttle';
-import { unByKey } from 'ol/Observable';
-import Control from './control';
-import image from '../../img/modify_geometry2.svg';
-import SelectMove from '../interaction/selectmove';
-import SelectModify from '../interaction/selectmodify';
-import Move from '../interaction/move';
-import Delete from '../interaction/delete';
+import throttle from "lodash.throttle";
+import { singleClick } from "ol/events/condition";
+import { Interaction, Modify } from "ol/interaction";
+import { unByKey } from "ol/Observable";
+
+import image from "../../img/modify_geometry2.svg";
+import Delete from "../interaction/delete";
+import Move from "../interaction/move";
+import SelectModify from "../interaction/selectmodify";
+import SelectMove from "../interaction/selectmove";
+import Control from "./control";
 
 /**
  * Control for modifying geometries.
@@ -31,9 +31,9 @@ class ModifyControl extends Control {
    */
   constructor(options = {}) {
     super({
-      title: 'Modify geometry',
-      className: 'ole-control-modify',
+      className: "ole-control-modify",
       image,
+      title: "Modify geometry",
       ...options,
     });
 
@@ -75,7 +75,10 @@ class ModifyControl extends Control {
       leading: true,
     });
     this.cursorStyleHandler =
-      options?.cursorStyleHandler || ((cursorStyle) => cursorStyle);
+      options?.cursorStyleHandler ||
+      ((cursorStyle) => {
+        return cursorStyle;
+      });
 
     /* Interactions */
     this.createSelectMoveInteraction(options.selectMoveOptions);
@@ -87,129 +90,63 @@ class ModifyControl extends Control {
   }
 
   /**
-   * Create the interaction used to select feature to move.
-   * @param {*} options
+   * @inheritdoc
+   */
+  activate() {
+    super.activate();
+    this.deselectInteraction.setActive(true);
+    this.deleteInteraction.setActive(true);
+    this.selectModify.setActive(true);
+    // For the default behavior it's very important to add selectMove after selectModify.
+    // It will avoid single/dbleclick mess.
+    this.selectMove.setActive(true);
+    this.addListeners();
+  }
+
+  /**
+   * Add others listeners on the map than interactions.
+   * @param {*} evt
    * @private
    */
-  createSelectMoveInteraction(options = {}) {
-    /**
-     * Select interaction to move features.
-     * @type {ol.interaction.Select}
-     * @private
-     */
-    this.selectMove = new SelectMove({
-      filter: (feature, layer) => {
-        // If the feature is already selected by modify interaction ignore the selection.
-        if (this.isSelectedByModify(feature)) {
-          return false;
+  addListeners() {
+    this.removeListeners();
+    this.cursorListenerKeys = [
+      this.map?.on("pointerdown", (evt) => {
+        const element = evt.map.getViewport();
+        if (element?.style?.cursor === "grab") {
+          this.changeCursor("grabbing");
         }
-        return this.selectFilter(feature, layer);
-      },
-      hitTolerance: this.hitTolerance,
-      ...options,
-    });
+      }),
+      this.map?.on("pointermove", this.cursorHandlerThrottled),
+      this.map?.on("pointerup", (evt) => {
+        const element = evt.map.getViewport();
+        if (element?.style?.cursor === "grabbing") {
+          this.changeCursor("grab");
+        }
+      }),
+    ];
+  }
 
-    this.selectMove.getFeatures().on('add', () => {
-      this.selectModify.getFeatures().clear();
-      this.moveInteraction.setActive(true);
-      this.deleteInteraction.setFeatures(this.selectMove.getFeatures());
-    });
-
-    this.selectMove.getFeatures().on('remove', () => {
-      // Deactive interaction when the select array is empty
-      if (this.selectMove.getFeatures().getLength() === 0) {
-        this.moveInteraction.setActive(false);
-        this.deleteInteraction.setFeatures();
+  /**
+   * Change cursor style.
+   * @param {string} cursor New cursor name.
+   * @private
+   */
+  changeCursor(cursor) {
+    if (!this.getActive()) {
+      return;
+    }
+    const newCursor = this.cursorStyleHandler(cursor);
+    const element = this.map.getViewport();
+    if (
+      (element.style.cursor || newCursor) &&
+      element.style.cursor !== newCursor
+    ) {
+      if (this.previousCursor === null) {
+        this.previousCursor = element.style.cursor;
       }
-    });
-    this.selectMove.setActive(false);
-  }
-
-  /**
-   * Create the interaction used to select feature to modify.
-   * @param {*} options
-   * @private
-   */
-  createSelectModifyInteraction(options = {}) {
-    /**
-     * Select interaction to modify features.
-     * @type {ol.interaction.Select}
-     */
-    this.selectModify = new SelectModify({
-      filter: this.selectFilter,
-      hitTolerance: this.hitTolerance,
-      ...options,
-    });
-
-    this.selectModify.getFeatures().on('add', () => {
-      this.selectMove.getFeatures().clear();
-      this.modifyInteraction.setActive(true);
-      this.deleteInteraction.setFeatures(this.selectModify.getFeatures());
-    });
-
-    this.selectModify.getFeatures().on('remove', () => {
-      // Deactive interaction when the select array is empty
-      if (this.selectModify.getFeatures().getLength() === 0) {
-        this.modifyInteraction.setActive(false);
-        this.deleteInteraction.setFeatures();
-      }
-    });
-    this.selectModify.setActive(false);
-  }
-
-  /**
-   * Create the interaction used to move feature.
-   * @param {*} options
-   * @private
-   */
-  createMoveInteraction(options = {}) {
-    /**
-     * @type {ole.interaction.Move}
-     * @private
-     */
-    this.moveInteraction = new Move({
-      features: this.selectMove.getFeatures(),
-      ...options,
-    });
-
-    this.moveInteraction.on('movestart', (evt) => {
-      this.editor.setEditFeature(evt.feature);
-      this.isMoving = true;
-    });
-
-    this.moveInteraction.on('moveend', () => {
-      this.editor.setEditFeature();
-      this.isMoving = false;
-    });
-    this.moveInteraction.setActive(false);
-  }
-
-  /**
-   * Create the interaction used to modify vertexes of features.
-   * @param {*} options
-   * @private
-   */
-  createModifyInteraction(options = {}) {
-    /**
-     * @type {ol.interaction.Modify}
-     * @private
-     */
-    this.modifyInteraction = new Modify({
-      features: this.selectModify.getFeatures(),
-      deleteCondition: singleClick,
-      ...options,
-    });
-
-    this.modifyInteraction.on('modifystart', (evt) => {
-      this.editor.setEditFeature(evt.features.item(0));
-      this.isModifying = true;
-    });
-
-    this.modifyInteraction.on('modifyend', () => {
-      this.editor.setEditFeature();
-      this.isModifying = false;
-    });
-    this.modifyInteraction.setActive(false);
+      element.style.cursor = newCursor;
+    }
   }
 
   /**
@@ -224,7 +161,7 @@ class ModifyControl extends Control {
      */
     this.deleteInteraction = new Delete({ source: this.source, ...options });
 
-    this.deleteInteraction.on('delete', () => {
+    this.deleteInteraction.on("delete", () => {
       this.changeCursor(null);
     });
     this.deleteInteraction.setActive(false);
@@ -264,6 +201,178 @@ class ModifyControl extends Control {
       },
     });
     this.deselectInteraction.setActive(false);
+  }
+
+  /**
+   * Create the interaction used to modify vertexes of features.
+   * @param {*} options
+   * @private
+   */
+  createModifyInteraction(options = {}) {
+    /**
+     * @type {ol.interaction.Modify}
+     * @private
+     */
+    this.modifyInteraction = new Modify({
+      deleteCondition: singleClick,
+      features: this.selectModify.getFeatures(),
+      ...options,
+    });
+
+    this.modifyInteraction.on("modifystart", (evt) => {
+      this.editor.setEditFeature(evt.features.item(0));
+      this.isModifying = true;
+    });
+
+    this.modifyInteraction.on("modifyend", () => {
+      this.editor.setEditFeature();
+      this.isModifying = false;
+    });
+    this.modifyInteraction.setActive(false);
+  }
+
+  /**
+   * Create the interaction used to move feature.
+   * @param {*} options
+   * @private
+   */
+  createMoveInteraction(options = {}) {
+    /**
+     * @type {ole.interaction.Move}
+     * @private
+     */
+    this.moveInteraction = new Move({
+      features: this.selectMove.getFeatures(),
+      ...options,
+    });
+
+    this.moveInteraction.on("movestart", (evt) => {
+      this.editor.setEditFeature(evt.feature);
+      this.isMoving = true;
+    });
+
+    this.moveInteraction.on("moveend", () => {
+      this.editor.setEditFeature();
+      this.isMoving = false;
+    });
+    this.moveInteraction.setActive(false);
+  }
+
+  /**
+   * Create the interaction used to select feature to modify.
+   * @param {*} options
+   * @private
+   */
+  createSelectModifyInteraction(options = {}) {
+    /**
+     * Select interaction to modify features.
+     * @type {ol.interaction.Select}
+     */
+    this.selectModify = new SelectModify({
+      filter: this.selectFilter,
+      hitTolerance: this.hitTolerance,
+      ...options,
+    });
+
+    this.selectModify.getFeatures().on("add", () => {
+      this.selectMove.getFeatures().clear();
+      this.modifyInteraction.setActive(true);
+      this.deleteInteraction.setFeatures(this.selectModify.getFeatures());
+    });
+
+    this.selectModify.getFeatures().on("remove", () => {
+      // Deactive interaction when the select array is empty
+      if (this.selectModify.getFeatures().getLength() === 0) {
+        this.modifyInteraction.setActive(false);
+        this.deleteInteraction.setFeatures();
+      }
+    });
+    this.selectModify.setActive(false);
+  }
+
+  /**
+   * Create the interaction used to select feature to move.
+   * @param {*} options
+   * @private
+   */
+  createSelectMoveInteraction(options = {}) {
+    /**
+     * Select interaction to move features.
+     * @type {ol.interaction.Select}
+     * @private
+     */
+    this.selectMove = new SelectMove({
+      filter: (feature, layer) => {
+        // If the feature is already selected by modify interaction ignore the selection.
+        if (this.isSelectedByModify(feature)) {
+          return false;
+        }
+        return this.selectFilter(feature, layer);
+      },
+      hitTolerance: this.hitTolerance,
+      ...options,
+    });
+
+    this.selectMove.getFeatures().on("add", () => {
+      this.selectModify.getFeatures().clear();
+      this.moveInteraction.setActive(true);
+      this.deleteInteraction.setFeatures(this.selectMove.getFeatures());
+    });
+
+    this.selectMove.getFeatures().on("remove", () => {
+      // Deactive interaction when the select array is empty
+      if (this.selectMove.getFeatures().getLength() === 0) {
+        this.moveInteraction.setActive(false);
+        this.deleteInteraction.setFeatures();
+      }
+    });
+    this.selectMove.setActive(false);
+  }
+
+  /**
+   * Handle the move event of the move interaction.
+   * @param {ol.MapBrowserEvent} evt Event.
+   * @private
+   */
+  cursorHandler(evt) {
+    if (evt.dragging || this.isMoving || this.isModifying) {
+      this.changeCursor("grabbing");
+      return;
+    }
+
+    const feature = this.getFeatureAtPixel(evt.pixel);
+    if (!feature) {
+      this.changeCursor(this.previousCursor);
+      this.previousCursor = null;
+      return;
+    }
+
+    if (this.isSelectedByMove(feature)) {
+      this.changeCursor("grab");
+    } else if (this.isSelectedByModify(feature)) {
+      if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
+        this.changeCursor("grab");
+      } else {
+        this.changeCursor(this.previousCursor);
+      }
+    } else {
+      // Feature available for selection.
+      this.changeCursor("pointer");
+    }
+  }
+
+  /**
+   * @inheritdoc
+   */
+  deactivate(silent) {
+    this.removeListeners();
+    this.selectMove.getFeatures().clear();
+    this.selectModify.getFeatures().clear();
+    this.deselectInteraction.setActive(false);
+    this.deleteInteraction.setActive(false);
+    this.selectModify.setActive(false);
+    this.selectMove.setActive(false);
+    super.deactivate(silent);
   }
 
   /**
@@ -309,66 +418,21 @@ class ModifyControl extends Control {
     return isHoverVertex;
   }
 
-  isSelectedByMove(feature) {
-    return this.selectMove.getFeatures().getArray().indexOf(feature) !== -1;
-  }
-
   isSelectedByModify(feature) {
     return this.selectModify.getFeatures().getArray().indexOf(feature) !== -1;
   }
 
-  /**
-   * Handle the move event of the move interaction.
-   * @param {ol.MapBrowserEvent} evt Event.
-   * @private
-   */
-  cursorHandler(evt) {
-    if (evt.dragging || this.isMoving || this.isModifying) {
-      this.changeCursor('grabbing');
-      return;
-    }
-
-    const feature = this.getFeatureAtPixel(evt.pixel);
-    if (!feature) {
-      this.changeCursor(this.previousCursor);
-      this.previousCursor = null;
-      return;
-    }
-
-    if (this.isSelectedByMove(feature)) {
-      this.changeCursor('grab');
-    } else if (this.isSelectedByModify(feature)) {
-      if (this.isHoverVertexFeatureAtPixel(evt.pixel)) {
-        this.changeCursor('grab');
-      } else {
-        this.changeCursor(this.previousCursor);
-      }
-    } else {
-      // Feature available for selection.
-      this.changeCursor('pointer');
-    }
+  isSelectedByMove(feature) {
+    return this.selectMove.getFeatures().getArray().indexOf(feature) !== -1;
   }
 
   /**
-   * Change cursor style.
-   * @param {string} cursor New cursor name.
+   * Remove others listeners on the map than interactions.
+   * @param {*} evt
    * @private
    */
-  changeCursor(cursor) {
-    if (!this.getActive()) {
-      return;
-    }
-    const newCursor = this.cursorStyleHandler(cursor);
-    const element = this.map.getViewport();
-    if (
-      (element.style.cursor || newCursor) &&
-      element.style.cursor !== newCursor
-    ) {
-      if (this.previousCursor === null) {
-        this.previousCursor = element.style.cursor;
-      }
-      element.style.cursor = newCursor;
-    }
+  removeListeners() {
+    unByKey(this.cursorListenerKeys);
   }
 
   setMap(map) {
@@ -393,67 +457,6 @@ class ModifyControl extends Control {
     this.map?.addInteraction(this.selectMove);
     this.map?.addInteraction(this.moveInteraction);
     this.map?.addInteraction(this.modifyInteraction);
-  }
-
-  /**
-   * Add others listeners on the map than interactions.
-   * @param {*} evt
-   * @private
-   */
-  addListeners() {
-    this.removeListeners();
-    this.cursorListenerKeys = [
-      this.map?.on('pointerdown', (evt) => {
-        const element = evt.map.getViewport();
-        if (element?.style?.cursor === 'grab') {
-          this.changeCursor('grabbing');
-        }
-      }),
-      this.map?.on('pointermove', this.cursorHandlerThrottled),
-      this.map?.on('pointerup', (evt) => {
-        const element = evt.map.getViewport();
-        if (element?.style?.cursor === 'grabbing') {
-          this.changeCursor('grab');
-        }
-      }),
-    ];
-  }
-
-  /**
-   * Remove others listeners on the map than interactions.
-   * @param {*} evt
-   * @private
-   */
-  removeListeners() {
-    unByKey(this.cursorListenerKeys);
-  }
-
-  /**
-   * @inheritdoc
-   */
-  activate() {
-    super.activate();
-    this.deselectInteraction.setActive(true);
-    this.deleteInteraction.setActive(true);
-    this.selectModify.setActive(true);
-    // For the default behavior it's very important to add selectMove after selectModify.
-    // It will avoid single/dbleclick mess.
-    this.selectMove.setActive(true);
-    this.addListeners();
-  }
-
-  /**
-   * @inheritdoc
-   */
-  deactivate(silent) {
-    this.removeListeners();
-    this.selectMove.getFeatures().clear();
-    this.selectModify.getFeatures().clear();
-    this.deselectInteraction.setActive(false);
-    this.deleteInteraction.setActive(false);
-    this.selectModify.setActive(false);
-    this.selectMove.setActive(false);
-    super.deactivate(silent);
   }
 }
 
