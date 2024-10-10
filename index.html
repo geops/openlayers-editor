@@ -240,6 +240,11 @@
       });
 
       modify.modifyInteraction.on('modifystart', function () {
+
+        cad.setProperties({
+          showSnapPoints: false,
+          showSnapLines: true,
+        });
         cad.activate();
       });
       modify.modifyInteraction.on('modifyend', function () {
