@@ -231,7 +231,7 @@
         }
       });
 
-      [buffer, union, intersection, difference].forEach(function (control) {
+      [modify, buffer, union, intersection, difference].forEach(function (control) {
         control.on('change:active', function (evt) {
           if (evt.target.active) {
             cad.deactivate(true);
@@ -239,12 +239,11 @@
         });
       });
 
-      [modify].forEach(function (control) {
-        control.on('change:active', function (evt) {
-          if (evt.target.active && !cad.getActive()) {
-            cad.activate(true);
-          }
-        });
+      modify.modifyInteraction.on('modifystart', function () {
+        cad.activate();
+      });
+      modify.modifyInteraction.on('modifyend', function () {
+        cad.deactivate();
       });
 
 

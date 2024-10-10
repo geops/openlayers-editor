@@ -463,7 +463,12 @@ class CadControl extends Control {
       const geom = feature.getGeometry();
 
       if (!(geom instanceof Circle) && !(geom instanceof Point)) {
-        const snapGeom = getShiftedMultiPoint(geom);
+        const snapGeom = getShiftedMultiPoint(
+          geom,
+          coordinate,
+          editFeature,
+          drawFeature,
+        );
         const isPolygon = geom instanceof Polygon;
         const snapFeature = feature.clone();
         const coordinates = snapGeom.getCoordinates();
