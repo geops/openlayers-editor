@@ -76,6 +76,7 @@ describe("ModifyControl", () => {
               null,
             );
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(toTest).to.not.be.called;
           });
         });
@@ -118,6 +119,7 @@ describe("ModifyControl", () => {
           ).to.equal(2);
           // Check that no features from the overlay are mistakenly selected
 
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           expect(
             omitFeatureSelectSpy.withArgs(
               omitFeatureSelectSpy.args[0][0],
