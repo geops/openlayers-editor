@@ -458,7 +458,7 @@ class CadControl extends Control {
     }
 
     // When using showSnapLines, return all features but edit/draw features are
-    // cloned to remove the node at the mouse position.
+    // cloned to remove the node being modified.
     currentFeatures.filter(this.filter).forEach((feature) => {
       const geom = feature.getGeometry();
 

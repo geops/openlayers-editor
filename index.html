@@ -199,9 +199,6 @@
             showSnapPoints: true,
             showSnapLines: false,
           });
-          if (!cad.getActive()) {
-            cad.activate(true);
-          }
           // cad.updateDialog();
         }
       });
@@ -212,10 +209,6 @@
             showSnapPoints: false,
             showSnapLines: true,
           });
-          if (!cad.getActive()) {
-            cad.activate(true);
-          }
-          // cad.updateDialog();
         }
       });
 
@@ -225,10 +218,19 @@
             showSnapPoints: false,
             showSnapLines: true,
           });
-          if (!cad.getActive()) {
-            cad.activate(true);
-          }
         }
+      });
+
+      [draw, drawLine, drawPoly].forEach(function (control) {
+        control.on('change:active', function (evt) {
+          if (evt.target.active) {
+            if (!cad.getActive()) {
+              cad.activate();
+            }
+          } else if (cad.getActive()) {
+            cad.deactivate();
+          }
+        });
       });
 
       [modify, buffer, union, intersection, difference].forEach(function (control) {
@@ -240,7 +242,6 @@
       });
 
       modify.modifyInteraction.on('modifystart', function () {
-
         cad.setProperties({
           showSnapPoints: false,
           showSnapLines: true,
@@ -273,9 +274,6 @@
       // For tests purpose
       window.editor = editor;
       window.editLayer = editLayer;
-
-      // cad.activate(true);
-
     </script>
   </body>
 </html>

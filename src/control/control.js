@@ -254,6 +254,7 @@ class Control extends OLControl {
         type: "propertychange",
       });
     }
+    this.updateDialog();
   }
 
   updateDialog() {
