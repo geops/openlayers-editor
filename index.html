@@ -199,7 +199,6 @@
             showSnapPoints: true,
             showSnapLines: false,
           });
-          // cad.updateDialog();
         }
       });
 
@@ -227,7 +226,7 @@
             if (!cad.getActive()) {
               cad.activate();
             }
-          } else if (cad.getActive()) {
+          } else if (cad.getActive() && !draw.getActive() && !drawLine.getActive() && !drawPoly.getActive()) {
             cad.deactivate();
           }
         });
@@ -241,6 +240,24 @@
         });
       });
 
+      modify.moveInteraction.on('movestart', function () {
+        const features = modify.selectMove.getFeatures();
+        const length = features?.getLength();
+        const firstFeature = features?.item(0);
+        if (length > 1 || firstFeature?.getGeometry()?.getType() !== 'Point') {
+          return;
+        }
+        cad.setProperties({
+          showSnapPoints: true,
+          showSnapLines: false,
+        });
+        cad.activate();
+      });
+
+      modify.moveInteraction.on('moveend', function () {
+        cad.deactivate();
+      });
+
       modify.modifyInteraction.on('modifystart', function () {
         cad.setProperties({
           showSnapPoints: false,
@@ -248,6 +265,7 @@
         });
         cad.activate();
       });
+
       modify.modifyInteraction.on('modifyend', function () {
         cad.deactivate();
       });
