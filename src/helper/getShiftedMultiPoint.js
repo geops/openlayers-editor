@@ -3,6 +3,7 @@ import { LineString, MultiPoint } from "ol/geom";
 
 let prevCoordinates;
 let prevFeature;
+let prevIndex = -1;
 
 /**
  * Removes the last coordinate of a given geometry (Line or Polygon).
@@ -19,13 +20,23 @@ const getShiftedMultipoint = (
 ) => {
   // Include all but the last vertex to the coordinate (e.g. at mouse position)
   // to prevent snapping on mouse cursor node
+  let lineGeometry = geometry;
+
   const isPolygon = geometry.getType() === "Polygon";
-  const lineGeometry = isPolygon
-    ? new LineString(geometry.getCoordinates()[0])
-    : geometry;
+  if (isPolygon) {
+    const coordinates = geometry.getCoordinates()[0];
+
+    // If the poylgon is properly closed we remove the last coordinate to avoid duplicated snapping nodes and lines.
+    if (
+      coordinates[0].toString() ===
+      coordinates[coordinates.length - 1].toString()
+    ) {
+      coordinates.pop();
+    }
+    lineGeometry = new LineString(coordinates);
+  }
 
   let coordinates = [];
-  // console.log(editFeature, drawFeature);
 
   if (
     !editFeature ||
@@ -33,6 +44,7 @@ const getShiftedMultipoint = (
   ) {
     prevFeature = editFeature;
     prevCoordinates = null;
+    prevIndex = -1;
   }
 
   // When the user is drawing a line or polygon, we just want to remove the last coordinate drawn.
@@ -51,13 +63,19 @@ const getShiftedMultipoint = (
           return coord.toString() !== prevCoordinates[index].toString();
         })
       : -1;
+
+    // The use of prevIndex avoid the flickering of the snapping node on eache pointermove event.
+    prevIndex = index != -1 ? index : prevIndex;
     prevCoordinates = lineGeometry.getCoordinates();
 
-    if (index > -1) {
+    if (prevIndex > -1) {
+      console.log(index, prevIndex);
       // Exclude the node being modified
       const coords = lineGeometry.getCoordinates();
-      coords.splice(index, 1);
+      coords.splice(prevIndex, 1);
       coordinates = coords;
+    } else {
+      console.log("index not found", prevIndex, index);
     }
   }
   return new MultiPoint(coordinates);
