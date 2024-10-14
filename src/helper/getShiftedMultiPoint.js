@@ -64,18 +64,15 @@ const getShiftedMultipoint = (
         })
       : -1;
 
-    // The use of prevIndex avoid the flickering of the snapping node on eache pointermove event.
+    // The use of prevIndex avoid the flickering of the snapping node on eache pointer move event.
     prevIndex = index != -1 ? index : prevIndex;
     prevCoordinates = lineGeometry.getCoordinates();
 
     if (prevIndex > -1) {
-      console.log(index, prevIndex);
       // Exclude the node being modified
       const coords = lineGeometry.getCoordinates();
       coords.splice(prevIndex, 1);
       coordinates = coords;
-    } else {
-      console.log("index not found", prevIndex, index);
     }
   }
   return new MultiPoint(coordinates);
