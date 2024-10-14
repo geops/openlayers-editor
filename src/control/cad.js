@@ -262,7 +262,6 @@ class CadControl extends Control {
           snapCoordsAfter.push();
         } else {
           // Add feature vertices
-
           if (geom instanceof LineString) {
             for (let j = 0; j < featureCoord.length; j += 1) {
               snapCoordsBefore.push(featureCoord[j - 1]);

@@ -52,9 +52,6 @@ const getShiftedMultipoint = (
     lineGeometry.forEachSegment((start) => {
       coordinates.push(start);
     });
-    if (isPolygon) {
-      coordinates.pop();
-    }
 
     // When we are modifying a line or polygon, we want to remove the node that is being modified.
   } else if (editFeature) {
@@ -64,7 +61,7 @@ const getShiftedMultipoint = (
         })
       : -1;
 
-    // The use of prevIndex avoid the flickering of the snapping node on eache pointer move event.
+    // The use of prevIndex avoid the flickering of the snapping node on each pointer move event.
     prevIndex = index != -1 ? index : prevIndex;
     prevCoordinates = lineGeometry.getCoordinates();
 
