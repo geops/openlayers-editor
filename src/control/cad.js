@@ -238,9 +238,10 @@ class CadControl extends Control {
    * a pair of features.
    * @private
    * @param {ol.Coordinate} coordinate Mouse pointer coordinate.
+   * @param {ol.Pixel} coordinate Mouse pointer pixel coordinate.
    * @param {Array.<ol.Feature>} features List of features.
    */
-  drawSnapLines(coordinate, features) {
+  drawSnapLines(coordinate, pixel, features) {
     // First get all snap points: neighbouring feature vertices and extent corners
     const snapCoordsBefore = []; // store the direct before point in the coordinate array
     const snapCoords = [];
@@ -305,17 +306,19 @@ class CadControl extends Control {
 
     if (showOrthoLines) {
       helpLines[ORTHO_LINE_KEY] =
-        this.getOrthoLines(coordinate, snapCoords, snapCoordsBefore) || [];
+        this.getOrthoLines(coordinate, pixel, snapCoords, snapCoordsBefore) ||
+        [];
     }
 
     if (showSegmentLines) {
       helpLines[SEGMENT_LINE_KEY] =
-        this.getSegmentLines(coordinate, snapCoords, snapCoordsBefore) || [];
+        this.getSegmentLines(coordinate, pixel, snapCoords, snapCoordsBefore) ||
+        [];
     }
 
     if (showVerticalAndHorizontalLines) {
       helpLines[VH_LINE_KEY] =
-        this.getVerticalAndHorizontalLines(coordinate, snapCoords) || [];
+        this.getVerticalAndHorizontalLines(coordinate, pixel, snapCoords) || [];
     }
 
     // Add custom lines
@@ -510,12 +513,11 @@ class CadControl extends Control {
       </div>
     `;
   }
-
   /**
    * For each segment, we calculate lines that are perpendicular.
    */
-  getOrthoLines(coordinate, snapCoords, snapCoordsBefore) {
-    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+  getOrthoLines(coordinate, pixel, snapCoords, snapCoordsBefore) {
+    const mousePx = pixel;
     const doubleTol = this.snapTolerance * 2;
     const [mouseX, mouseY] = mousePx;
     const lines = [];
@@ -526,8 +528,8 @@ class CadControl extends Control {
       }
       const snapCoordBefore = snapCoordsBefore[i];
       const snapCoord = snapCoords[i];
-      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
-      const snapPx = this.map.getPixelFromCoordinate(snapCoord);
+      const snapPxBefore = this.getRoundedPixelFromCoordinate(snapCoordBefore);
+      const snapPx = this.getRoundedPixelFromCoordinate(snapCoord);
 
       const orthoLine1 = new LineString([snapPxBefore, snapPx]);
       orthoLine1.rotate((90 * Math.PI) / 180, snapPxBefore);
@@ -537,7 +539,11 @@ class CadControl extends Control {
 
       [orthoLine1, orthoLine2].forEach((line) => {
         const [anchorPx, last] = line.getCoordinates();
-        const projMousePx = getProjectedPoint(mousePx, anchorPx, last);
+        const projMousePx = getProjectedPoint(mousePx, anchorPx, last).map(
+          (v) => {
+            return Math.round(v);
+          },
+        );
         const [projMouseX, projMouseY] = projMousePx;
         const distance = Math.sqrt(
           (projMouseX - mouseX) ** 2 + (projMouseY - mouseY) ** 2,
@@ -673,11 +679,17 @@ class CadControl extends Control {
     ];
   }
 
+  getRoundedPixelFromCoordinate(coordinate) {
+    return this.map.getPixelFromCoordinate(coordinate).map((v) => {
+      return Math.round(v);
+    });
+  }
+
   /**
    * For each segment, we calculate lines that extends it.
    */
-  getSegmentLines(coordinate, snapCoords, snapCoordsBefore) {
-    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+  getSegmentLines(coordinate, pixel, snapCoords, snapCoordsBefore) {
+    const mousePx = pixel;
     const doubleTol = this.snapTolerance * 2;
     const [mouseX, mouseY] = mousePx;
     const lines = [];
@@ -688,7 +700,7 @@ class CadControl extends Control {
       }
       const snapCoordBefore = snapCoordsBefore[i];
       const snapCoord = snapCoords[i];
-      const snapPxBefore = this.map.getPixelFromCoordinate(snapCoordBefore);
+      const snapPxBefore = this.getRoundedPixelFromCoordinate(snapCoordBefore);
       const snapPx = this.map.getPixelFromCoordinate(snapCoord);
 
       const [snapX] = snapPx;
@@ -725,12 +737,12 @@ class CadControl extends Control {
   }
 
   // Calculate lines that are vertical or horizontal to a coordinate.
-  getVerticalAndHorizontalLines(coordinate, snapCoords) {
+  getVerticalAndHorizontalLines(coordinate, pixel, snapCoords) {
     // Draw snaplines when cursor vertically or horizontally aligns with a snap feature.
-    // We draw only on vertical and one horizontal line to avoid crowded lines when polygons or lines have a lot of coordinates.
+    // We draw only one vertical and one horizontal line to avoid crowded lines when polygons or lines have a lot of coordinates.
     const halfTol = this.snapTolerance / 2;
     const doubleTol = this.snapTolerance * 2;
-    const mousePx = this.map.getPixelFromCoordinate(coordinate);
+    const mousePx = pixel;
     const [mouseX, mouseY] = mousePx;
     let vLine;
     let hLine;
@@ -738,7 +750,7 @@ class CadControl extends Control {
     let closerDistanceWithHLine = Infinity;
     for (let i = 0; i < snapCoords.length; i += 1) {
       const snapCoord = snapCoords[i];
-      const snapPx = this.map.getPixelFromCoordinate(snapCoords[i]);
+      const snapPx = this.getRoundedPixelFromCoordinate(snapCoords[i]);
       const [snapX, snapY] = snapPx;
       const drawVLine = mouseX > snapX - halfTol && mouseX < snapX + halfTol;
       const drawHLine = mouseY > snapY - halfTol && mouseY < snapY + halfTol;
@@ -827,7 +839,7 @@ class CadControl extends Control {
     );
 
     if (this.properties.showSnapLines) {
-      this.drawSnapLines(evt.coordinate, features);
+      this.drawSnapLines(evt.coordinate, evt.pixel, features);
     }
 
     if (this.properties.showSnapPoints && features.length) {
