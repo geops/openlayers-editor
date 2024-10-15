@@ -1,5 +1,6 @@
 {
   "(src|__mocks__)/**/*.js": ["eslint --fix", "prettier --write"],
+  "cypress/e2e/**/*.js": ["eslint --fix", "prettier --write"],
   "package.json": ["yarn fixpack"],
   "src/**/*.{css,scss}": ["stylelint --fix"]
 }

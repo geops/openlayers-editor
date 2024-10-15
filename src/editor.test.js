@@ -1,11 +1,11 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { expect, test, describe, beforeEach } from 'vitest';
-import Map from 'ol/Map';
-import Editor from './editor';
-import CAD from './control/cad';
-import ModifyControl from './control/modify';
+import Map from "ol/Map";
+import { beforeEach, describe, expect, test } from "vitest";
 
-describe('editor', () => {
+import CAD from "./control/cad";
+import ModifyControl from "./control/modify";
+import Editor from "./editor";
+
+describe("editor", () => {
   let map;
   let editor;
   let cad;
@@ -14,14 +14,14 @@ describe('editor', () => {
   beforeEach(() => {
     // In the test we use pixel as coordinates.
     map = new Map({
-      target: document.createElement('div'),
+      target: document.createElement("div"),
     });
     editor = new Editor(map);
     cad = new CAD();
     modify = new ModifyControl();
   });
 
-  test('adds a control', () => {
+  test("adds a control", () => {
     editor.addControl(cad);
     expect(editor.controls.getArray()[0]).toBe(cad);
     expect(editor.activeControls.getLength()).toBe(0);
@@ -34,7 +34,7 @@ describe('editor', () => {
     expect(editor.activeControls.getArray()[0]).toBe(cad);
   });
 
-  test('removes a control', () => {
+  test("removes a control", () => {
     editor.addControl(cad);
     cad.activate();
     expect(cad.getActive()).toBe(true);
@@ -48,7 +48,7 @@ describe('editor', () => {
     expect(cad.getActive()).toBe(false);
   });
 
-  test('is removed', () => {
+  test("is removed", () => {
     editor.addControl(modify);
     editor.addControl(cad);
     modify.activate();

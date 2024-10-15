@@ -1,4 +1,4 @@
-import Service from './service';
+import Service from "./service";
 
 /**
  * OLE storage service.
@@ -28,7 +28,7 @@ export default class Storage extends Service {
      * List of properties keys to ignore.
      * @type {array.<string>}
      */
-    this.ignoreKeys = ['title', 'image', 'className'];
+    this.ignoreKeys = ["title", "image", "className"];
   }
 
   /**
@@ -41,14 +41,14 @@ export default class Storage extends Service {
     this.restoreActiveControls();
 
     this.controls.forEach((control) => {
-      control.addEventListener('propertychange', (evt) => {
+      control.addEventListener("propertychange", (evt) => {
         this.storeProperties(
           evt.detail.control.getProperties().title,
           evt.detail.properties,
         );
       });
 
-      control.addEventListener('change:active', () => {
+      control.addEventListener("change:active", () => {
         this.storeActiveControls();
       });
     });
@@ -61,7 +61,32 @@ export default class Storage extends Service {
     super.deactivate();
 
     this.controls.forEach((control) => {
-      control.removeEventListener('propertychange');
+      control.removeEventListener("propertychange");
+    });
+  }
+
+  /**
+   * Restore the active state of the controls.
+   */
+  restoreActiveControls() {
+    // to be implemented by child class
+  }
+
+  /**
+   * Restore the control properties.
+   */
+
+  restoreProperties() {
+    // to be implemented by child class
+  }
+
+  /**
+   * Store the active state of controls.
+   */
+  storeActiveControls() {
+    const activeControls = this.editor.getActiveControls();
+    return activeControls.getArray().map((c) => {
+      return c.getProperties().title;
     });
   }
 
@@ -85,29 +110,5 @@ export default class Storage extends Service {
     }
 
     return storageProps;
-  }
-
-  /**
-   * Restore the control properties.
-   */
-  // eslint-disable-next-line class-methods-use-this
-  restoreProperties() {
-    // to be implemented by child class
-  }
-
-  /**
-   * Store the active state of controls.
-   */
-  storeActiveControls() {
-    const activeControls = this.editor.getActiveControls();
-    return activeControls.getArray().map((c) => c.getProperties().title);
-  }
-
-  /**
-   * Restore the active state of the controls.
-   */
-  // eslint-disable-next-line class-methods-use-this
-  restoreActiveControls() {
-    // to be implemented by child class
   }
 }

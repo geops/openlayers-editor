@@ -1,6 +1,7 @@
-import Select from 'ol/interaction/Select';
-import Control from './control';
-import delSVG from '../../img/buffer.svg';
+import Select from "ol/interaction/Select";
+
+import delSVG from "../../img/buffer.svg";
+import Control from "./control";
 
 /**
  * Control for deleting geometries.
@@ -17,9 +18,9 @@ class TopologyControl extends Control {
    */
   constructor(options) {
     super({
-      title: 'TopoloyOp',
-      className: 'ole-control-topology',
+      className: "ole-control-topology",
       image: delSVG,
+      title: "TopoloyOp",
       ...options,
     });
 
@@ -28,33 +29,26 @@ class TopologyControl extends Control {
      * @private
      */
     this.selectInteraction = new Select({
-      toggleCondition: () => true,
-      layers: this.layerFilter,
       hitTolerance:
         options.hitTolerance === undefined ? 10 : options.hitTolerance,
+      layers: this.layerFilter,
       multi: true,
       style: options.style,
+      toggleCondition: () => {
+        return true;
+      },
     });
 
-    this.selectInteraction.on('select', () => {
+    this.selectInteraction.on("select", () => {
       const feats = this.selectInteraction.getFeatures();
 
       try {
         this.applyTopologyOperation(feats.getArray());
-      } catch (ex) {
-        // eslint-disable-next-line no-console
-        console.error('Unable to process features.');
+      } catch (error) {
+        console.error("Unable to process features.", error);
         feats.clear();
       }
     });
-  }
-
-  /**
-   * Apply a topology operation for given features.
-   * @param {Array.<ol.Feature>} features Features.
-   */
-  applyTopologyOperation(features) {
-    this.topologyFeatures = features;
   }
 
   /**
@@ -64,6 +58,14 @@ class TopologyControl extends Control {
     this.map?.addInteraction(this.selectInteraction);
     this.addedFeatures = [];
     super.activate();
+  }
+
+  /**
+   * Apply a topology operation for given features.
+   * @param {Array.<ol.Feature>} features Features.
+   */
+  applyTopologyOperation(features) {
+    this.topologyFeatures = features;
   }
 
   /**

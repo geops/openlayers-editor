@@ -1,5 +1,5 @@
-import OLControl from 'ol/control/Control';
-import VectorSource from 'ol/source/Vector';
+import OLControl from "ol/control/Control";
+import VectorSource from "ol/source/Vector";
 /**
  * OLE control base class.
  * @extends ol.control.Control
@@ -24,14 +24,14 @@ class Control extends OLControl {
   constructor(options) {
     let button = null;
     if (options.element !== null && !options.element) {
-      button = document.createElement('button');
+      button = document.createElement("button");
       button.className = `ole-control ${options.className}`;
     }
 
     super({
       element:
         options.element === null
-          ? document.createElement('div') // An element must be define otherwise ol complains, when we add control
+          ? document.createElement("div") // An element must be define otherwise ol complains, when we add control
           : options.element || button,
     });
 
@@ -65,13 +65,13 @@ class Control extends OLControl {
     this.title = options.title;
 
     if (button) {
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.src = options.image;
 
       button.appendChild(img);
       button.title = this.title;
 
-      button.addEventListener('click', this.onClick.bind(this));
+      button.addEventListener("click", this.onClick.bind(this));
     }
 
     /**
@@ -93,7 +93,9 @@ class Control extends OLControl {
      */
     this.layerFilter =
       options.layerFilter ||
-      ((layer) => !this.source || (layer && layer.getSource() === this.source));
+      ((layer) => {
+        return !this.source || (layer && layer.getSource() === this.source);
+      });
 
     /**
      * ole.Editor instance.
@@ -110,110 +112,23 @@ class Control extends OLControl {
   }
 
   /**
-   * Returns the control's element.
-   * @returns {Element} the control element.
-   */
-  getElement() {
-    return this.element;
-  }
-
-  /**
-   * Click handler for the control element.
-   * @private
-   */
-  onClick() {
-    if (this.active) {
-      this.deactivate();
-    } else {
-      this.activate();
-    }
-  }
-
-  /**
-   * Sets the map of the control.
-   * @protected
-   * @param {ol.Map} map The map object.
-   */
-  setMap(map) {
-    this.map = map;
-    super.setMap(this.map);
-  }
-
-  /**
-   * Introduce the control to it's editor.
-   * @param {ole.Editor} editor OLE Editor.
-   * @protected
-   */
-  setEditor(editor) {
-    this.editor = editor;
-  }
-
-  /**
    * Activate the control
    */
   activate(silent) {
     this.active = true;
     if (this.element) {
-      this.element.className += ' active';
+      this.element.className += " active";
     }
 
     if (!silent) {
       this.dispatchEvent({
-        type: 'change:active',
-        target: this,
         detail: { control: this },
+        target: this,
+        type: "change:active",
       });
     }
 
     this.openDialog();
-  }
-
-  /**
-   * Dectivate the control
-   * @param {boolean} [silent] Do not trigger an event.
-   */
-  deactivate(silent) {
-    this.active = false;
-    if (this.element) {
-      this.element.classList.remove('active');
-    }
-
-    if (!silent) {
-      this.dispatchEvent({
-        type: 'change:active',
-        target: this,
-        detail: { control: this },
-      });
-    }
-
-    this.closeDialog();
-  }
-
-  /**
-   * Returns the active state of the control.
-   * @returns {Boolean} Active state.
-   */
-  getActive() {
-    return this.active;
-  }
-
-  /**
-   * Open the control's dialog (if defined).
-   */
-  openDialog() {
-    this.closeDialog();
-    if (this.dialogTarget !== null && this.getDialogTemplate) {
-      this.dialogDiv = document.createElement('div');
-
-      this.dialogDiv.innerHTML = `
-        <div class="ole-dialog">
-          ${this.getDialogTemplate()}
-        </div>
-      `;
-      (this.dialogTarget || this.map.getTargetElement()).appendChild(
-        this.dialogDiv,
-      );
-    }
   }
 
   /**
@@ -230,6 +145,101 @@ class Control extends OLControl {
   }
 
   /**
+   * Dectivate the control
+   * @param {boolean} [silent] Do not trigger an event.
+   */
+  deactivate(silent) {
+    this.active = false;
+    if (this.element) {
+      this.element.classList.remove("active");
+    }
+
+    if (!silent) {
+      this.dispatchEvent({
+        detail: { control: this },
+        target: this,
+        type: "change:active",
+      });
+    }
+
+    this.closeDialog();
+  }
+
+  /**
+   * Returns the active state of the control.
+   * @returns {Boolean} Active state.
+   */
+  getActive() {
+    return this.active;
+  }
+
+  /**
+   * Returns the control's element.
+   * @returns {Element} the control element.
+   */
+  getElement() {
+    return this.element;
+  }
+
+  /**
+   * Return properties.
+   * @returns {object} Copy of control properties.
+   */
+  getProperties() {
+    return { ...this.properties };
+  }
+
+  /**
+   * Click handler for the control element.
+   * @private
+   */
+  onClick() {
+    if (this.active) {
+      this.deactivate();
+    } else {
+      this.activate();
+    }
+  }
+
+  /**
+   * Open the control's dialog (if defined).
+   */
+  openDialog() {
+    this.closeDialog();
+    if (this.dialogTarget !== null && this.getDialogTemplate) {
+      this.dialogDiv = document.createElement("div");
+
+      this.dialogDiv.innerHTML = `
+        <div class="ole-dialog">
+          ${this.getDialogTemplate()}
+        </div>
+      `;
+      (this.dialogTarget || this.map.getTargetElement()).appendChild(
+        this.dialogDiv,
+      );
+    }
+  }
+
+  /**
+   * Introduce the control to it's editor.
+   * @param {ole.Editor} editor OLE Editor.
+   * @protected
+   */
+  setEditor(editor) {
+    this.editor = editor;
+  }
+
+  /**
+   * Sets the map of the control.
+   * @protected
+   * @param {ol.Map} map The map object.
+   */
+  setMap(map) {
+    this.map = map;
+    super.setMap(this.map);
+  }
+
+  /**
    * Set properties.
    * @param {object} properties New control properties.
    * @param {boolean} [silent] If true, no propertychange event is triggered.
@@ -239,19 +249,22 @@ class Control extends OLControl {
 
     if (!silent) {
       this.dispatchEvent({
-        type: 'propertychange',
+        detail: { control: this, properties: this.properties },
         target: this,
-        detail: { properties: this.properties, control: this },
+        type: "propertychange",
       });
     }
+    this.updateDialog();
   }
 
-  /**
-   * Return properties.
-   * @returns {object} Copy of control properties.
-   */
-  getProperties() {
-    return { ...this.properties };
+  updateDialog() {
+    if (this.dialogDiv && this.getDialogTemplate) {
+      this.dialogDiv.innerHTML = `
+        <div class="ole-dialog">
+          ${this.getDialogTemplate()}
+        </div>
+      `;
+    }
   }
 }
 

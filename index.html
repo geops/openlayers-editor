@@ -150,6 +150,9 @@
 
       var cad = new ole.control.CAD({
         source: editLayer.getSource(),
+        showSnapPointsOnlyOnPoints: true,
+        dialogTarget: null,
+        element: null
       });
 
       var draw = new ole.control.Draw({
@@ -190,6 +193,85 @@
         source: editLayer.getSource(),
       });
 
+      draw.on('change:active', function (evt) {
+        if (evt.target.active) {
+          cad.setProperties({
+            showSnapPoints: true,
+            showSnapLines: false,
+          });
+        }
+      });
+
+      drawLine.on('change:active', function (evt) {
+        if (evt.target.active) {
+          cad.setProperties({
+            showSnapPoints: false,
+            showSnapLines: true,
+          });
+        }
+      });
+
+      drawPoly.on('change:active', function (evt) {
+        if (evt.target.active) {
+          cad.setProperties({
+            showSnapPoints: false,
+            showSnapLines: true,
+          });
+        }
+      });
+
+      [draw, drawLine, drawPoly].forEach(function (control) {
+        control.on('change:active', function (evt) {
+          if (evt.target.active) {
+            if (!cad.getActive()) {
+              cad.activate();
+            }
+          } else if (cad.getActive() && !draw.getActive() && !drawLine.getActive() && !drawPoly.getActive()) {
+            cad.deactivate();
+          }
+        });
+      });
+
+      [modify, buffer, union, intersection, difference].forEach(function (control) {
+        control.on('change:active', function (evt) {
+          if (evt.target.active) {
+            cad.deactivate(true);
+          }
+        });
+      });
+
+      modify.moveInteraction.on('movestart', function () {
+        const features = modify.selectMove.getFeatures();
+        const length = features?.getLength();
+        const firstFeature = features?.item(0);
+        if (length > 1 || firstFeature?.getGeometry()?.getType() !== 'Point') {
+          return;
+        }
+        cad.setProperties({
+          showSnapPoints: true,
+          showSnapLines: false,
+        });
+        cad.activate();
+      });
+
+      modify.moveInteraction.on('moveend', function () {
+        cad.deactivate();
+      });
+
+      modify.modifyInteraction.on('modifystart', function () {
+        cad.setProperties({
+          showSnapPoints: false,
+          showSnapLines: true,
+        });
+        cad.activate();
+      });
+
+      modify.modifyInteraction.on('modifyend', function () {
+        cad.deactivate();
+      });
+
+
+
       editor.addControls([
         cad,
         draw,
@@ -203,9 +285,9 @@
         difference,
       ]);
 
-      var ls = new ole.service.LocalStorage();
+      // var ls = new ole.service.LocalStorage();
 
-      editor.addService(ls);
+      // editor.addService(ls);
 
       // For tests purpose
       window.editor = editor;

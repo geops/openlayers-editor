@@ -1,4 +1,4 @@
-import Event from 'ol/events/Event';
+import Event from "ol/events/Event";
 
 /**
  * Enum for snap event type.
@@ -10,7 +10,7 @@ export const SnapEventType = {
    * Triggered upon feature is snapped.
    * @type {string}
    */
-  SNAP: 'snap',
+  SNAP: "snap",
 };
 
 /**

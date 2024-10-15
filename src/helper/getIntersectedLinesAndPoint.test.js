@@ -1,20 +1,22 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { expect, test, describe, beforeEach } from 'vitest';
-import LineString from 'ol/geom/LineString';
-import Feature from 'ol/Feature';
-import getIntersectedLinesAndPoint from './getIntersectedLinesAndPoint';
+import Feature from "ol/Feature";
+import LineString from "ol/geom/LineString";
+import { beforeEach, describe, expect, test } from "vitest";
 
-describe('getIntersectedLinesAndPoint', () => {
+import getIntersectedLinesAndPoint from "./getIntersectedLinesAndPoint";
+
+describe("getIntersectedLinesAndPoint", () => {
   let map;
 
   beforeEach(() => {
     // In the test we use pixel as coordinates.
     map = {
-      getPixelFromCoordinate: (coord) => coord,
+      getPixelFromCoordinate: (coord) => {
+        return coord;
+      },
     };
   });
 
-  test('returns empty array because lines are not intersected', () => {
+  test("returns empty array because lines are not intersected", () => {
     const line1 = new Feature(
       new LineString([
         [0, 0],
@@ -38,7 +40,7 @@ describe('getIntersectedLinesAndPoint', () => {
     expect(intersectedLines).toEqual([]);
   });
 
-  test('returns empty array because the tolerance is not big enough', () => {
+  test("returns empty array because the tolerance is not big enough", () => {
     const line1 = new Feature(
       new LineString([
         [0, 0],
@@ -62,7 +64,7 @@ describe('getIntersectedLinesAndPoint', () => {
     expect(intersectedLines).toEqual([]);
   });
 
-  test('returns intersected lines and the intersection point', () => {
+  test("returns intersected lines and the intersection point", () => {
     const line1 = new Feature(
       new LineString([
         [0, 0],

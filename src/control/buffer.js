@@ -1,17 +1,18 @@
-import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
-import { BufferOp } from 'jsts/org/locationtech/jts/operation/buffer';
-import LinearRing from 'ol/geom/LinearRing';
+import OL3Parser from "jsts/org/locationtech/jts/io/OL3Parser";
+import { BufferOp } from "jsts/org/locationtech/jts/operation/buffer";
 import {
-  Point,
   LineString,
-  Polygon,
-  MultiPoint,
   MultiLineString,
+  MultiPoint,
   MultiPolygon,
-} from 'ol/geom';
-import Select from 'ol/interaction/Select';
-import Control from './control';
-import bufferSVG from '../../img/buffer.svg';
+  Point,
+  Polygon,
+} from "ol/geom";
+import LinearRing from "ol/geom/LinearRing";
+import Select from "ol/interaction/Select";
+
+import bufferSVG from "../../img/buffer.svg";
+import Control from "./control";
 
 /**
  * Control for creating buffers.
@@ -30,10 +31,10 @@ class BufferControl extends Control {
    */
   constructor(options) {
     super({
-      title: 'Buffer geometry',
-      className: 'ole-control-buffer',
-      image: bufferSVG,
       buffer: 50,
+      className: "ole-control-buffer",
+      image: bufferSVG,
+      title: "Buffer geometry",
       ...options,
     });
 
@@ -42,10 +43,10 @@ class BufferControl extends Control {
      * @private
      */
     this.selectInteraction = new Select({
-      layers: this.layerFilter,
       hitTolerance:
         options.hitTolerance === undefined ? 10 : options.hitTolerance,
-      multi: typeof options.multi === 'undefined' ? true : options.multi,
+      layers: this.layerFilter,
+      multi: typeof options.multi === "undefined" ? true : options.multi,
       style: options.style,
     });
   }
@@ -53,15 +54,22 @@ class BufferControl extends Control {
   /**
    * @inheritdoc
    */
-  getDialogTemplate() {
-    return `
-      <label>Buffer width: &nbsp;
-        <input type="text" id="buffer-width"
-          value="${this.properties.buffer}"
-        />
-      </label>
-      <input type="button" value="OK" id="buffer-btn" />
-    `;
+  activate() {
+    this.map?.addInteraction(this.selectInteraction);
+    super.activate();
+
+    document.getElementById("buffer-width")?.addEventListener("change", (e) => {
+      this.setProperties({ buffer: e.target.value });
+    });
+
+    document.getElementById("buffer-btn")?.addEventListener("click", () => {
+      const input = document.getElementById("buffer-width");
+      const width = parseInt(input.value, 10);
+
+      if (width) {
+        this.buffer(width);
+      }
+    });
   }
 
   /**
@@ -92,30 +100,23 @@ class BufferControl extends Control {
   /**
    * @inheritdoc
    */
-  activate() {
-    this.map?.addInteraction(this.selectInteraction);
-    super.activate();
-
-    document.getElementById('buffer-width')?.addEventListener('change', (e) => {
-      this.setProperties({ buffer: e.target.value });
-    });
-
-    document.getElementById('buffer-btn')?.addEventListener('click', () => {
-      const input = document.getElementById('buffer-width');
-      const width = parseInt(input.value, 10);
-
-      if (width) {
-        this.buffer(width);
-      }
-    });
+  deactivate() {
+    this.map?.removeInteraction(this.selectInteraction);
+    super.deactivate();
   }
 
   /**
    * @inheritdoc
    */
-  deactivate() {
-    this.map?.removeInteraction(this.selectInteraction);
-    super.deactivate();
+  getDialogTemplate() {
+    return `
+      <label>Buffer width: &nbsp;
+        <input type="text" id="buffer-width"
+          value="${this.properties.buffer}"
+        />
+      </label>
+      <input type="button" value="OK" id="buffer-btn" />
+    `;
   }
 }
 

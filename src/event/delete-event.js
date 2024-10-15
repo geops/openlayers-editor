@@ -1,4 +1,4 @@
-import Event from 'ol/events/Event';
+import Event from "ol/events/Event";
 
 /**
  * Enum for delete event type.
@@ -10,7 +10,7 @@ export const DeleteEventType = {
    * Triggered upon feature(s) is(are) deleted.
    * @type {string}
    */
-  DELETE: 'delete',
+  DELETE: "delete",
 };
 
 /**

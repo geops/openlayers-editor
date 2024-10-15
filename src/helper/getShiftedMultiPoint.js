@@ -1,30 +1,78 @@
-import { MultiPoint } from 'ol/geom';
+import { getUid } from "ol";
+import { LineString, MultiPoint } from "ol/geom";
+
+let prevCoordinates;
+let prevFeature;
+let prevIndex = -1;
 
 /**
- * Removes the closest node to a given coordinate from a given geometry.
+ * Removes the last coordinate of a given geometry (Line or Polygon).
+ * When we draw the last coordinate if tat mouse cursor.
  * @private
  * @param {ol.Geometry} geometry An openlayers geometry.
- * @param {ol.Coordinate} coordinate Coordinate.
  * @returns {ol.Geometry.MultiPoint} An openlayers MultiPoint geometry.
  */
-const getShiftedMultipoint = (geometry, coordinate) => {
-  // Include all but the closest vertex to the coordinate (e.g. at mouse position)
+const getShiftedMultipoint = (
+  geometry,
+  coordinate,
+  editFeature,
+  drawFeature,
+) => {
+  // Include all but the last vertex to the coordinate (e.g. at mouse position)
   // to prevent snapping on mouse cursor node
-  const isPolygon = geometry.getType() === 'Polygon';
-  const shiftedMultipoint = new MultiPoint(
-    isPolygon ? geometry.getCoordinates()[0] : geometry.getCoordinates(),
-  );
+  let lineGeometry = geometry;
 
-  const drawNodeCoordinate = shiftedMultipoint.getClosestPoint(coordinate);
+  const isPolygon = geometry.getType() === "Polygon";
+  if (isPolygon) {
+    const coordinates = geometry.getCoordinates()[0];
 
-  // Exclude the node being modified
-  shiftedMultipoint.setCoordinates(
-    shiftedMultipoint
-      .getCoordinates()
-      .filter((coord) => coord.toString() !== drawNodeCoordinate.toString()),
-  );
+    // If the poylgon is properly closed we remove the last coordinate to avoid duplicated snapping nodes and lines.
+    if (
+      coordinates[0].toString() ===
+      coordinates[coordinates.length - 1].toString()
+    ) {
+      coordinates.pop();
+    }
+    lineGeometry = new LineString(coordinates);
+  }
 
-  return shiftedMultipoint;
+  let coordinates = [];
+
+  if (
+    !editFeature ||
+    (prevFeature && getUid(editFeature) !== getUid(prevFeature))
+  ) {
+    prevFeature = editFeature;
+    prevCoordinates = null;
+    prevIndex = -1;
+  }
+
+  // When the user is drawing a line or polygon, we just want to remove the last coordinate drawn.
+  if (drawFeature) {
+    lineGeometry.forEachSegment((start) => {
+      coordinates.push(start);
+    });
+
+    // When we are modifying a line or polygon, we want to remove the node that is being modified.
+  } else if (editFeature) {
+    const index = prevCoordinates?.length
+      ? lineGeometry.getCoordinates()?.findIndex((coord, index) => {
+          return coord.toString() !== prevCoordinates[index].toString();
+        })
+      : -1;
+
+    // The use of prevIndex avoid the flickering of the snapping node on each pointer move event.
+    prevIndex = index != -1 ? index : prevIndex;
+    prevCoordinates = lineGeometry.getCoordinates();
+
+    if (prevIndex > -1) {
+      // Exclude the node being modified
+      const coords = lineGeometry.getCoordinates();
+      coords.splice(prevIndex, 1);
+      coordinates = coords;
+    }
+  }
+  return new MultiPoint(coordinates);
 };
 
 export default getShiftedMultipoint;

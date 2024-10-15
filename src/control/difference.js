@@ -1,16 +1,17 @@
-import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
-import { OverlayOp } from 'jsts/org/locationtech/jts/operation/overlay';
-import LinearRing from 'ol/geom/LinearRing';
+import OL3Parser from "jsts/org/locationtech/jts/io/OL3Parser";
+import { OverlayOp } from "jsts/org/locationtech/jts/operation/overlay";
 import {
-  Point,
   LineString,
-  Polygon,
-  MultiPoint,
   MultiLineString,
+  MultiPoint,
   MultiPolygon,
-} from 'ol/geom';
-import TopologyControl from './topology';
-import diffSVG from '../../img/difference.svg';
+  Point,
+  Polygon,
+} from "ol/geom";
+import LinearRing from "ol/geom/LinearRing";
+
+import diffSVG from "../../img/difference.svg";
+import TopologyControl from "./topology";
 
 /**
  * Control for creating a difference of geometries.
@@ -26,9 +27,9 @@ class Difference extends TopologyControl {
    */
   constructor(options) {
     super({
-      title: 'Difference',
-      className: 'ole-control-difference',
+      className: "ole-control-difference",
       image: diffSVG,
+      title: "Difference",
       ...options,
     });
   }

@@ -1,4 +1,6 @@
-const dotProduct = (e1, e2) => e1[0] * e2[0] + e1[1] * e2[1];
+const dotProduct = (e1, e2) => {
+  return e1[0] * e2[0] + e1[1] * e2[1];
+};
 
 /**
  * Get projected point P' of P on line e1. Faster version.
